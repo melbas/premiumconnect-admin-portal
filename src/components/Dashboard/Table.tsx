@@ -1,9 +1,9 @@
 
-import React, { useState } from 'react';
+import React, { useState, ReactNode } from 'react';
 
 interface Column<T> {
   header: string;
-  accessor: keyof T | ((item: T) => React.ReactNode);
+  accessor: keyof T | ((item: T) => ReactNode);
   className?: string;
 }
 
@@ -48,11 +48,11 @@ function Table<T>({
   };
   
   // Get cell value based on accessor
-  const getCellValue = (item: T, accessor: keyof T | ((item: T) => React.ReactNode)) => {
+  const getCellValue = (item: T, accessor: keyof T | ((item: T) => ReactNode)): ReactNode => {
     if (typeof accessor === 'function') {
       return accessor(item);
     }
-    return item[accessor];
+    return item[accessor] as ReactNode;
   };
 
   return (

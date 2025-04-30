@@ -61,6 +61,7 @@ const SalesManagement = () => {
     labels: ['Mobile Money', 'Credit Card', 'Bank Transfer'],
     datasets: [
       {
+        label: 'Payment Methods',
         data: [8, 4, 3],
         backgroundColor: [
           'rgba(139, 92, 246, 0.7)',
@@ -83,13 +84,13 @@ const SalesManagement = () => {
 
   // Sale table columns
   const columns = [
-    { header: "ID", accessor: "id" },
-    { header: "Client", accessor: "client" },
-    { header: "Plan", accessor: "plan" },
-    { header: "Amount", accessor: "amount" },
-    { header: "Date", accessor: "date" },
-    { header: "Payment Method", accessor: "payment" },
-    { header: "Status", accessor: (sale) => {
+    { header: "ID", accessor: "id" as const },
+    { header: "Client", accessor: "client" as const },
+    { header: "Plan", accessor: "plan" as const },
+    { header: "Amount", accessor: "amount" as const },
+    { header: "Date", accessor: "date" as const },
+    { header: "Payment Method", accessor: "payment" as const },
+    { header: "Status", accessor: (sale: any) => {
       const statusClasses = {
         completed: "bg-success/20 text-success",
         processing: "bg-warning/20 text-warning",

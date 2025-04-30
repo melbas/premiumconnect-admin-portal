@@ -74,12 +74,12 @@ const DashboardOverview = () => {
 
   // Recent sales table columns
   const salesColumns = [
-    { header: "ID", accessor: "id" },
-    { header: "Client", accessor: "client" },
-    { header: "Plan", accessor: "plan" },
-    { header: "Amount", accessor: "amount" },
-    { header: "Date", accessor: "date" },
-    { header: "Status", accessor: (item) => (
+    { header: "ID", accessor: "id" as const },
+    { header: "Client", accessor: "client" as const },
+    { header: "Plan", accessor: "plan" as const },
+    { header: "Amount", accessor: "amount" as const },
+    { header: "Date", accessor: "date" as const },
+    { header: "Status", accessor: (item: any) => (
       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
         item.status === "Completed" ? "bg-success/20 text-success" : "bg-warning/20 text-warning"
       }`}>
@@ -98,11 +98,11 @@ const DashboardOverview = () => {
 
   // New users table columns
   const userColumns = [
-    { header: "Name", accessor: "name" },
-    { header: "Email", accessor: "email" },
-    { header: "Phone", accessor: "phone" },
-    { header: "Date", accessor: "date" },
-    { header: "Plan", accessor: "plan" },
+    { header: "Name", accessor: "name" as const },
+    { header: "Email", accessor: "email" as const },
+    { header: "Phone", accessor: "phone" as const },
+    { header: "Date", accessor: "date" as const },
+    { header: "Plan", accessor: "plan" as const },
     { header: "Actions", accessor: () => (
       <div className="flex space-x-2">
         <button className="btn btn-primary py-1 px-2 text-xs">View</button>

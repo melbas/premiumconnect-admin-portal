@@ -29,6 +29,7 @@ const Statistics = () => {
     labels: ["Smartphone", "Desktop", "Tablet", "Other"],
     datasets: [
       {
+        label: "Device Distribution",
         data: [65, 25, 8, 2],
         backgroundColor: [
           "rgba(59, 130, 246, 0.7)", 

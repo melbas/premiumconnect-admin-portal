@@ -47,6 +47,7 @@ const ClientsManagement = () => {
     labels: ['Premium 50', 'Pro 100', 'Basic 20', 'Enterprise'],
     datasets: [
       {
+        label: 'Client Distribution',
         data: [5, 4, 4, 2],
         backgroundColor: [
           'rgba(59, 130, 246, 0.7)',
@@ -70,17 +71,17 @@ const ClientsManagement = () => {
 
   // Client table columns
   const columns = [
-    { header: "ID", accessor: "id" },
-    { header: "Name", accessor: "name" },
-    { header: "Contact", accessor: (client) => (
+    { header: "ID", accessor: "id" as const },
+    { header: "Name", accessor: "name" as const },
+    { header: "Contact", accessor: (client: any) => (
       <div>
         <div>{client.email}</div>
         <div className="text-sm text-muted-foreground">{client.phone}</div>
       </div>
     )},
-    { header: "Registration Date", accessor: "date" },
-    { header: "Current Plan", accessor: "plan" },
-    { header: "Status", accessor: (client) => (
+    { header: "Registration Date", accessor: "date" as const },
+    { header: "Current Plan", accessor: "plan" as const },
+    { header: "Status", accessor: (client: any) => (
       <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
         client.status === "active" ? "bg-success/20 text-success" : "bg-muted/50 text-muted-foreground"
       }`}>
