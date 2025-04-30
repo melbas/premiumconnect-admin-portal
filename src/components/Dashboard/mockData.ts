@@ -1,31 +1,37 @@
-
 import { Users, DollarSign, CreditCard, UserCheck } from "lucide-react";
-import React from "react";
 
-// Metric cards data
-export const dashboardMetrics = [
+// Type definitions for metrics
+export interface Metric {
+  title: string;
+  value: string;
+  iconType: "users" | "dollar" | "credit-card" | "user-check";
+  change: { value: number; isPositive: boolean };
+}
+
+// Dashboard metrics (without JSX in data)
+export const dashboardMetrics: Metric[] = [
   {
     title: "Total Users",
     value: "5,283",
-    icon: <Users size={24} className="text-primary" />,
+    iconType: "users",
     change: { value: 12.5, isPositive: true }
   },
   {
     title: "Daily Sales",
-    value: "37",
-    icon: <DollarSign size={24} className="text-success" />,
-    change: { value: 8.3, isPositive: true }
+    value: "15,200 FCFA",
+    iconType: "dollar", 
+    change: { value: 8.2, isPositive: true }
   },
   {
     title: "Monthly Revenue",
-    value: "1,245,000 FCFA",
-    icon: <CreditCard size={24} className="text-accent" />,
-    change: { value: 4.2, isPositive: true }
+    value: "482,950 FCFA",
+    iconType: "credit-card",
+    change: { value: 5.3, isPositive: true }
   },
   {
     title: "Active Clients",
-    value: "3,742",
-    icon: <UserCheck size={24} className="text-warning" />,
+    value: "3,721",
+    iconType: "user-check",
     change: { value: 2.1, isPositive: false }
   }
 ];
