@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import DashboardLayout from "@/components/Dashboard/DashboardLayout";
 import DashboardOverview from "@/components/Dashboard/DashboardOverview";
 import ClientsManagement from "@/components/Dashboard/ClientsManagement";
@@ -7,6 +8,7 @@ import SalesManagement from "@/components/Dashboard/SalesManagement";
 import Statistics from "@/components/Dashboard/Statistics";
 import Discussions from "@/components/Dashboard/Discussions";
 import Settings from "@/components/Dashboard/Settings";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -32,7 +34,16 @@ const Index = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case "dashboard":
-        return <DashboardOverview />;
+        return (
+          <>
+            <div className="mb-6 flex justify-end">
+              <Link to="/super-admin">
+                <Button variant="outline">Accéder au Super Admin Dashboard</Button>
+              </Link>
+            </div>
+            <DashboardOverview />
+          </>
+        );
       case "clients":
         return <ClientsManagement />;
       case "sales":

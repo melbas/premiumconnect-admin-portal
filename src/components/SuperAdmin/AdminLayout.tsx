@@ -1,0 +1,56 @@
+
+import React, { useState } from 'react';
+import SuperAdminSidebar from './SuperAdminSidebar';
+import SuperAdminHeader from './SuperAdminHeader';
+import { useAuth, UserRole } from '@/context/AuthContext';
+
+// Define tab types for navigation
+export type AdminTab = 'overview' | 'users' | 'sites' | 'marketing' | 'technical' | 'settings';
+
+// Define which roles can access which tabs
+export const rolePermissions: Record<UserRole, AdminTab[]> = {
+  superadmin: ['overview', 'users', 'sites', 'marketing', 'technical', 'settings'],
+  marketing: ['marketing'],
+  technical: ['technical']
+};
+
+interface AdminLayoutProps {
+  children: React.ReactNode;
+}
+
+const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const { user } = useAuth();
+  
+  // If no user is logged in, show a message
+  if (!user) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background">
+        <p className="text-xl">Veuillez vous connecter pour accéder au tableau de bord administrateur.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex h-screen bg-background">
+      {/* Sidebar */}
+      <SuperAdminSidebar 
+        isOpen={sidebarOpen} 
+        setIsOpen={setSidebarOpen} 
+      />
+      
+      {/* Main Content */}
+      <div className="flex flex-col flex-1 overflow-hidden">
+        <SuperAdminHeader 
+          sidebarOpen={sidebarOpen} 
+          setSidebarOpen={setSidebarOpen} 
+        />
+        <main className="flex-1 overflow-y-auto p-4 md:p-6">
+          {children}
+        </main>
+      </div>
+    </div>
+  );
+};
+
+export default AdminLayout;
