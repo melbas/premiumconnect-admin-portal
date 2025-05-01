@@ -32,8 +32,8 @@ const MetricsOverview = () => {
           title={metric.title}
           value={metric.value}
           icon={getIconForType(metric.iconType)}
-          change={metric.change}
-        />
+          change={metric.change} // This is already an object with value and isPositive properties in the mockData
+          />
       ))}
     </div>
   );

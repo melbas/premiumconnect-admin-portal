@@ -5,8 +5,20 @@ import ChartComponent from '@/components/Dashboard/ChartComponent';
 import { technicalIssues, uptimeChartData } from '../mockData';
 import { useToast } from '@/hooks/use-toast';
 
+// Define proper TypeScript interfaces
+interface TechnicalIssue {
+  id: string;
+  description: string;
+  siteId: string;
+  siteName: string;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  status: 'open' | 'in-progress' | 'resolved';
+  reportedAt: string;
+  resolvedAt?: string;
+}
+
 const SuperAdminTechnical: React.FC = () => {
-  const [issues, setIssues] = useState(technicalIssues);
+  const [issues, setIssues] = useState<TechnicalIssue[]>(technicalIssues);
   const { toast } = useToast();
 
   // Simulate random technical alerts
@@ -20,8 +32,8 @@ const SuperAdminTechnical: React.FC = () => {
           "Touba Résidentiel", "Ziguinchor Centre", "Mbour Côtier", "Kaolack Est"
         ][randomSiteId - 1];
         
-        const issueSeverities = ['low', 'medium', 'high', 'critical'];
-        const randomSeverity = issueSeverities[Math.floor(Math.random() * issueSeverities.length)] as 'low' | 'medium' | 'high' | 'critical';
+        const issueSeverities: Array<'low' | 'medium' | 'high' | 'critical'> = ['low', 'medium', 'high', 'critical'];
+        const randomSeverity = issueSeverities[Math.floor(Math.random() * issueSeverities.length)];
         
         const issueTypes = [
           "Instabilité réseau",
@@ -32,13 +44,13 @@ const SuperAdminTechnical: React.FC = () => {
         ];
         const randomType = issueTypes[Math.floor(Math.random() * issueTypes.length)];
         
-        const newIssue = {
+        const newIssue: TechnicalIssue = {
           id: `${Date.now()}`,
           description: `${randomType} - ${randomSiteName}`,
           siteId: randomSiteId.toString(),
           siteName: randomSiteName,
           severity: randomSeverity,
-          status: 'open' as 'open',
+          status: 'open',
           reportedAt: new Date().toISOString()
         };
         
