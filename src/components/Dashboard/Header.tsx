@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Bell, MessageSquare, Moon, Search, Sun } from "lucide-react";
 
 interface HeaderProps {
@@ -7,7 +7,7 @@ interface HeaderProps {
   setSidebarOpen: (open: boolean) => void;
 }
 
-const Header = ({ sidebarOpen, setSidebarOpen }: HeaderProps) => {
+const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const storedTheme = localStorage.getItem("theme");
     return storedTheme === "dark" || (!storedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches);
