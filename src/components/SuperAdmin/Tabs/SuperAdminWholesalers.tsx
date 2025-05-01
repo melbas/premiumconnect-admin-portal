@@ -540,10 +540,11 @@ const SuperAdminWholesalers: React.FC = () => {
           <CardContent>
             <div className="h-[250px]">
               <ChartComponent
-                type="pie"
+                type="doughnut"
                 data={{
                   labels: sites.map(site => site.name),
                   datasets: [{
+                    label: 'Grossistes',
                     data: sites.map(site => 
                       wholesalers.filter(w => w.assignedSiteId === site.id).length
                     ),

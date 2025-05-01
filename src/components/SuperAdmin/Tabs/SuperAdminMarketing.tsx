@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { campaigns, Campaign, campaignChartData } from '../mockData';
@@ -25,6 +24,8 @@ const CampaignModal = ({
     name: campaign?.name || '',
     budget: campaign?.budget || 0,
     status: campaign?.status || 'active',
+    type: campaign?.type || 'banner',
+    targetZones: campaign?.targetZones || [],
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -77,6 +78,24 @@ const CampaignModal = ({
               onChange={handleChange}
               required
             />
+          </div>
+          
+          <div className="space-y-2">
+            <label htmlFor="type" className="block text-sm font-medium">
+              Type
+            </label>
+            <select
+              id="type"
+              name="type"
+              value={formData.type}
+              onChange={handleChange}
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              required
+            >
+              <option value="banner">Bannière</option>
+              <option value="audio">Audio</option>
+              <option value="video">Vidéo</option>
+            </select>
           </div>
           
           <div className="space-y-2">
@@ -139,7 +158,9 @@ const SuperAdminMarketing: React.FC = () => {
         impressions: 0,
         clicks: 0,
         status: (campaignData.status as 'active' | 'completed' | 'paused') || 'active',
-        startDate: new Date().toISOString().split('T')[0]
+        startDate: new Date().toISOString().split('T')[0],
+        type: campaignData.type || 'banner',
+        targetZones: campaignData.targetZones || []
       };
       
       setMarketingCampaigns([...marketingCampaigns, newCampaign]);
