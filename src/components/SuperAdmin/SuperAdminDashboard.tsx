@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import AdminLayout from './AdminLayout';
 import { useAuth, mockUsers } from '@/context/AuthContext';
 import SuperAdminOverview from './Tabs/SuperAdminOverview';
-import SuperAdminUsers from './Tabs/SuperAdminUsers';
+import SuperAdminWholesalers from './Tabs/SuperAdminWholesalers';
 import SuperAdminSites from './Tabs/SuperAdminSites';
 import SuperAdminMarketing from './Tabs/SuperAdminMarketing';
 import SuperAdminTechnical from './Tabs/SuperAdminTechnical';
@@ -18,7 +18,7 @@ const LoginForm = () => {
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
       <div className="w-full max-w-md space-y-8 rounded-lg border border-border bg-card p-6 shadow-md">
         <div className="text-center">
-          <h1 className="text-2xl font-bold">PremiumConnect</h1>
+          <h1 className="text-2xl font-bold">Wifi Sénégal</h1>
           <p className="text-sm text-muted-foreground">Super Admin Dashboard</p>
         </div>
         
@@ -76,8 +76,8 @@ const SuperAdminDashboard: React.FC = () => {
     switch (activeTab) {
       case 'overview':
         return <SuperAdminOverview />;
-      case 'users':
-        return <SuperAdminUsers />;
+      case 'wholesalers':
+        return <SuperAdminWholesalers />;
       case 'sites':
         return <SuperAdminSites />;
       case 'marketing':

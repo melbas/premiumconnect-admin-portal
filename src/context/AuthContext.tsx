@@ -1,10 +1,10 @@
 
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-// Define user roles
+// Define the user roles
 export type UserRole = 'superadmin' | 'marketing' | 'technical';
 
-// User interface
+// Define user interface
 export interface User {
   id: string;
   name: string;
@@ -13,8 +13,8 @@ export interface User {
   avatar?: string;
 }
 
-// Context interface
-interface AuthContextProps {
+// Auth context interface
+interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   login: (user: User) => void;
@@ -22,73 +22,70 @@ interface AuthContextProps {
   setCurrentUser: (user: User) => void;
 }
 
-// Create context with default values
-const AuthContext = createContext<AuthContextProps>({
-  user: null,
-  isAuthenticated: false,
-  login: () => {},
-  logout: () => {},
-  setCurrentUser: () => {},
-});
+// Create the context
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Auth provider component
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+// Mock users for demonstration
+export const mockUsers: User[] = [
+  {
+    id: '1',
+    name: 'Amadou Diallo',
+    email: 'admin@wifisenegal.com',
+    role: 'superadmin',
+    avatar: 'https://i.pravatar.cc/150?img=1'
+  },
+  {
+    id: '2',
+    name: 'Fatou Ndiaye',
+    email: 'marketing@wifisenegal.com',
+    role: 'marketing',
+    avatar: 'https://i.pravatar.cc/150?img=2'
+  },
+  {
+    id: '3',
+    name: 'Omar Sow',
+    email: 'tech@wifisenegal.com',
+    role: 'technical',
+    avatar: 'https://i.pravatar.cc/150?img=3'
+  }
+];
+
+// Provider component
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  
-  // Mock login function
+
+  // Login handler
   const login = (userData: User) => {
     setUser(userData);
   };
-  
-  // Logout function
+
+  // Logout handler
   const logout = () => {
     setUser(null);
   };
-  
+
   // Update current user
   const setCurrentUser = (userData: User) => {
     setUser(userData);
   };
-  
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isAuthenticated: !!user,
-        login,
-        logout,
-        setCurrentUser,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+
+  // Context value
+  const value = {
+    user,
+    isAuthenticated: !!user,
+    login,
+    logout,
+    setCurrentUser
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-// Custom hook for using auth context
-export const useAuth = () => useContext(AuthContext);
-
-// Default mock users
-export const mockUsers: User[] = [
-  {
-    id: "1",
-    name: "Super Admin",
-    email: "admin@premiumconnect.sn",
-    role: "superadmin",
-    avatar: "https://i.pravatar.cc/150?img=1"
-  },
-  {
-    id: "2",
-    name: "Marketing User",
-    email: "marketing@premiumconnect.sn",
-    role: "marketing",
-    avatar: "https://i.pravatar.cc/150?img=2"
-  },
-  {
-    id: "3",
-    name: "Technical User",
-    email: "tech@premiumconnect.sn",
-    role: "technical",
-    avatar: "https://i.pravatar.cc/150?img=3"
+// Custom hook to use auth context
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
   }
-];
+  return context;
+};

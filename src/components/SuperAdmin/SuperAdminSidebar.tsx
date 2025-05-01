@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ChevronLeft, ChevronRight, LayoutDashboard, Users, Layout, BarChart3, Settings, MonitorSmartphone } from 'lucide-react';
+import { ChevronLeft, ChevronRight, LayoutDashboard, Users, Layout, BarChart3, Settings, MonitorSmartphone, Wifi } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { AdminTab, rolePermissions } from './AdminLayout';
 
@@ -12,7 +12,7 @@ interface SuperAdminSidebarProps {
 // Array of navigation items
 const navItems = [
   { id: 'overview' as AdminTab, label: 'Tableau de bord', icon: <LayoutDashboard size={20} /> },
-  { id: 'users' as AdminTab, label: 'Utilisateurs', icon: <Users size={20} /> },
+  { id: 'wholesalers' as AdminTab, label: 'Grossistes', icon: <Users size={20} /> },
   { id: 'sites' as AdminTab, label: 'Sites', icon: <Layout size={20} /> },
   { id: 'marketing' as AdminTab, label: 'Marketing', icon: <BarChart3 size={20} /> },
   { id: 'technical' as AdminTab, label: 'Technique', icon: <MonitorSmartphone size={20} /> },
@@ -39,13 +39,13 @@ const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({ isOpen, setIsOpen
         {isOpen ? (
           <div className="flex items-center">
             <div className="h-8 w-8 rounded-md bg-primary flex items-center justify-center">
-              <span className="text-white font-bold">PC</span>
+              <Wifi size={18} className="text-white" />
             </div>
-            <span className="ml-2 font-bold text-sidebar-foreground">PremiumConnect</span>
+            <span className="ml-2 font-bold text-sidebar-foreground">Wifi Sénégal</span>
           </div>
         ) : (
           <div className="h-8 w-8 mx-auto rounded-md bg-primary flex items-center justify-center">
-            <span className="text-white font-bold">PC</span>
+            <Wifi size={18} className="text-white" />
           </div>
         )}
         
@@ -79,9 +79,9 @@ const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({ isOpen, setIsOpen
         </ul>
       </nav>
 
-      {/* Version info */}
+      {/* Footer with domain info */}
       <div className="border-t border-sidebar-border p-4 text-xs text-sidebar-foreground text-center">
-        {isOpen ? "PremiumConnect v1.0" : "v1.0"}
+        {isOpen ? "WifiSénégal.com v1.0" : "v1.0"}
       </div>
     </div>
   );

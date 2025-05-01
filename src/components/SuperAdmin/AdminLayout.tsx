@@ -5,11 +5,11 @@ import SuperAdminHeader from './SuperAdminHeader';
 import { useAuth, UserRole } from '@/context/AuthContext';
 
 // Define tab types for navigation
-export type AdminTab = 'overview' | 'users' | 'sites' | 'marketing' | 'technical' | 'settings';
+export type AdminTab = 'overview' | 'wholesalers' | 'sites' | 'marketing' | 'technical' | 'settings';
 
 // Define which roles can access which tabs
 export const rolePermissions: Record<UserRole, AdminTab[]> = {
-  superadmin: ['overview', 'users', 'sites', 'marketing', 'technical', 'settings'],
+  superadmin: ['overview', 'wholesalers', 'sites', 'marketing', 'technical', 'settings'],
   marketing: ['marketing'],
   technical: ['technical']
 };
@@ -48,6 +48,9 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         <main className="flex-1 overflow-y-auto p-4 md:p-6">
           {children}
         </main>
+        <footer className="text-center py-3 text-xs text-muted-foreground border-t border-border">
+          Powered by WifiSénégal.com &copy; {new Date().getFullYear()}
+        </footer>
       </div>
     </div>
   );

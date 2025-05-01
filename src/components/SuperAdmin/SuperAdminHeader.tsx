@@ -19,6 +19,36 @@ const SuperAdminHeader: React.FC<SuperAdminHeaderProps> = ({
     document.documentElement.classList.contains('dark')
   );
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(3);
+
+  // Generate random notifications
+  const notifications = [
+    {
+      id: '1',
+      title: 'Nouveau grossiste',
+      description: 'Mamadou Sow a été enregistré en tant que grossiste.',
+      time: '1m',
+      read: false,
+      type: 'info'
+    },
+    {
+      id: '2',
+      title: 'Alerte technique',
+      description: 'Incident critique détecté à Dakar Central.',
+      time: '15m',
+      read: false,
+      type: 'warning'
+    },
+    {
+      id: '3',
+      title: 'Campagne terminée',
+      description: 'La campagne "Offre Spéciale Été" est terminée.',
+      time: '1h',
+      read: true,
+      type: 'success'
+    }
+  ];
 
   // Toggle dark mode
   const toggleDarkMode = () => {
@@ -40,6 +70,15 @@ const SuperAdminHeader: React.FC<SuperAdminHeaderProps> = ({
     });
   };
 
+  // Mark all notifications as read
+  const markAllAsRead = () => {
+    setNotificationCount(0);
+    toast({
+      title: "Notifications",
+      description: "Toutes les notifications ont été marquées comme lues.",
+    });
+  };
+
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background px-4 md:px-6">
       {/* Left side - Menu toggle */}
@@ -50,6 +89,7 @@ const SuperAdminHeader: React.FC<SuperAdminHeaderProps> = ({
         >
           <Menu size={20} />
         </button>
+        <h1 className="text-lg font-medium md:text-xl">Super Admin Dashboard</h1>
       </div>
 
       {/* Right side - Actions */}
@@ -58,17 +98,64 @@ const SuperAdminHeader: React.FC<SuperAdminHeaderProps> = ({
         <button 
           onClick={toggleDarkMode} 
           className="rounded-full p-2 text-muted-foreground hover:bg-secondary hover:text-foreground"
+          aria-label={isDarkMode ? "Activer le mode clair" : "Activer le mode sombre"}
         >
           {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
         </button>
 
         {/* Notifications */}
-        <button className="relative rounded-full p-2 text-muted-foreground hover:bg-secondary hover:text-foreground">
-          <Bell size={20} />
-          <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground">
-            3
-          </span>
-        </button>
+        <div className="relative">
+          <button 
+            onClick={() => setNotificationsOpen(!notificationsOpen)}
+            className="relative rounded-full p-2 text-muted-foreground hover:bg-secondary hover:text-foreground"
+            aria-label="Notifications"
+          >
+            <Bell size={20} />
+            {notificationCount > 0 && (
+              <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground">
+                {notificationCount}
+              </span>
+            )}
+          </button>
+
+          {/* Notifications dropdown */}
+          {notificationsOpen && (
+            <div className="absolute right-0 mt-2 w-80 rounded-md border border-border bg-background py-1 shadow-lg">
+              <div className="flex items-center justify-between border-b border-border px-4 py-2">
+                <h3 className="font-medium">Notifications</h3>
+                <button 
+                  onClick={markAllAsRead}
+                  className="text-xs text-primary hover:underline"
+                >
+                  Marquer tout comme lu
+                </button>
+              </div>
+              <div className="max-h-[250px] overflow-y-auto">
+                {notifications.map(notification => (
+                  <div 
+                    key={notification.id}
+                    className={`border-b border-border px-4 py-2 hover:bg-secondary/50 ${
+                      !notification.read ? 'bg-secondary/20' : ''
+                    }`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h4 className="text-sm font-medium">{notification.title}</h4>
+                        <p className="text-xs text-muted-foreground">{notification.description}</p>
+                      </div>
+                      <span className="text-xs text-muted-foreground">{notification.time}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="border-t border-border p-2 text-center">
+                <button className="text-xs text-primary hover:underline">
+                  Voir toutes les notifications
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* User menu */}
         <div className="relative">
