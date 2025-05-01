@@ -43,7 +43,7 @@ const MetricsOverview = () => {
 const SuperAdminOverview: React.FC = () => {
   return (
     <div className="space-y-6">
-      <h1 className="dashboard-title">Tableau de Bord Super Admin</h1>
+      <h1 className="dashboard-title">Tableau de Bord Wifi Sénégal</h1>
       
       {/* Metrics section */}
       <MetricsOverview />
@@ -102,8 +102,8 @@ const SuperAdminOverview: React.FC = () => {
                   <tr key={site.id}>
                     <td className="font-medium">{site.name}</td>
                     <td>{site.location}</td>
-                    <td>{site.users.toLocaleString()}</td>
-                    <td>{site.revenue.toLocaleString()} FCFA</td>
+                    <td>{site.users?.toLocaleString()}</td>
+                    <td>{site.revenue?.toLocaleString()} FCFA</td>
                     <td>{site.uptime}%</td>
                     <td>{site.issues}</td>
                     <td>
@@ -111,13 +111,10 @@ const SuperAdminOverview: React.FC = () => {
                         className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
                         ${site.status === 'active' 
                           ? 'bg-success/20 text-success' 
-                          : site.status === 'maintenance'
-                            ? 'bg-warning/20 text-warning'
-                            : 'bg-danger/20 text-danger'
+                          : 'bg-danger/20 text-danger'
                         }`}
                       >
-                        {site.status === 'active' ? 'Actif' : 
-                          site.status === 'maintenance' ? 'Maintenance' : 'Hors ligne'}
+                        {site.status === 'active' ? 'Actif' : 'Hors ligne'}
                       </span>
                     </td>
                   </tr>

@@ -276,3 +276,128 @@ export const issues = [
     assignedTo: '5'
   }
 ];
+
+// Add missing data for overview tab
+export const overviewMetrics = [
+  {
+    title: "Sites totaux",
+    value: "5",
+    iconType: "layout",
+    change: "+1 cette semaine"
+  },
+  {
+    title: "Revenu global",
+    value: "8,850,000 FCFA",
+    iconType: "dollar",
+    change: "+12% ce mois"
+  },
+  {
+    title: "Utilisateurs",
+    value: "3,600",
+    iconType: "users",
+    change: "+85 ce mois"
+  },
+  {
+    title: "Problèmes Actifs",
+    value: "8",
+    iconType: "alert-triangle",
+    change: "-2 cette semaine"
+  }
+];
+
+// Add revenue chart data
+export const revenueChartData = {
+  labels: ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin"],
+  datasets: [
+    {
+      label: "Dakar Central",
+      data: [2800000, 3100000, 2900000, 3300000, 3500000, 3800000],
+      backgroundColor: "rgba(37, 99, 235, 0.5)"
+    },
+    {
+      label: "Thiès Connect",
+      data: [1500000, 1600000, 1700000, 1750000, 1800000, 1950000],
+      backgroundColor: "rgba(239, 68, 68, 0.5)"
+    },
+    {
+      label: "Saint-Louis WiFi",
+      data: [1200000, 1300000, 1250000, 1350000, 1400000, 1450000],
+      backgroundColor: "rgba(16, 185, 129, 0.5)"
+    }
+  ]
+};
+
+// Add technical issues data
+export const technicalIssues = [
+  {
+    id: "T1",
+    description: "Instabilité réseau - Dakar Central",
+    siteId: "1",
+    siteName: "Dakar Central",
+    severity: "medium",
+    status: "open",
+    reportedAt: "2023-04-28T09:15:00",
+    resolvedAt: null
+  },
+  {
+    id: "T2",
+    description: "Problème d'alimentation - Thiès Connect",
+    siteId: "2", 
+    siteName: "Thiès Connect",
+    severity: "high",
+    status: "in-progress",
+    reportedAt: "2023-04-27T14:30:00",
+    resolvedAt: null
+  },
+  {
+    id: "T3",
+    description: "Interruption fibre - Saint-Louis WiFi",
+    siteId: "3",
+    siteName: "Saint-Louis WiFi",
+    severity: "critical",
+    status: "open",
+    reportedAt: "2023-04-29T08:45:00",
+    resolvedAt: null
+  },
+  {
+    id: "T4", 
+    description: "Pic de latence - Ziguinchor Net",
+    siteId: "4",
+    siteName: "Ziguinchor Net",
+    severity: "low",
+    status: "resolved",
+    reportedAt: "2023-04-25T10:20:00",
+    resolvedAt: "2023-04-26T11:30:00"
+  }
+];
+
+// Add uptime chart data
+export const uptimeChartData = {
+  labels: ["1", "5", "10", "15", "20", "25", "30"],
+  datasets: [
+    {
+      label: "Dakar Central",
+      data: [99.9, 99.8, 99.9, 99.7, 99.8, 99.9, 99.8],
+      borderColor: "rgba(37, 99, 235, 0.7)",
+      backgroundColor: "rgba(37, 99, 235, 0.1)",
+      fill: true,
+      tension: 0.3
+    },
+    {
+      label: "Thiès Connect",
+      data: [99.5, 98.9, 99.2, 98.7, 98.1, 98.4, 98.2],
+      borderColor: "rgba(239, 68, 68, 0.7)",
+      backgroundColor: "rgba(239, 68, 68, 0.1)",
+      fill: true,
+      tension: 0.3
+    },
+    {
+      label: "Saint-Louis WiFi",
+      data: [98.5, 97.9, 97.4, 97.8, 97.3, 97.6, 97.5],
+      borderColor: "rgba(16, 185, 129, 0.7)",
+      backgroundColor: "rgba(16, 185, 129, 0.1)",
+      fill: true,
+      tension: 0.3
+    }
+  ]
+};

@@ -29,7 +29,7 @@ const SuperAdminSites: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">
-              {sites.reduce((total, site) => total + site.users, 0).toLocaleString()}
+              {sites.reduce((total, site) => total + (site.users || 0), 0).toLocaleString()}
             </div>
             <p className="text-sm text-muted-foreground">
               Sur tous les sites
@@ -77,8 +77,8 @@ const SuperAdminSites: React.FC = () => {
                   <tr key={site.id}>
                     <td className="font-medium">{site.name}</td>
                     <td>{site.location}</td>
-                    <td>{site.users.toLocaleString()}</td>
-                    <td>{site.revenue.toLocaleString()} FCFA</td>
+                    <td>{site.users?.toLocaleString()}</td>
+                    <td>{site.revenue?.toLocaleString()} FCFA</td>
                     <td>
                       <div className="flex items-center">
                         <div className="mr-2 h-2.5 w-full max-w-24 rounded-full bg-muted">
@@ -100,13 +100,10 @@ const SuperAdminSites: React.FC = () => {
                         className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
                           ${site.status === 'active' 
                             ? 'bg-success/20 text-success' 
-                            : site.status === 'maintenance'
-                              ? 'bg-warning/20 text-warning'
-                              : 'bg-danger/20 text-danger'
+                            : 'bg-danger/20 text-danger'
                           }`}
                       >
-                        {site.status === 'active' ? 'Actif' : 
-                          site.status === 'maintenance' ? 'Maintenance' : 'Hors ligne'}
+                        {site.status === 'active' ? 'Actif' : 'Hors ligne'}
                       </span>
                     </td>
                     <td>
