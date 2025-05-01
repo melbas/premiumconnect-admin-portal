@@ -1,4 +1,3 @@
-
 // User data interface
 export interface UserData {
   id: string;
@@ -283,25 +282,37 @@ export const overviewMetrics = [
     title: "Sites totaux",
     value: "5",
     iconType: "layout",
-    change: "+1 cette semaine"
+    change: {
+      value: 1,
+      isPositive: true
+    }
   },
   {
     title: "Revenu global",
     value: "8,850,000 FCFA",
     iconType: "dollar",
-    change: "+12% ce mois"
+    change: {
+      value: 12,
+      isPositive: true
+    }
   },
   {
     title: "Utilisateurs",
     value: "3,600",
     iconType: "users",
-    change: "+85 ce mois"
+    change: {
+      value: 85,
+      isPositive: true
+    }
   },
   {
     title: "Problèmes Actifs",
     value: "8",
     iconType: "alert-triangle",
-    change: "-2 cette semaine"
+    change: {
+      value: 2,
+      isPositive: false
+    }
   }
 ];
 
@@ -327,15 +338,15 @@ export const revenueChartData = {
   ]
 };
 
-// Add technical issues data
+// Add technical issues data with proper types
 export const technicalIssues = [
   {
     id: "T1",
     description: "Instabilité réseau - Dakar Central",
     siteId: "1",
     siteName: "Dakar Central",
-    severity: "medium",
-    status: "open",
+    severity: "medium" as "low" | "medium" | "high" | "critical",
+    status: "open" as "open" | "in-progress" | "resolved",
     reportedAt: "2023-04-28T09:15:00",
     resolvedAt: null
   },
@@ -344,8 +355,8 @@ export const technicalIssues = [
     description: "Problème d'alimentation - Thiès Connect",
     siteId: "2", 
     siteName: "Thiès Connect",
-    severity: "high",
-    status: "in-progress",
+    severity: "high" as "low" | "medium" | "high" | "critical",
+    status: "in-progress" as "open" | "in-progress" | "resolved",
     reportedAt: "2023-04-27T14:30:00",
     resolvedAt: null
   },
@@ -354,8 +365,8 @@ export const technicalIssues = [
     description: "Interruption fibre - Saint-Louis WiFi",
     siteId: "3",
     siteName: "Saint-Louis WiFi",
-    severity: "critical",
-    status: "open",
+    severity: "critical" as "low" | "medium" | "high" | "critical",
+    status: "open" as "open" | "in-progress" | "resolved",
     reportedAt: "2023-04-29T08:45:00",
     resolvedAt: null
   },
@@ -364,8 +375,8 @@ export const technicalIssues = [
     description: "Pic de latence - Ziguinchor Net",
     siteId: "4",
     siteName: "Ziguinchor Net",
-    severity: "low",
-    status: "resolved",
+    severity: "low" as "low" | "medium" | "high" | "critical",
+    status: "resolved" as "open" | "in-progress" | "resolved",
     reportedAt: "2023-04-25T10:20:00",
     resolvedAt: "2023-04-26T11:30:00"
   }
