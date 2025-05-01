@@ -7,6 +7,8 @@ import { AdminTab, rolePermissions } from './AdminLayout';
 interface SuperAdminSidebarProps {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
+  activeTab: AdminTab;
+  setActiveTab: (tab: AdminTab) => void;
 }
 
 // Array of navigation items
@@ -19,9 +21,8 @@ const navItems = [
   { id: 'settings' as AdminTab, label: 'Paramètres', icon: <Settings size={20} /> },
 ];
 
-const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({ isOpen, setIsOpen }) => {
+const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({ isOpen, setIsOpen, activeTab, setActiveTab }) => {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = React.useState<AdminTab>('overview');
 
   // Filter navigation items based on user role
   const filteredNavItems = user ? navItems.filter(item => 

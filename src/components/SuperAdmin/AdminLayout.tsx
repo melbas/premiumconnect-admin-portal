@@ -16,9 +16,11 @@ export const rolePermissions: Record<UserRole, AdminTab[]> = {
 
 interface AdminLayoutProps {
   children: React.ReactNode;
+  activeTab: AdminTab;
+  setActiveTab: (tab: AdminTab) => void;
 }
 
-const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
+const AdminLayout: React.FC<AdminLayoutProps> = ({ children, activeTab, setActiveTab }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const { user } = useAuth();
   
@@ -36,7 +38,9 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       {/* Sidebar */}
       <SuperAdminSidebar 
         isOpen={sidebarOpen} 
-        setIsOpen={setSidebarOpen} 
+        setIsOpen={setSidebarOpen}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
       />
       
       {/* Main Content */}

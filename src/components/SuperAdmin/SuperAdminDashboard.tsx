@@ -9,6 +9,7 @@ import SuperAdminMarketing from './Tabs/SuperAdminMarketing';
 import SuperAdminTechnical from './Tabs/SuperAdminTechnical';
 import SuperAdminSettings from './Tabs/SuperAdminSettings';
 import { AdminTab, rolePermissions } from './AdminLayout';
+import { useToast } from '@/hooks/use-toast';
 
 // Login form for demonstration
 const LoginForm = () => {
@@ -61,6 +62,17 @@ const LoginForm = () => {
 const SuperAdminDashboard: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
   const [activeTab, setActiveTab] = useState<AdminTab>('overview');
+  const { toast } = useToast();
+  
+  React.useEffect(() => {
+    // Notify user when tab changes
+    if (isAuthenticated) {
+      toast({
+        title: `Onglet ${activeTab}`,
+        description: `Vous avez accédé à l'onglet ${activeTab}`,
+      });
+    }
+  }, [activeTab, isAuthenticated, toast]);
   
   if (!isAuthenticated) {
     return <LoginForm />;
@@ -92,7 +104,7 @@ const SuperAdminDashboard: React.FC = () => {
   };
 
   return (
-    <AdminLayout>
+    <AdminLayout activeTab={activeTab} setActiveTab={setActiveTab}>
       <div className="animate-fade-in">
         {renderTabContent()}
       </div>
