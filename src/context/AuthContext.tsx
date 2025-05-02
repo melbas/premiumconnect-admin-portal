@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 // Define the user roles
-export type UserRole = 'superadmin' | 'marketing' | 'technical';
+export type UserRole = 'superadmin' | 'marketing' | 'technical' | 'voucher_manager';
 
 // Define user interface
 export interface User {
@@ -47,6 +47,13 @@ export const mockUsers: User[] = [
     email: 'tech@wifisenegal.com',
     role: 'technical',
     avatar: 'https://i.pravatar.cc/150?img=3'
+  },
+  {
+    id: '4',
+    name: 'Mariama Bâ',
+    email: 'vouchers@wifisenegal.com',
+    role: 'voucher_manager',
+    avatar: 'https://i.pravatar.cc/150?img=4'
   }
 ];
 
