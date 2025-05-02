@@ -5,13 +5,13 @@ import SuperAdminHeader from './SuperAdminHeader';
 import { useAuth, UserRole } from '@/context/AuthContext';
 
 // Define tab types for navigation
-export type AdminTab = 'overview' | 'wholesalers' | 'sites' | 'marketing' | 'technical' | 'settings';
+export type AdminTab = 'overview' | 'wholesalers' | 'sites' | 'marketing' | 'technical' | 'vouchers' | 'settings';
 
 // Define which roles can access which tabs
 export const rolePermissions: Record<UserRole, AdminTab[]> = {
-  superadmin: ['overview', 'wholesalers', 'sites', 'marketing', 'technical', 'settings'],
+  superadmin: ['overview', 'wholesalers', 'sites', 'marketing', 'technical', 'vouchers', 'settings'],
   marketing: ['marketing'],
-  technical: ['technical']
+  technical: ['technical', 'sites', 'vouchers']
 };
 
 interface AdminLayoutProps {

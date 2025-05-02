@@ -7,6 +7,7 @@ import SuperAdminWholesalers from './Tabs/SuperAdminWholesalers';
 import SuperAdminSites from './Tabs/SuperAdminSites';
 import SuperAdminMarketing from './Tabs/SuperAdminMarketing';
 import SuperAdminTechnical from './Tabs/SuperAdminTechnical';
+import SuperAdminVouchers from './Tabs/SuperAdminVouchers';
 import SuperAdminSettings from './Tabs/SuperAdminSettings';
 import { AdminTab, rolePermissions } from './AdminLayout';
 import { useToast } from '@/hooks/use-toast';
@@ -96,6 +97,8 @@ const SuperAdminDashboard: React.FC = () => {
         return <SuperAdminMarketing />;
       case 'technical':
         return <SuperAdminTechnical />;
+      case 'vouchers':
+        return <SuperAdminVouchers />;
       case 'settings':
         return <SuperAdminSettings />;
       default:

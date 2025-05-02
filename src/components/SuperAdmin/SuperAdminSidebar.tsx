@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ChevronLeft, ChevronRight, LayoutDashboard, Users, Layout, BarChart3, Settings, MonitorSmartphone, Wifi } from 'lucide-react';
+import { ChevronLeft, ChevronRight, LayoutDashboard, Users, Layout, BarChart3, Settings, MonitorSmartphone, Wifi, Ticket } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { AdminTab, rolePermissions } from './AdminLayout';
 
@@ -18,6 +18,7 @@ const navItems = [
   { id: 'sites' as AdminTab, label: 'Sites', icon: <Layout size={20} /> },
   { id: 'marketing' as AdminTab, label: 'Marketing', icon: <BarChart3 size={20} /> },
   { id: 'technical' as AdminTab, label: 'Technique', icon: <MonitorSmartphone size={20} /> },
+  { id: 'vouchers' as AdminTab, label: 'Vouchers', icon: <Ticket size={20} /> },
   { id: 'settings' as AdminTab, label: 'Paramètres', icon: <Settings size={20} /> },
 ];
 
