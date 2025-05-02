@@ -7,15 +7,23 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { RefreshCw, Plus, Ticket, FileDown, Trash2 } from 'lucide-react';
+import { RefreshCw, Plus, Ticket, FileDown, Trash2, Search, Check, Printer, Copy, Calendar } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { unifiApiService, UnifiVoucher } from '@/services/unifiService';
+import ChartComponent from '@/components/Dashboard/ChartComponent';
+import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 const SuperAdminVouchers: React.FC = () => {
   const [vouchers, setVouchers] = useState<UnifiVoucher[]>([]);
   const [activeTab, setActiveTab] = useState<string>('all');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [sortBy, setSortBy] = useState<string>('createdAt');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [selectedVouchers, setSelectedVouchers] = useState<string[]>([]);
   const { toast } = useToast();
 
   // Form state for new voucher
@@ -24,6 +32,9 @@ const SuperAdminVouchers: React.FC = () => {
   const [voucherDataLimit, setVoucherDataLimit] = useState<string>('1000'); // 1 GB in MB
   const [voucherCount, setVoucherCount] = useState<string>('1');
   const [voucherBandwidth, setVoucherBandwidth] = useState<string>('1024'); // 1 Mbps in Kbps
+  const [printCodes, setPrintCodes] = useState<boolean>(true);
+  const [notifyBySMS, setNotifyBySMS] = useState<boolean>(false);
+  const [multiUse, setMultiUse] = useState<boolean>(false);
   
   // Fetch vouchers
   const fetchVouchers = async () => {
@@ -54,20 +65,107 @@ const SuperAdminVouchers: React.FC = () => {
     fetchVouchers();
   }, []);
   
-  // Filter vouchers based on active tab
-  const filteredVouchers = vouchers.filter(voucher => {
-    if (activeTab === 'all') return true;
-    if (activeTab === 'active') return !voucher.expired;
-    if (activeTab === 'expired') return voucher.expired;
-    return true;
-  });
+  // Filter vouchers based on active tab and search term
+  const filteredVouchers = vouchers
+    .filter(voucher => {
+      // Filter by tab
+      if (activeTab === 'all') return true;
+      if (activeTab === 'active') return !voucher.expired;
+      if (activeTab === 'expired') return voucher.expired;
+      return true;
+    })
+    .filter(voucher => {
+      // Filter by search
+      if (!searchTerm) return true;
+      
+      const searchLower = searchTerm.toLowerCase();
+      return (
+        (voucher.name && voucher.name.toLowerCase().includes(searchLower)) ||
+        voucher.code.toLowerCase().includes(searchLower)
+      );
+    })
+    .sort((a, b) => {
+      // Sort vouchers
+      if (sortBy === 'createdAt') {
+        return sortDirection === 'asc' 
+          ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      }
+      
+      if (sortBy === 'expiresAt') {
+        const aTime = a.expiresAt ? new Date(a.expiresAt).getTime() : Infinity;
+        const bTime = b.expiresAt ? new Date(b.expiresAt).getTime() : Infinity;
+        
+        return sortDirection === 'asc' ? aTime - bTime : bTime - aTime;
+      }
+      
+      if (sortBy === 'duration') {
+        const aDuration = a.timeLimitMinutes || 0;
+        const bDuration = b.timeLimitMinutes || 0;
+        
+        return sortDirection === 'asc' ? aDuration - bDuration : bDuration - aDuration;
+      }
+      
+      if (sortBy === 'usage') {
+        const aUsage = a.authorizedGuestCount / (a.authorizeGuestLimit || 1);
+        const bUsage = b.authorizedGuestCount / (b.authorizeGuestLimit || 1);
+        
+        return sortDirection === 'asc' ? aUsage - bUsage : bUsage - aUsage;
+      }
+      
+      return 0;
+    });
 
   // Generate new voucher
   const handleGenerateVoucher = () => {
+    // Generate random codes for demo
+    const generateRandomCode = () => {
+      return Math.floor(1000000000 + Math.random() * 9000000000).toString();
+    };
+    
+    const count = parseInt(voucherCount, 10);
+    const newVouchers = Array(count).fill(null).map((_, index) => {
+      const now = new Date();
+      const durationMinutes = parseInt(voucherDuration, 10);
+      const expiresAt = new Date(now.getTime() + durationMinutes * 60 * 1000).toISOString();
+      
+      return {
+        id: `v${Date.now()}-${index}`,
+        createdAt: now.toISOString(),
+        name: voucherName,
+        code: generateRandomCode(),
+        authorizeGuestLimit: multiUse ? 5 : 1,
+        authorizedGuestCount: 0,
+        activeAt: undefined,
+        expiresAt: expiresAt,
+        expired: false,
+        timeLimitMinutes: durationMinutes,
+        dataUsageLimitMBytes: parseInt(voucherDataLimit, 10),
+        rxRateLimitKBps: parseInt(voucherBandwidth, 10),
+        txRateLimitKBps: parseInt(voucherBandwidth, 10)
+      };
+    });
+    
+    setVouchers([...newVouchers, ...vouchers]);
+    
     toast({
       title: "Vouchers générés",
-      description: `${voucherCount} voucher(s) créé(s) avec succès.`,
+      description: `${count} voucher(s) créé(s) avec succès.`,
     });
+    
+    if (printCodes) {
+      toast({
+        title: "Impression préparée",
+        description: `Les codes sont prêts pour impression.`,
+      });
+    }
+    
+    if (notifyBySMS) {
+      toast({
+        title: "Notifications SMS",
+        description: `Les notifications SMS seraient envoyées dans un environnement de production.`,
+      });
+    }
     
     // Reset form values
     setVoucherName('Forfait Standard');
@@ -75,6 +173,67 @@ const SuperAdminVouchers: React.FC = () => {
     setVoucherDataLimit('1000');
     setVoucherCount('1');
     setVoucherBandwidth('1024');
+  };
+  
+  // Delete voucher
+  const handleDeleteVoucher = (voucherId: string) => {
+    setVouchers(vouchers.filter(v => v.id !== voucherId));
+    
+    toast({
+      title: "Voucher supprimé",
+      description: "Le voucher a été supprimé avec succès.",
+    });
+  };
+  
+  // Delete selected vouchers
+  const handleDeleteSelected = () => {
+    if (selectedVouchers.length === 0) return;
+    
+    setVouchers(vouchers.filter(v => !selectedVouchers.includes(v.id)));
+    setSelectedVouchers([]);
+    
+    toast({
+      title: "Vouchers supprimés",
+      description: `${selectedVouchers.length} voucher(s) supprimé(s) avec succès.`,
+    });
+  };
+  
+  // Print selected vouchers
+  const handlePrintSelected = () => {
+    if (selectedVouchers.length === 0) return;
+    
+    toast({
+      title: "Impression lancée",
+      description: `${selectedVouchers.length} voucher(s) envoyé(s) à l'imprimante.`,
+    });
+  };
+  
+  // Toggle voucher selection
+  const toggleVoucherSelection = (voucherId: string) => {
+    setSelectedVouchers(prev => 
+      prev.includes(voucherId)
+        ? prev.filter(id => id !== voucherId)
+        : [...prev, voucherId]
+    );
+  };
+  
+  // Toggle all vouchers selection
+  const toggleAllVouchers = () => {
+    if (selectedVouchers.length === filteredVouchers.length) {
+      setSelectedVouchers([]);
+    } else {
+      setSelectedVouchers(filteredVouchers.map(v => v.id));
+    }
+  };
+  
+  // Copy voucher code
+  const copyVoucherCode = (code: string) => {
+    navigator.clipboard.writeText(code);
+    
+    toast({
+      title: "Code copié",
+      description: "Le code du voucher a été copié dans le presse-papier.",
+    });
   };
 
   // Format date for display
@@ -87,6 +246,93 @@ const SuperAdminVouchers: React.FC = () => {
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+
+  // Get usage statistics
+  const getUsageStatistics = () => {
+    const total = vouchers.length;
+    const active = vouchers.filter(v => !v.expired).length;
+    const expired = vouchers.filter(v => v.expired).length;
+    const unused = vouchers.filter(v => !v.expired && v.authorizedGuestCount === 0).length;
+    const partiallyUsed = vouchers.filter(v => !v.expired && v.authorizedGuestCount > 0 && v.authorizedGuestCount < v.authorizeGuestLimit).length;
+    const fullyUsed = vouchers.filter(v => !v.expired && v.authorizedGuestCount === v.authorizeGuestLimit).length;
+    
+    // Usage rate
+    const usageRate = total > 0 
+      ? Math.round((vouchers.filter(v => v.authorizedGuestCount > 0).length / total) * 100)
+      : 0;
+      
+    return { total, active, expired, unused, partiallyUsed, fullyUsed, usageRate };
+  };
+  
+  const stats = getUsageStatistics();
+
+  // Chart data for voucher statistics
+  const voucherStatusChartData = {
+    labels: ['Non utilisés', 'Partiellement utilisés', 'Complètement utilisés', 'Expirés'],
+    datasets: [
+      {
+        label: 'Status des Vouchers',
+        data: [stats.unused, stats.partiallyUsed, stats.fullyUsed, stats.expired],
+        backgroundColor: [
+          'rgba(10, 179, 156, 0.6)',  // teal for unused
+          'rgba(255, 159, 64, 0.6)',  // orange for partially used
+          'rgba(54, 162, 235, 0.6)',  // blue for fully used 
+          'rgba(170, 170, 170, 0.6)', // gray for expired
+        ],
+        borderColor: [
+          'rgb(10, 179, 156)',
+          'rgb(255, 159, 64)',
+          'rgb(54, 162, 235)',
+          'rgb(170, 170, 170)',
+        ],
+        borderWidth: 1,
+      }
+    ],
+  };
+  
+  // Chart data for daily voucher creation
+  const getLast7DaysVoucherData = () => {
+    const dates = [];
+    const counts = [];
+    
+    // Get dates for the last 7 days
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      dates.push(date.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric' }));
+      
+      // Count vouchers created on this date
+      const count = vouchers.filter(voucher => {
+        const createdDate = new Date(voucher.createdAt);
+        return (
+          createdDate.getDate() === date.getDate() &&
+          createdDate.getMonth() === date.getMonth() &&
+          createdDate.getFullYear() === date.getFullYear()
+        );
+      }).length;
+      
+      counts.push(count);
+    }
+    
+    return { dates, counts };
+  };
+  
+  const dailyData = getLast7DaysVoucherData();
+  
+  const voucherCreationChartData = {
+    labels: dailyData.dates,
+    datasets: [
+      {
+        label: 'Vouchers créés',
+        data: dailyData.counts,
+        backgroundColor: 'rgba(101, 116, 205, 0.6)',
+        borderColor: 'rgba(101, 116, 205, 1)',
+        borderWidth: 2,
+        tension: 0.2,
+        fill: true,
+      }
+    ],
   };
 
   return (
@@ -188,6 +434,35 @@ const SuperAdminVouchers: React.FC = () => {
                 />
               </div>
               
+              <div className="space-y-4 pt-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="print-codes" className="cursor-pointer">Imprimer les codes</Label>
+                  <Switch 
+                    id="print-codes" 
+                    checked={printCodes}
+                    onCheckedChange={setPrintCodes}
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="notify-sms" className="cursor-pointer">Notifier par SMS</Label>
+                  <Switch 
+                    id="notify-sms" 
+                    checked={notifyBySMS}
+                    onCheckedChange={setNotifyBySMS}
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="multi-use" className="cursor-pointer">Multi-utilisateurs (5)</Label>
+                  <Switch 
+                    id="multi-use" 
+                    checked={multiUse}
+                    onCheckedChange={setMultiUse}
+                  />
+                </div>
+              </div>
+              
               <Button 
                 type="button" 
                 className="w-full mt-4 flex items-center justify-center gap-2" 
@@ -210,33 +485,150 @@ const SuperAdminVouchers: React.FC = () => {
             <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
               <TabsList>
                 <TabsTrigger value="all">Tous</TabsTrigger>
-                <TabsTrigger value="active">Actifs</TabsTrigger>
-                <TabsTrigger value="expired">Expirés</TabsTrigger>
+                <TabsTrigger value="active">
+                  Actifs
+                  <Badge variant="outline" className="ml-1 bg-success/20 text-success">{stats.active}</Badge>
+                </TabsTrigger>
+                <TabsTrigger value="expired">
+                  Expirés
+                  <Badge variant="outline" className="ml-1">{stats.expired}</Badge>
+                </TabsTrigger>
               </TabsList>
             </Tabs>
           </CardHeader>
           <CardContent>
-            <div className="flex justify-end mb-4">
-              <Button variant="outline" size="sm" className="flex items-center gap-1 mr-2">
-                <Ticket size={16} />
-                <span>Imprimer sélection</span>
-              </Button>
-              <Button variant="outline" size="sm" className="flex items-center gap-1">
-                <FileDown size={16} />
-                <span>Exporter CSV</span>
-              </Button>
+            <div className="flex justify-between mb-4">
+              <div className="relative max-w-xs">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Rechercher un voucher..."
+                  className="pl-8 w-[250px]"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              
+              <div className="flex items-center gap-2">
+                {selectedVouchers.length > 0 && (
+                  <>
+                    <Badge variant="outline">{selectedVouchers.length} sélectionné(s)</Badge>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="flex items-center gap-1"
+                      onClick={handleDeleteSelected}
+                    >
+                      <Trash2 size={16} />
+                      <span>Supprimer</span>
+                    </Button>
+                  </>
+                )}
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="flex items-center gap-1"
+                  onClick={handlePrintSelected}
+                  disabled={selectedVouchers.length === 0}
+                >
+                  <Printer size={16} />
+                  <span>Imprimer</span>
+                </Button>
+                <Button variant="outline" size="sm" className="flex items-center gap-1">
+                  <FileDown size={16} />
+                  <span>Exporter CSV</span>
+                </Button>
+              </div>
             </div>
             
             <div className="overflow-x-auto">
               <table className="dashboard-table">
                 <thead>
                   <tr>
-                    <th>Code</th>
+                    <th>
+                      <div className="flex items-center">
+                        <input 
+                          type="checkbox" 
+                          className="mr-2 h-4 w-4"
+                          checked={selectedVouchers.length === filteredVouchers.length && filteredVouchers.length > 0}
+                          onChange={toggleAllVouchers}
+                        />
+                        Code
+                      </div>
+                    </th>
                     <th>Forfait</th>
-                    <th>Durée</th>
+                    <th>
+                      <button 
+                        className="flex items-center"
+                        onClick={() => {
+                          if (sortBy === 'duration') {
+                            setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+                          } else {
+                            setSortBy('duration');
+                            setSortDirection('desc');
+                          }
+                        }}
+                      >
+                        Durée
+                        {sortBy === 'duration' && (
+                          <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                        )}
+                      </button>
+                    </th>
                     <th>Données</th>
-                    <th>Créé le</th>
-                    <th>Expire le</th>
+                    <th>
+                      <button 
+                        className="flex items-center"
+                        onClick={() => {
+                          if (sortBy === 'createdAt') {
+                            setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+                          } else {
+                            setSortBy('createdAt');
+                            setSortDirection('desc');
+                          }
+                        }}
+                      >
+                        Créé le
+                        {sortBy === 'createdAt' && (
+                          <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                        )}
+                      </button>
+                    </th>
+                    <th>
+                      <button 
+                        className="flex items-center"
+                        onClick={() => {
+                          if (sortBy === 'expiresAt') {
+                            setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+                          } else {
+                            setSortBy('expiresAt');
+                            setSortDirection('desc');
+                          }
+                        }}
+                      >
+                        Expire le
+                        {sortBy === 'expiresAt' && (
+                          <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                        )}
+                      </button>
+                    </th>
+                    <th>
+                      <button 
+                        className="flex items-center"
+                        onClick={() => {
+                          if (sortBy === 'usage') {
+                            setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+                          } else {
+                            setSortBy('usage');
+                            setSortDirection('desc');
+                          }
+                        }}
+                      >
+                        Utilisation
+                        {sortBy === 'usage' && (
+                          <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                        )}
+                      </button>
+                    </th>
                     <th>Statut</th>
                     <th>Actions</th>
                   </tr>
@@ -244,7 +636,23 @@ const SuperAdminVouchers: React.FC = () => {
                 <tbody>
                   {filteredVouchers.map((voucher) => (
                     <tr key={voucher.id}>
-                      <td className="font-medium">{voucher.code}</td>
+                      <td className="font-medium">
+                        <div className="flex items-center">
+                          <input 
+                            type="checkbox"
+                            className="mr-2 h-4 w-4"
+                            checked={selectedVouchers.includes(voucher.id)}
+                            onChange={() => toggleVoucherSelection(voucher.id)}
+                          />
+                          <span className="font-mono">{voucher.code}</span>
+                          <button 
+                            className="ml-2 text-muted-foreground hover:text-primary"
+                            onClick={() => copyVoucherCode(voucher.code)}
+                          >
+                            <Copy size={14} />
+                          </button>
+                        </div>
+                      </td>
                       <td>{voucher.name || 'Standard'}</td>
                       <td>
                         {voucher.timeLimitMinutes 
@@ -262,8 +670,51 @@ const SuperAdminVouchers: React.FC = () => {
                           : 'Illimité'
                         }
                       </td>
-                      <td>{formatDate(voucher.createdAt)}</td>
-                      <td>{formatDate(voucher.expiresAt)}</td>
+                      <td>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <button className="text-primary hover:underline flex items-center">
+                              {formatDate(voucher.createdAt).split(' ')[0]}
+                              <Calendar size={14} className="ml-1" />
+                            </button>
+                          </PopoverTrigger>
+                          <PopoverContent>
+                            <p className="text-sm font-medium">Créé le</p>
+                            <p className="text-xs text-muted-foreground">{formatDate(voucher.createdAt)}</p>
+                          </PopoverContent>
+                        </Popover>
+                      </td>
+                      <td>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <button className={`hover:underline flex items-center ${
+                              voucher.expired ? 'text-danger' : 'text-primary'
+                            }`}>
+                              {formatDate(voucher.expiresAt).split(' ')[0]}
+                              <Calendar size={14} className="ml-1" />
+                            </button>
+                          </PopoverTrigger>
+                          <PopoverContent>
+                            <p className="text-sm font-medium">Expire le</p>
+                            <p className="text-xs text-muted-foreground">{formatDate(voucher.expiresAt)}</p>
+                          </PopoverContent>
+                        </Popover>
+                      </td>
+                      <td>
+                        <div className="flex items-center">
+                          <div className="mr-2 h-2.5 w-full max-w-16 rounded-full bg-muted">
+                            <div 
+                              className={`h-full rounded-full ${
+                                voucher.authorizedGuestCount === voucher.authorizeGuestLimit ? 'bg-primary' : 'bg-success'
+                              }`}
+                              style={{ 
+                                width: `${(voucher.authorizedGuestCount / (voucher.authorizeGuestLimit || 1)) * 100}%` 
+                              }}
+                            />
+                          </div>
+                          <span>{voucher.authorizedGuestCount}/{voucher.authorizeGuestLimit || 1}</span>
+                        </div>
+                      </td>
                       <td>
                         <span 
                           className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
@@ -282,17 +733,27 @@ const SuperAdminVouchers: React.FC = () => {
                           }
                         </span>
                       </td>
-                      <td>
-                        <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                      <td className="flex items-center space-x-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="h-8 w-8 p-0" 
+                          onClick={() => handleDeleteVoucher(voucher.id)}
+                        >
                           <Trash2 className="h-4 w-4" />
+                        </Button>
+                        <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                          <Printer className="h-4 w-4" />
                         </Button>
                       </td>
                     </tr>
                   ))}
                   {filteredVouchers.length === 0 && (
                     <tr>
-                      <td colSpan={8} className="text-center py-4 text-muted-foreground">
-                        {isLoading ? 'Chargement des vouchers...' : 'Aucun voucher trouvé'}
+                      <td colSpan={9} className="text-center py-4 text-muted-foreground">
+                        {isLoading ? 'Chargement des vouchers...' : (
+                          searchTerm ? 'Aucun voucher ne correspond à votre recherche' : 'Aucun voucher trouvé'
+                        )}
                       </td>
                     </tr>
                   )}
@@ -304,31 +765,131 @@ const SuperAdminVouchers: React.FC = () => {
       </div>
       
       {/* Voucher Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Statistiques des Vouchers</CardTitle>
+            <CardDescription>Distribution des statuts de vouchers</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px]">
+              <ChartComponent
+                type="doughnut"
+                data={voucherStatusChartData}
+                options={{
+                  plugins: {
+                    legend: {
+                      position: 'right',
+                    }
+                  },
+                  cutout: '60%'
+                }}
+                height={300}
+              />
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>Création de Vouchers</CardTitle>
+            <CardDescription>Nombre de vouchers créés les 7 derniers jours</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px]">
+              <ChartComponent
+                type="bar"
+                data={voucherCreationChartData}
+                options={{
+                  scales: {
+                    y: {
+                      beginAtZero: true,
+                      ticks: {
+                        precision: 0
+                      }
+                    }
+                  },
+                  plugins: {
+                    legend: {
+                      display: false
+                    }
+                  }
+                }}
+                height={300}
+              />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Voucher Summary Statistics */}
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Vouchers Actifs</CardTitle>
+            <CardTitle className="text-lg">Total</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">
-              {vouchers.filter(v => !v.expired).length}
+              {stats.total}
             </div>
             <p className="text-sm text-muted-foreground">
-              {vouchers.filter(v => !v.expired && v.authorizedGuestCount > 0).length} en utilisation
+              Vouchers créés
             </p>
           </CardContent>
         </Card>
         
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Vouchers Expirés</CardTitle>
+            <CardTitle className="text-lg">Actifs</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">
-              {vouchers.filter(v => v.expired).length}
+              {stats.active}
             </div>
             <p className="text-sm text-muted-foreground">
-              Des 7 derniers jours
+              Non expirés
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">Non Utilisés</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">
+              {stats.unused}
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Disponibles
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">En Utilisation</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">
+              {stats.partiallyUsed}
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Partiellement utilisés
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">Expirés</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">
+              {stats.expired}
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Plus valides
             </p>
           </CardContent>
         </Card>
@@ -339,9 +900,7 @@ const SuperAdminVouchers: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">
-              {vouchers.length > 0 
-                ? Math.round((vouchers.filter(v => v.authorizedGuestCount > 0).length / vouchers.length) * 100)
-                : 0}%
+              {stats.usageRate}%
             </div>
             <p className="text-sm text-muted-foreground">
               Des vouchers générés

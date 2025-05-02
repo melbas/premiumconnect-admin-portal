@@ -11,7 +11,8 @@ export type AdminTab = 'overview' | 'wholesalers' | 'sites' | 'marketing' | 'tec
 export const rolePermissions: Record<UserRole, AdminTab[]> = {
   superadmin: ['overview', 'wholesalers', 'sites', 'marketing', 'technical', 'vouchers', 'settings'],
   marketing: ['marketing'],
-  technical: ['technical', 'sites', 'vouchers']
+  technical: ['technical', 'sites', 'vouchers'],
+  voucher_manager: ['vouchers', 'overview']
 };
 
 interface AdminLayoutProps {
