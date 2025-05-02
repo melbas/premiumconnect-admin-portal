@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AdminLayout from './AdminLayout';
 import { useAuth, mockUsers } from '@/context/AuthContext';
 import SuperAdminOverview from './Tabs/SuperAdminOverview';
@@ -15,6 +15,16 @@ import { useToast } from '@/hooks/use-toast';
 // Login form for demonstration
 const LoginForm = () => {
   const { login } = useAuth();
+  const { toast } = useToast();
+  
+  const handleLogin = (user) => {
+    login(user);
+    toast({
+      title: `Bienvenue ${user.name}`,
+      description: `Vous êtes connecté en tant que ${user.role}`,
+      variant: "default",
+    });
+  };
   
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
@@ -30,7 +40,7 @@ const LoginForm = () => {
             {mockUsers.map(user => (
               <button
                 key={user.id}
-                onClick={() => login(user)}
+                onClick={() => handleLogin(user)}
                 className="flex items-center space-x-3 rounded-md border border-border p-3 hover:bg-secondary"
               >
                 <div className="h-10 w-10 overflow-hidden rounded-full bg-muted">
@@ -65,7 +75,7 @@ const SuperAdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<AdminTab>('overview');
   const { toast } = useToast();
   
-  React.useEffect(() => {
+  useEffect(() => {
     // Notify user when tab changes
     if (isAuthenticated) {
       toast({
@@ -79,8 +89,9 @@ const SuperAdminDashboard: React.FC = () => {
     return <LoginForm />;
   }
   
-  // RBAC check - redirect to first allowed tab if current tab is not accessible
+  // Verify current user has access to this tab
   if (user && !rolePermissions[user.role].includes(activeTab)) {
+    // Automatically switch to first allowed tab
     setActiveTab(rolePermissions[user.role][0]);
   }
 

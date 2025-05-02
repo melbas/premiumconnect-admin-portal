@@ -10,8 +10,8 @@ export type AdminTab = 'overview' | 'wholesalers' | 'sites' | 'marketing' | 'tec
 // Define which roles can access which tabs
 export const rolePermissions: Record<UserRole, AdminTab[]> = {
   superadmin: ['overview', 'wholesalers', 'sites', 'marketing', 'technical', 'vouchers', 'settings'],
-  marketing: ['marketing'],
-  technical: ['technical', 'sites', 'vouchers'],
+  marketing: ['marketing', 'overview'],
+  technical: ['technical', 'sites', 'overview'],
   voucher_manager: ['vouchers', 'overview']
 };
 
@@ -32,6 +32,15 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, activeTab, setActiv
         <p className="text-xl">Veuillez vous connecter pour accéder au tableau de bord administrateur.</p>
       </div>
     );
+  }
+
+  // Get allowed tabs for the current user role
+  const allowedTabs = rolePermissions[user.role] || [];
+  
+  // If current active tab is not allowed, redirect to first allowed tab
+  if (!allowedTabs.includes(activeTab) && allowedTabs.length > 0) {
+    setActiveTab(allowedTabs[0]);
+    return null; // Return null to prevent flash of content
   }
 
   return (
