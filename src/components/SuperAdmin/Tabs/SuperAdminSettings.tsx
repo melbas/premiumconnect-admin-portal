@@ -6,8 +6,9 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/AuthContext';
 import { Label } from '@/components/ui/label';
-import { Moon, Sun, Bell, BellOff } from 'lucide-react';
+import { Moon, Sun, Bell, BellOff, Upload, Edit, User } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import ProfileImageUploader from '@/components/ui/profile-image-uploader';
 
 const SuperAdminSettings: React.FC = () => {
   const { user, setCurrentUser } = useAuth();
@@ -20,6 +21,9 @@ const SuperAdminSettings: React.FC = () => {
     name: user?.name || '',
     email: user?.email || '',
   });
+  
+  // Dialog state for profile image uploader
+  const [profileDialogOpen, setProfileDialogOpen] = useState(false);
 
   // Toggle dark mode
   const toggleDarkMode = () => {
@@ -55,6 +59,16 @@ const SuperAdminSettings: React.FC = () => {
       });
     }
   };
+  
+  // Handle profile image update
+  const handleProfileImageUpdate = (avatarUrl: string) => {
+    if (user) {
+      setCurrentUser({
+        ...user,
+        avatar: avatarUrl
+      });
+    }
+  };
 
   // Toggle notifications
   const toggleNotifications = () => {
@@ -84,27 +98,31 @@ const SuperAdminSettings: React.FC = () => {
           <CardContent>
             <form onSubmit={handleProfileUpdate} className="space-y-4">
               <div className="flex items-center mb-6">
-                <Avatar className="w-20 h-20">
-                  {user?.avatar ? (
-                    <AvatarImage src={user.avatar} alt={user.name} />
-                  ) : (
-                    <AvatarFallback className="text-lg">
-                      {user?.name?.charAt(0)}
-                    </AvatarFallback>
-                  )}
-                </Avatar>
+                <div className="relative">
+                  <Avatar className="w-20 h-20">
+                    {user?.avatar ? (
+                      <AvatarImage src={user.avatar} alt={user.name} />
+                    ) : (
+                      <AvatarFallback className="text-lg">
+                        {user?.name?.charAt(0)}
+                      </AvatarFallback>
+                    )}
+                  </Avatar>
+                  <button 
+                    type="button" 
+                    className="absolute -bottom-2 -right-2 bg-primary text-primary-foreground rounded-full p-1.5 shadow-sm"
+                    onClick={() => setProfileDialogOpen(true)}
+                  >
+                    <Edit size={14} />
+                  </button>
+                </div>
                 <div className="ml-4">
                   <h3 className="text-lg font-medium">{user?.name}</h3>
                   <p className="text-sm text-muted-foreground">
                     {user?.role === 'superadmin' ? 'Super Admin' : 
-                     user?.role === 'marketing' ? 'Marketing' : 'Technique'}
+                     user?.role === 'marketing' ? 'Marketing' : 
+                     user?.role === 'technical' ? 'Technique' : 'Gestionnaire de Vouchers'}
                   </p>
-                  <button 
-                    type="button" 
-                    className="text-sm text-primary hover:underline mt-1"
-                  >
-                    Changer la photo
-                  </button>
                 </div>
               </div>
               
@@ -134,7 +152,8 @@ const SuperAdminSettings: React.FC = () => {
                 <Input
                   id="role"
                   value={user?.role === 'superadmin' ? 'Super Admin' : 
-                         user?.role === 'marketing' ? 'Marketing' : 'Technique'}
+                         user?.role === 'marketing' ? 'Marketing' : 
+                         user?.role === 'technical' ? 'Technique' : 'Gestionnaire de Vouchers'}
                   disabled
                 />
               </div>
@@ -226,6 +245,15 @@ const SuperAdminSettings: React.FC = () => {
           </div>
         </CardContent>
       </Card>
+      
+      {/* Profile Image Uploader Dialog */}
+      <ProfileImageUploader
+        open={profileDialogOpen}
+        onOpenChange={setProfileDialogOpen}
+        currentAvatar={user?.avatar}
+        userName={user?.name || ''}
+        onSave={handleProfileImageUpdate}
+      />
     </div>
   );
 };

@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { Menu, Bell, User } from 'lucide-react';
+import React, { useState } from 'react';
+import { Menu, Bell, User, Edit } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import {
   DropdownMenu,
@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import ProfileImageUploader from '@/components/ui/profile-image-uploader';
 
 interface SuperAdminHeaderProps {
   sidebarOpen: boolean;
@@ -19,7 +20,17 @@ interface SuperAdminHeaderProps {
 }
 
 const SuperAdminHeader: React.FC<SuperAdminHeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
-  const { user, logout } = useAuth();
+  const { user, logout, setCurrentUser } = useAuth();
+  const [profileDialogOpen, setProfileDialogOpen] = useState(false);
+
+  const handleProfileImageUpdate = (avatarUrl: string) => {
+    if (user) {
+      setCurrentUser({
+        ...user,
+        avatar: avatarUrl
+      });
+    }
+  };
 
   return (
     <header className="bg-background z-20 border-b border-border flex items-center h-16 px-4 lg:px-6">
@@ -76,21 +87,27 @@ const SuperAdminHeader: React.FC<SuperAdminHeaderProps> = ({ sidebarOpen, setSid
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-2 rounded-md p-2 hover:bg-secondary">
-              <Avatar>
-                {user?.avatar ? (
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                ) : (
-                  <AvatarFallback>
-                    {user?.name?.charAt(0)}
-                  </AvatarFallback>
-                )}
-              </Avatar>
+              <div className="relative">
+                <Avatar>
+                  {user?.avatar ? (
+                    <AvatarImage src={user.avatar} alt={user.name} />
+                  ) : (
+                    <AvatarFallback>
+                      {user?.name?.charAt(0)}
+                    </AvatarFallback>
+                  )}
+                </Avatar>
+              </div>
               <span className="hidden md:inline text-sm font-medium">{user?.name}</span>
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel>Mon compte</DropdownMenuLabel>
             <DropdownMenuSeparator />
+            <DropdownMenuItem className="cursor-pointer" onClick={() => setProfileDialogOpen(true)}>
+              <Edit className="mr-2 h-4 w-4" />
+              <span>Changer la photo de profil</span>
+            </DropdownMenuItem>
             <DropdownMenuItem className="cursor-pointer">
               <User className="mr-2 h-4 w-4" />
               <span>Profil</span>
@@ -101,6 +118,15 @@ const SuperAdminHeader: React.FC<SuperAdminHeaderProps> = ({ sidebarOpen, setSid
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+
+      {/* Profile Image Uploader Dialog */}
+      <ProfileImageUploader
+        open={profileDialogOpen}
+        onOpenChange={setProfileDialogOpen}
+        currentAvatar={user?.avatar}
+        userName={user?.name || ''}
+        onSave={handleProfileImageUpdate}
+      />
     </header>
   );
 };
