@@ -52,7 +52,7 @@ export const users: UserData[] = [
     role: 'superadmin',
     status: 'active',
     lastActive: '2023-03-20T14:30:00',
-    avatar: 'https://i.pravatar.cc/150?img=12'
+    avatar: '/assets/profiles/amadou.jpg'
   },
   {
     id: '2',
@@ -61,7 +61,7 @@ export const users: UserData[] = [
     role: 'marketing',
     status: 'active',
     lastActive: '2023-03-19T10:15:00',
-    avatar: 'https://i.pravatar.cc/150?img=5'
+    avatar: '/assets/profiles/fatou.jpg'
   },
   {
     id: '3',
@@ -70,7 +70,7 @@ export const users: UserData[] = [
     role: 'technical',
     status: 'active',
     lastActive: '2023-03-15T09:45:00',
-    avatar: 'https://i.pravatar.cc/150?img=11'
+    avatar: '/assets/profiles/moussa.jpg'
   },
   {
     id: '4',
@@ -79,7 +79,7 @@ export const users: UserData[] = [
     role: 'marketing',
     status: 'active',
     lastActive: '2023-03-18T16:20:00',
-    avatar: 'https://i.pravatar.cc/150?img=9'
+    avatar: '/assets/profiles/aissatou.jpg'
   },
   {
     id: '5',
@@ -88,7 +88,7 @@ export const users: UserData[] = [
     role: 'technical',
     status: 'inactive',
     lastActive: '2023-02-28T11:10:00',
-    avatar: 'https://i.pravatar.cc/150?img=15'
+    avatar: '/assets/profiles/omar-g.jpg'
   }
 ];
 

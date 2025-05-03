@@ -7,6 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/AuthContext';
 import { Label } from '@/components/ui/label';
 import { Moon, Sun, Bell, BellOff } from 'lucide-react';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 const SuperAdminSettings: React.FC = () => {
   const { user, setCurrentUser } = useAuth();
@@ -82,6 +83,31 @@ const SuperAdminSettings: React.FC = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleProfileUpdate} className="space-y-4">
+              <div className="flex items-center mb-6">
+                <Avatar className="w-20 h-20">
+                  {user?.avatar ? (
+                    <AvatarImage src={user.avatar} alt={user.name} />
+                  ) : (
+                    <AvatarFallback className="text-lg">
+                      {user?.name?.charAt(0)}
+                    </AvatarFallback>
+                  )}
+                </Avatar>
+                <div className="ml-4">
+                  <h3 className="text-lg font-medium">{user?.name}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {user?.role === 'superadmin' ? 'Super Admin' : 
+                     user?.role === 'marketing' ? 'Marketing' : 'Technique'}
+                  </p>
+                  <button 
+                    type="button" 
+                    className="text-sm text-primary hover:underline mt-1"
+                  >
+                    Changer la photo
+                  </button>
+                </div>
+              </div>
+              
               <div className="space-y-2">
                 <Label htmlFor="name">Nom</Label>
                 <Input

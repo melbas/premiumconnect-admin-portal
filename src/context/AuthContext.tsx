@@ -32,28 +32,28 @@ export const mockUsers: User[] = [
     name: 'Amadou Diallo',
     email: 'admin@wifisenegal.com',
     role: 'superadmin',
-    avatar: 'https://i.pravatar.cc/150?img=1'
+    avatar: '/assets/profiles/amadou.jpg'
   },
   {
     id: '2',
     name: 'Fatou Ndiaye',
     email: 'marketing@wifisenegal.com',
     role: 'marketing',
-    avatar: 'https://i.pravatar.cc/150?img=2'
+    avatar: '/assets/profiles/fatou.jpg'
   },
   {
     id: '3',
     name: 'Omar Sow',
     email: 'tech@wifisenegal.com',
     role: 'technical',
-    avatar: 'https://i.pravatar.cc/150?img=3'
+    avatar: '/assets/profiles/omar.jpg'
   },
   {
     id: '4',
     name: 'Mariama Bâ',
     email: 'vouchers@wifisenegal.com',
     role: 'voucher_manager',
-    avatar: 'https://i.pravatar.cc/150?img=4'
+    avatar: '/assets/profiles/mariama.jpg'
   }
 ];
 

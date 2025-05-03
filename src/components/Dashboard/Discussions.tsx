@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Phone, Video, Search, Send, User } from "lucide-react";
 
@@ -12,7 +11,7 @@ const Discussions = () => {
       lastMessage: "Ma connexion est très lente depuis 2 jours.", 
       timestamp: "10:33", 
       unread: true,
-      avatar: null
+      avatar: "/assets/profiles/mamadou.jpg"
     },
     { 
       id: 2, 
@@ -21,7 +20,7 @@ const Discussions = () => {
       lastMessage: "Je n'ai pas reçu ma facture ce mois-ci.", 
       timestamp: "09:15", 
       unread: false,
-      avatar: null
+      avatar: "/assets/profiles/fatou-m.jpg"
     },
     { 
       id: 3, 
@@ -30,7 +29,7 @@ const Discussions = () => {
       lastMessage: "Comment puis-je passer au forfait Premium?", 
       timestamp: "Hier", 
       unread: false,
-      avatar: null
+      avatar: "/assets/profiles/ibrahim.jpg"
     },
     { 
       id: 4, 
@@ -39,7 +38,7 @@ const Discussions = () => {
       lastMessage: "Mon modem ne fonctionne plus après la coupure d'électricité.", 
       timestamp: "Hier", 
       unread: true,
-      avatar: null
+      avatar: "/assets/profiles/aminata.jpg"
     },
     { 
       id: 5, 
@@ -48,7 +47,7 @@ const Discussions = () => {
       lastMessage: "Y a-t-il une panne dans la zone de Parcelles?", 
       timestamp: "14/04", 
       unread: false,
-      avatar: null
+      avatar: "/assets/profiles/omar-f.jpg"
     },
     { 
       id: 6, 
@@ -57,7 +56,7 @@ const Discussions = () => {
       lastMessage: "Je n'arrive pas à me connecter à mon compte.", 
       timestamp: "14/04", 
       unread: false,
-      avatar: null
+      avatar: "/assets/profiles/aicha.jpg"
     },
     { 
       id: 7, 
@@ -66,7 +65,7 @@ const Discussions = () => {
       lastMessage: "Comment puis-je changer ma méthode de paiement?", 
       timestamp: "13/04", 
       unread: false,
-      avatar: null
+      avatar: "/assets/profiles/cheikh.jpg"
     },
     { 
       id: 8, 
@@ -75,7 +74,7 @@ const Discussions = () => {
       lastMessage: "Est-ce qu'il y a une panne générale? Je n'ai plus de connexion.", 
       timestamp: "13/04", 
       unread: false,
-      avatar: null
+      avatar: "/assets/profiles/marie.jpg"
     }
   ];
 
@@ -152,7 +151,7 @@ const Discussions = () => {
                       <img
                         src={convo.avatar}
                         alt={convo.user}
-                        className="w-10 h-10 rounded-full"
+                        className="w-10 h-10 rounded-full object-cover"
                       />
                     ) : (
                       <div className="w-10 h-10 bg-muted/60 rounded-full flex items-center justify-center text-muted-foreground">
@@ -194,9 +193,17 @@ const Discussions = () => {
               {/* Chat header */}
               <div className="flex items-center justify-between pb-4 border-b border-border">
                 <div className="flex items-center">
-                  <div className="w-10 h-10 bg-muted/60 rounded-full flex items-center justify-center text-muted-foreground">
-                    <User size={20} />
-                  </div>
+                  {currentConversation.avatar ? (
+                    <img 
+                      src={currentConversation.avatar} 
+                      alt={currentConversation.user}
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 bg-muted/60 rounded-full flex items-center justify-center text-muted-foreground">
+                      <User size={20} />
+                    </div>
+                  )}
                   <div className="ml-3">
                     <h3 className="font-medium">{currentConversation.user}</h3>
                     <p className="text-xs text-muted-foreground">{currentConversation.issue}</p>

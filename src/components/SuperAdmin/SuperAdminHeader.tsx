@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 interface SuperAdminHeaderProps {
   sidebarOpen: boolean;
@@ -75,19 +76,15 @@ const SuperAdminHeader: React.FC<SuperAdminHeaderProps> = ({ sidebarOpen, setSid
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-2 rounded-md p-2 hover:bg-secondary">
-              <div className="h-8 w-8 overflow-hidden rounded-full bg-muted">
+              <Avatar>
                 {user?.avatar ? (
-                  <img 
-                    src={user.avatar} 
-                    alt={user.name} 
-                    className="h-full w-full object-cover"
-                  />
+                  <AvatarImage src={user.avatar} alt={user.name} />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-primary text-primary-foreground">
-                    {user?.name.charAt(0)}
-                  </div>
+                  <AvatarFallback>
+                    {user?.name?.charAt(0)}
+                  </AvatarFallback>
                 )}
-              </div>
+              </Avatar>
               <span className="hidden md:inline text-sm font-medium">{user?.name}</span>
             </button>
           </DropdownMenuTrigger>
