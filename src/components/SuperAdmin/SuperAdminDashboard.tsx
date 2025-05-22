@@ -16,7 +16,7 @@ interface SuperAdminDashboardProps {
 }
 
 const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ initialTab = 'overview' }) => {
-  const [activeTab, setActiveTab] = useState<AdminTab | 'captive-portal'>(initialTab as AdminTab);
+  const [activeTab, setActiveTab] = useState<AdminTab | 'captive-portal'>(initialTab);
   
   const renderTabContent = () => {
     switch (activeTab) {

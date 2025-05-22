@@ -1,717 +1,515 @@
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+
+import React, { useState, useRef } from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useToast } from '@/hooks/use-toast';
 import { ChartComponent } from '@/components/Dashboard/Chart';
-import { Plus, Search } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { mockWholesalers } from '../mockData/wholesalers';
+import { sites } from '../mockData/sites';
+import { UserData } from '../mockData/users';
+import { useAuth } from '@/context/AuthContext';
 
-// Calculate performance score for wholesalers
-const calculatePerformanceScore = (wholesaler: UserData) => {
-  // Mock calculation based on revenue, users, and resolved issues
-  const maxRevenue = 5000000; // Maximum possible revenue
-  const maxUsers = 2000; // Maximum possible users
-  const totalIssues = wholesaler.totalIssues || 10;
-  const resolvedIssues = wholesaler.resolvedIssues || 5;
+import {
+  Phone,
+  Mail,
+  User,
+  ExternalLink,
+  Edit,
+  Trash,
+  Plus,
+  Search,
+  ChevronDown,
+  Info
+} from 'lucide-react';
+
+const WholesalerDetail = ({ wholesaler }: { wholesaler: UserData }) => {
+  // Format the last active date for better readability
+  const lastActive = new Date(wholesaler.lastActive).toLocaleString();
   
-  const revenueScore = (wholesaler.revenue || 0) / maxRevenue * 40;
-  const usersScore = (wholesaler.users || 0) / maxUsers * 30;
-  const issueScore = resolvedIssues / totalIssues * 30;
+  // Find the site name if assigned
+  const assignedSite = wholesaler.assignedSiteId 
+    ? sites.find(site => site.id === wholesaler.assignedSiteId)?.name || 'Site inconnu' 
+    : 'Non assigné';
   
-  return Math.min(Math.round(revenueScore + usersScore + issueScore), 100);
-};
-
-// Modal component for viewing wholesaler profile
-const WholesalerProfileModal = ({ 
-  isOpen, 
-  onClose, 
-  wholesaler 
-}: { 
-  isOpen: boolean; 
-  onClose: () => void; 
-  wholesaler: UserData;
-}) => {
-  if (!isOpen || !wholesaler) return null;
-
-  const performanceScore = calculatePerformanceScore(wholesaler);
-  const assignedSite = sites.find(site => site.id === wholesaler.assignedSiteId);
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-3xl rounded-lg bg-background p-6 shadow-xl overflow-y-auto max-h-[90vh]">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold">Profil du Grossiste</h2>
-          <Button variant="outline" size="sm" onClick={onClose}>
-            Fermer
-          </Button>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Basic Information */}
-          <div className="md:col-span-1 space-y-4">
-            <div className="flex flex-col items-center text-center">
-              <div className="h-24 w-24 rounded-full overflow-hidden bg-muted mb-3">
-                {wholesaler.avatar ? (
-                  <img 
-                    src={wholesaler.avatar} 
-                    alt={wholesaler.name}
-                    className="h-full w-full object-cover" 
-                  />
-                ) : (
-                  <div className="h-full w-full flex items-center justify-center bg-primary text-primary-foreground text-2xl">
-                    {wholesaler.name.charAt(0)}
-                  </div>
-                )}
-              </div>
-              <h3 className="text-lg font-medium">{wholesaler.name}</h3>
-              <p className="text-sm text-muted-foreground capitalize">{wholesaler.role}</p>
-            </div>
-            
-            <div className="space-y-2">
-              <div className="flex items-center">
-                <Mail size={16} className="mr-2 text-muted-foreground" />
-                <span>{wholesaler.email}</span>
-              </div>
-              <div className="flex items-center">
-                <Phone size={16} className="mr-2 text-muted-foreground" />
-                <span>{wholesaler.phone || "+221 78 123 4567"}</span>
-              </div>
-              <div className="flex items-center">
-                <User size={16} className="mr-2 text-muted-foreground" />
-                <span>ID: {wholesaler.id}</span>
-              </div>
-            </div>
-            
-            <div className="pt-2 border-t border-border">
-              <h4 className="font-medium mb-1">Performance</h4>
-              <div className="flex items-center space-x-2">
-                <div className="h-2 flex-1 bg-muted rounded-full overflow-hidden">
-                  <div 
-                    className={`h-full ${
-                      performanceScore >= 80 ? 'bg-success' : 
-                      performanceScore >= 60 ? 'bg-warning' : 'bg-danger'
-                    }`}
-                    style={{ width: `${performanceScore}%` }}
-                  ></div>
-                </div>
-                <span className="text-sm font-medium">{performanceScore}</span>
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                {performanceScore >= 80 ? 'Excellent' : 
-                 performanceScore >= 60 ? 'Bon' : 'Nécessite une amélioration'}
-              </p>
-            </div>
-          </div>
-          
-          {/* Assigned Site Information */}
-          <div className="md:col-span-2 space-y-4">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Site Assigné</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {assignedSite ? (
-                  <>
-                    <div className="flex justify-between">
-                      <span className="font-medium">{assignedSite.name}</span>
-                      <span className="text-sm text-muted-foreground">{assignedSite.location}</span>
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1">
-                        <p className="text-xs text-muted-foreground">Utilisateurs</p>
-                        <p className="font-medium">{assignedSite.users?.toLocaleString()}</p>
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-xs text-muted-foreground">Revenu Mensuel</p>
-                        <p className="font-medium">{assignedSite.revenue?.toLocaleString()} FCFA</p>
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-xs text-muted-foreground">Disponibilité</p>
-                        <p className="font-medium">{assignedSite.uptime}%</p>
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-xs text-muted-foreground">Problèmes</p>
-                        <p className="font-medium">{assignedSite.issues}</p>
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <p className="text-muted-foreground">Aucun site assigné</p>
-                )}
-              </CardContent>
-            </Card>
-            
-            {/* Revenue History */}
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Historique de Revenu</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[200px]">
-                  <ChartComponent
-                    type="line"
-                    data={{
-                      labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun'],
-                      datasets: [{
-                        label: 'Revenu (FCFA)',
-                        data: [
-                          Math.floor(Math.random() * 500000) + 200000,
-                          Math.floor(Math.random() * 500000) + 200000,
-                          Math.floor(Math.random() * 500000) + 200000,
-                          Math.floor(Math.random() * 500000) + 200000,
-                          Math.floor(Math.random() * 500000) + 200000,
-                          Math.floor(Math.random() * 500000) + 200000,
-                        ],
-                        borderColor: 'rgba(16, 185, 129, 1)',
-                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                        fill: true,
-                        tension: 0.3
-                      }]
-                    }}
-                    options={{
-                      plugins: {
-                        legend: {
-                          display: false
-                        }
-                      },
-                      scales: {
-                        y: {
-                          beginAtZero: true,
-                          ticks: {
-                            callback: function(value) {
-                              return value.toLocaleString() + ' FCFA';
-                            }
-                          }
-                        }
-                      }
-                    }}
-                    height={200}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-            
-            {/* Additional Information */}
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Informations Supplémentaires</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">Bio</p>
-                  <p>{wholesaler.bio || "Grossiste responsable de la gestion du site et des clients dans la région."}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">Dernière Connexion</p>
-                  <p>{new Date(wholesaler.lastActive).toLocaleString('fr-FR')}</p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Modal component for adding/editing wholesalers
-const WholesalerModal = ({ 
-  isOpen, 
-  onClose, 
-  wholesaler, 
-  onSave 
-}: { 
-  isOpen: boolean; 
-  onClose: () => void; 
-  wholesaler?: UserData; 
-  onSave: (wholesaler: Partial<UserData>) => void;
-}) => {
-  const [formData, setFormData] = useState({
-    name: wholesaler?.name || '',
-    email: wholesaler?.email || '',
-    phone: wholesaler?.phone || '',
-    role: wholesaler?.role || 'technical',
-    assignedSiteId: wholesaler?.assignedSiteId || '',
-    bio: wholesaler?.bio || ''
-  });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSave(formData);
-    onClose();
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-md rounded-lg bg-background p-6 shadow-xl max-h-[90vh] overflow-y-auto">
-        <h2 className="mb-4 text-xl font-semibold">
-          {wholesaler ? 'Modifier Grossiste' : 'Ajouter Grossiste'}
-        </h2>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <label htmlFor="name" className="block text-sm font-medium">
-              Nom
-            </label>
-            <Input
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="email" className="block text-sm font-medium">
-              Email
-            </label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="phone" className="block text-sm font-medium">
-              Téléphone
-            </label>
-            <Input
-              id="phone"
-              name="phone"
-              type="tel"
-              value={formData.phone}
-              onChange={handleChange}
-              placeholder="+221 78 123 4567"
-              required
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="role" className="block text-sm font-medium">
-              Rôle
-            </label>
-            <select
-              id="role"
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              required
-            >
-              <option value="superadmin">Super Admin</option>
-              <option value="marketing">Marketing</option>
-              <option value="technical">Technique</option>
-            </select>
-          </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="assignedSiteId" className="block text-sm font-medium">
-              Site Assigné
-            </label>
-            <select
-              id="assignedSiteId"
-              name="assignedSiteId"
-              value={formData.assignedSiteId}
-              onChange={handleChange}
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              <option value="">-- Sélectionner un site --</option>
-              {sites.map(site => (
-                <option key={site.id} value={site.id}>
-                  {site.name} ({site.location})
-                </option>
-              ))}
-            </select>
-          </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="bio" className="block text-sm font-medium">
-              Bio
-            </label>
-            <textarea
-              id="bio"
-              name="bio"
-              value={formData.bio}
-              onChange={handleChange}
-              className="w-full min-h-[100px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            />
-          </div>
-          
-          <div className="mt-6 flex justify-end space-x-3">
-            <Button variant="outline" type="button" onClick={onClose}>
-              Annuler
-            </Button>
-            <Button type="submit">
-              {wholesaler ? 'Mettre à jour' : 'Ajouter'}
-            </Button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-};
-
-// Main Wholesalers component
-const SuperAdminWholesalers: React.FC = () => {
-  const [wholesalers, setWholesalers] = useState<UserData[]>(() => 
-    mockWholesalers.map(user => ({
-      ...user,
-      revenue: Math.floor(Math.random() * 3000000) + 500000,
-      users: Math.floor(Math.random() * 1500) + 250,
-      totalIssues: Math.floor(Math.random() * 15) + 5,
-      resolvedIssues: Math.floor(Math.random() * 10) + 2,
-      assignedSiteId: ['1', '2', '3', '4', '5'][Math.floor(Math.random() * 5)]
-    }))
-  );
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
-  const [currentWholesaler, setCurrentWholesaler] = useState<UserData | undefined>(undefined);
-  const [selectedWholesaler, setSelectedWholesaler] = useState<UserData | undefined>(undefined);
-  const { toast } = useToast();
-  const { user } = useAuth();
-
-  // Get top wholesalers by revenue for chart
-  const topWholesalers = [...wholesalers]
-    .sort((a, b) => (b.revenue || 0) - (a.revenue || 0))
-    .slice(0, 5);
-
-  // Filter wholesalers based on search term
-  const filteredWholesalers = wholesalers.filter(wholesaler => 
-    wholesaler.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    wholesaler.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  // Handle modal save
-  const handleSaveWholesaler = (wholesalerData: Partial<UserData>) => {
-    if (currentWholesaler) {
-      // Edit existing wholesaler
-      const updatedWholesalers = wholesalers.map(w => 
-        w.id === currentWholesaler.id ? { ...w, ...wholesalerData } : w
-      );
-      setWholesalers(updatedWholesalers);
-      toast({ 
-        title: "Grossiste modifié", 
-        description: `${wholesalerData.name} a été mis à jour avec succès.` 
-      });
-    } else {
-      // Create new wholesaler
-      const newWholesaler: UserData = {
-        id: (wholesalers.length + 1).toString(),
-        name: wholesalerData.name || '',
-        email: wholesalerData.email || '',
-        role: (wholesalerData.role as 'superadmin' | 'marketing' | 'technical') || 'technical',
-        lastActive: new Date().toISOString(),
-        status: 'active',
-        avatar: `https://i.pravatar.cc/150?img=${wholesalers.length + 10}`,
-        phone: wholesalerData.phone,
-        assignedSiteId: wholesalerData.assignedSiteId,
-        bio: wholesalerData.bio,
-        revenue: Math.floor(Math.random() * 3000000) + 500000,
-        users: Math.floor(Math.random() * 1500) + 250,
-        totalIssues: Math.floor(Math.random() * 15) + 5,
-        resolvedIssues: Math.floor(Math.random() * 10) + 2,
-      };
-      
-      setWholesalers([...wholesalers, newWholesaler]);
-      toast({ 
-        title: "Grossiste ajouté", 
-        description: `${newWholesaler.name} a été ajouté avec succès.` 
-      });
-    }
-  };
-
-  // Handle wholesaler edit
-  const handleEditWholesaler = (wholesaler: UserData) => {
-    setCurrentWholesaler(wholesaler);
-    setIsModalOpen(true);
-  };
-
-  // Handle wholesaler delete
-  const handleDeleteWholesaler = (id: string) => {
-    setWholesalers(wholesalers.filter(wholesaler => wholesaler.id !== id));
-    toast({ 
-      title: "Grossiste supprimé", 
-      description: "Le grossiste a été supprimé avec succès." 
-    });
-  };
-
-  // Handle wholesaler status toggle
-  const handleToggleStatus = (id: string) => {
-    setWholesalers(wholesalers.map(wholesaler => 
-      wholesaler.id === id
-        ? { ...wholesaler, status: wholesaler.status === 'active' ? 'inactive' : 'active' }
-        : wholesaler
-    ));
-    
-    const wholesaler = wholesalers.find(w => w.id === id);
-    const newStatus = wholesaler?.status === 'active' ? 'inactive' : 'active';
-    
-    toast({
-      title: `Grossiste ${newStatus === 'active' ? 'activé' : 'suspendu'}`,
-      description: `Le compte de ${wholesaler?.name} a été ${newStatus === 'active' ? 'activé' : 'suspendu'}.`,
-      variant: newStatus === 'active' ? 'default' : 'destructive'
-    });
-  };
-
-  // Handle viewing wholesaler profile
-  const handleViewProfile = (wholesaler: UserData) => {
-    setSelectedWholesaler(wholesaler);
-    setIsProfileModalOpen(true);
-  };
-
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="dashboard-title">Gestion des Grossistes</h1>
-        {user?.role === 'superadmin' && (
-          <Button onClick={() => {
-            setCurrentWholesaler(undefined);
-            setIsModalOpen(true);
-          }}>
-            <Plus size={16} className="mr-2" />
-            Ajouter Grossiste
+      <div className="flex items-center gap-4">
+        <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
+          <User size={32} className="text-primary" />
+        </div>
+        <div>
+          <h2 className="text-xl font-semibold">{wholesaler.name}</h2>
+          <p className="text-muted-foreground">{wholesaler.role === 'technical' ? 'Grossiste' : wholesaler.role}</p>
+        </div>
+        <div className="ml-auto flex gap-2">
+          <Button variant="outline" size="sm">
+            <Mail size={16} className="mr-2" />
+            Email
           </Button>
-        )}
+          <Button variant="outline" size="sm">
+            <Phone size={16} className="mr-2" />
+            Appeler
+          </Button>
+          <Button size="sm">
+            <User size={16} className="mr-2" />
+            Profil
+          </Button>
+        </div>
       </div>
       
-      {/* Wholesaler charts */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* Top Wholesalers by Revenue */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
-          <CardHeader>
-            <CardTitle>Top 5 Grossistes par Revenu</CardTitle>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">Site Assigné</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-[250px]">
-              <ChartComponent
-                type="bar"
-                data={{
-                  labels: topWholesalers.map(w => w.name),
-                  datasets: [{
-                    label: 'Revenu (FCFA)',
-                    data: topWholesalers.map(w => w.revenue || 0),
-                    backgroundColor: 'rgba(16, 185, 129, 0.7)'
-                  }]
-                }}
-                options={{
-                  indexAxis: 'y',
-                  plugins: {
-                    legend: {
-                      display: false
-                    }
-                  },
-                  scales: {
-                    x: {
-                      ticks: {
-                        callback: function(value) {
-                          return (value as number).toLocaleString() + ' FCFA';
-                        }
-                      }
-                    }
-                  }
-                }}
-                height={250}
-              />
-            </div>
+            <p className="text-2xl font-semibold">{assignedSite}</p>
           </CardContent>
         </Card>
         
-        {/* Wholesaler Distribution by Site */}
         <Card>
-          <CardHeader>
-            <CardTitle>Distribution des Grossistes par Site</CardTitle>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">Revenu Total</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-[250px]">
-              <ChartComponent
-                type="doughnut"
-                data={{
-                  labels: sites.map(site => site.name),
-                  datasets: [{
-                    label: 'Grossistes',
-                    data: sites.map(site => 
-                      wholesalers.filter(w => w.assignedSiteId === site.id).length
-                    ),
-                    backgroundColor: [
-                      'rgba(37, 99, 235, 0.7)',
-                      'rgba(239, 68, 68, 0.7)',
-                      'rgba(16, 185, 129, 0.7)',
-                      'rgba(245, 158, 11, 0.7)',
-                      'rgba(139, 92, 246, 0.7)',
-                      'rgba(236, 72, 153, 0.7)',
-                      'rgba(14, 165, 233, 0.7)'
-                    ]
-                  }]
-                }}
-                options={{
-                  plugins: {
-                    legend: {
-                      position: 'bottom'
-                    }
-                  }
-                }}
-                height={250}
-              />
-            </div>
+            <p className="text-2xl font-semibold">{wholesaler.revenue?.toLocaleString()} FCFA</p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">Utilisateurs</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-semibold">{wholesaler.users || 0}</p>
           </CardContent>
         </Card>
       </div>
       
       <Card>
-        <CardHeader className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-          <CardTitle>Grossistes</CardTitle>
-          <div className="relative w-full max-w-sm">
-            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Rechercher les grossistes..."
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
+        <CardHeader>
+          <CardTitle>Informations Personnelles</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Nom</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Téléphone</TableHead>
-                  <TableHead>Site Assigné</TableHead>
-                  <TableHead>Revenu</TableHead>
-                  <TableHead>Performance</TableHead>
-                  <TableHead>Statut</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredWholesalers.map((wholesaler) => {
-                  const performanceScore = calculatePerformanceScore(wholesaler);
-                  const assignedSite = sites.find(site => site.id === wholesaler.assignedSiteId);
-                  
-                  return (
-                    <TableRow key={wholesaler.id}>
-                      <TableCell>
-                        <div className="flex items-center space-x-3">
-                          <div className="h-8 w-8 overflow-hidden rounded-full">
-                            {wholesaler.avatar && (
-                              <img 
-                                src={wholesaler.avatar}
-                                alt={wholesaler.name}
-                                className="h-full w-full object-cover"
-                              />
-                            )}
-                          </div>
-                          {wholesaler.name}
-                        </div>
-                      </TableCell>
-                      <TableCell>{wholesaler.email}</TableCell>
-                      <TableCell>{wholesaler.phone || "+221 78 123 4567"}</TableCell>
-                      <TableCell>{assignedSite ? assignedSite.name : "--"}</TableCell>
-                      <TableCell>{(wholesaler.revenue || 0).toLocaleString()} FCFA</TableCell>
-                      <TableCell>
-                        <div className="flex items-center space-x-2">
-                          <div className="h-2 w-16 rounded-full bg-muted overflow-hidden">
-                            <div 
-                              className={`h-full ${
-                                performanceScore >= 80 ? 'bg-success' : 
-                                performanceScore >= 60 ? 'bg-warning' : 'bg-danger'
-                              }`}
-                              style={{ width: `${performanceScore}%` }}
-                            ></div>
-                          </div>
-                          <span>{performanceScore}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <span 
-                          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
-                            ${wholesaler.status === 'active' 
-                              ? 'bg-success/20 text-success' 
-                              : 'bg-danger/20 text-danger'}`}
-                        >
-                          {wholesaler.status === 'active' ? 'Actif' : 'Suspendu'}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex space-x-2">
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            onClick={() => handleViewProfile(wholesaler)}
-                          >
-                            <ExternalLink size={14} />
-                          </Button>
-                          {user?.role === 'superadmin' && (
-                            <>
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
-                                onClick={() => handleEditWholesaler(wholesaler)}
-                              >
-                                <Edit size={14} />
-                              </Button>
-                              <Button 
-                                variant={wholesaler.status === 'active' ? 'destructive' : 'default'}
-                                size="sm" 
-                                onClick={() => handleToggleStatus(wholesaler.id)}
-                              >
-                                {wholesaler.status === 'active' ? 'Suspendre' : 'Activer'}
-                              </Button>
-                              <Button 
-                                variant="destructive" 
-                                size="sm" 
-                                onClick={() => handleDeleteWholesaler(wholesaler.id)}
-                              >
-                                <Trash size={14} />
-                              </Button>
-                            </>
-                          )}
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Nom Complet</p>
+                <p>{wholesaler.name}</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Email</p>
+                <p>{wholesaler.email}</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Téléphone</p>
+                <p>{wholesaler.phone || 'Non renseigné'}</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Dernière Activité</p>
+                <p>{lastActive}</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Statut</p>
+                <p>
+                  <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
+                    ${wholesaler.status === 'active' ? 'bg-success/20 text-success' : 'bg-destructive/20 text-destructive'}`}
+                  >
+                    {wholesaler.status === 'active' ? 'Actif' : 'Inactif'}
+                  </span>
+                </p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Problèmes</p>
+                <p>{wholesaler.resolvedIssues || 0} résolus sur {wholesaler.totalIssues || 0}</p>
+              </div>
+            </div>
+            
+            {wholesaler.bio && (
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Biographie</p>
+                <p className="text-sm">{wholesaler.bio}</p>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
       
-      {/* Wholesaler Modal */}
-      <WholesalerModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        wholesaler={currentWholesaler}
-        onSave={handleSaveWholesaler}
-      />
+      <Card>
+        <CardHeader className="pb-0">
+          <CardTitle>Performance</CardTitle>
+          <CardDescription>Revenu sur les 3 derniers mois</CardDescription>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <div className="h-[200px]">
+            {/* Placeholder chart - In a real app, you would use actual data */}
+            <ChartComponent
+              type="line"
+              data={{
+                labels: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin'],
+                datasets: [
+                  {
+                    label: 'Revenu (FCFA)',
+                    data: [350000, 410000, 380000, 450000, 420000, wholesaler.revenue || 0],
+                    borderColor: 'rgba(37, 99, 235, 0.7)',
+                    backgroundColor: 'rgba(37, 99, 235, 0.05)',
+                    fill: true,
+                    tension: 0.4
+                  }
+                ]
+              }}
+              height={200}
+            />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+const WholesalersTable = ({ 
+  wholesalers, 
+  onSelect,
+  onEdit,
+  onDelete
+}: { 
+  wholesalers: UserData[],
+  onSelect: (wholesaler: UserData) => void,
+  onEdit: (wholesaler: UserData) => void,
+  onDelete: (id: string) => void
+}) => {
+  const [searchTerm, setSearchTerm] = useState("");
+  
+  // Filter wholesalers based on search term
+  const filteredWholesalers = wholesalers.filter(
+    w => w.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+         w.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
+  return (
+    <Card className="w-full">
+      <CardHeader className="pb-0">
+        <div className="flex items-center justify-between">
+          <CardTitle>Grossistes</CardTitle>
+          <div className="relative w-64">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder="Rechercher..."
+              className="pl-8"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="p-0">
+        <div className="rounded-md border mt-4">
+          <table className="w-full text-sm">
+            <thead className="bg-muted/50">
+              <tr>
+                <th className="p-3 text-left">Nom</th>
+                <th className="p-3 text-left">Email</th>
+                <th className="p-3 text-left">Site</th>
+                <th className="p-3 text-left">Statut</th>
+                <th className="p-3 text-left">Revenu</th>
+                <th className="p-3 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredWholesalers.length > 0 ? (
+                filteredWholesalers.map((wholesaler) => {
+                  // Find site name if assigned
+                  const siteName = wholesaler.assignedSiteId
+                    ? sites.find(site => site.id === wholesaler.assignedSiteId)?.name || 'Site inconnu'
+                    : '-';
+                  
+                  return (
+                    <tr key={wholesaler.id} className="border-t">
+                      <td className="p-3 cursor-pointer" onClick={() => onSelect(wholesaler)}>
+                        <div className="font-medium">{wholesaler.name}</div>
+                      </td>
+                      <td className="p-3">{wholesaler.email}</td>
+                      <td className="p-3">{siteName}</td>
+                      <td className="p-3">
+                        <span 
+                          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
+                          ${wholesaler.status === 'active' ? 'bg-success/20 text-success' : 'bg-destructive/20 text-destructive'}`}
+                        >
+                          {wholesaler.status === 'active' ? 'Actif' : 'Inactif'}
+                        </span>
+                      </td>
+                      <td className="p-3">{wholesaler.revenue?.toLocaleString()} FCFA</td>
+                      <td className="p-3">
+                        <div className="flex justify-center gap-2">
+                          <Button 
+                            variant="ghost" 
+                            size="icon"
+                            onClick={() => onSelect(wholesaler)}
+                          >
+                            <ExternalLink size={14} />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="icon"
+                            onClick={() => onEdit(wholesaler)}
+                          >
+                            <Edit size={14} />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="icon"
+                            className="text-destructive hover:text-destructive/80"
+                            onClick={() => onDelete(wholesaler.id)}
+                          >
+                            <Trash size={14} />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan={6} className="p-6 text-center text-muted-foreground">
+                    Aucun grossiste trouvé avec le terme de recherche
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+interface WholesalerFormData {
+  name: string;
+  email: string;
+  phone: string;
+  assignedSiteId: string;
+  status: 'active' | 'inactive';
+  bio: string;
+}
+
+const SuperAdminWholesalers: React.FC = () => {
+  const [activeTab, setActiveTab] = useState("list");
+  const [selectedWholesaler, setSelectedWholesaler] = useState<UserData | null>(null);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [toDeleteId, setToDeleteId] = useState<string | null>(null);
+  
+  const { user } = useAuth();
+  
+  const [formData, setFormData] = useState<WholesalerFormData>({
+    name: '',
+    email: '',
+    phone: '',
+    assignedSiteId: '',
+    status: 'active',
+    bio: ''
+  });
+  
+  const handleSelectWholesaler = (wholesaler: UserData) => {
+    setSelectedWholesaler(wholesaler);
+    setActiveTab("detail");
+  };
+  
+  const handleEditWholesaler = (wholesaler: UserData) => {
+    setFormData({
+      name: wholesaler.name,
+      email: wholesaler.email,
+      phone: wholesaler.phone || '',
+      assignedSiteId: wholesaler.assignedSiteId || '',
+      status: wholesaler.status,
+      bio: wholesaler.bio || ''
+    });
+    setIsAddDialogOpen(true);
+  };
+  
+  const handleOpenDeleteDialog = (id: string) => {
+    setToDeleteId(id);
+    setIsDeleteDialogOpen(true);
+  };
+  
+  const handleDeleteWholesaler = () => {
+    if (!toDeleteId) return;
+    
+    // In a real app, this would involve an API call
+    console.log(`Deleting wholesaler with ID ${toDeleteId}`);
+    
+    setIsDeleteDialogOpen(false);
+    setToDeleteId(null);
+  };
+  
+  const handleAddWholesaler = () => {
+    // In a real app, this would be an API call
+    console.log("Adding new wholesaler:", formData);
+    
+    setIsAddDialogOpen(false);
+    setFormData({
+      name: '',
+      email: '',
+      phone: '',
+      assignedSiteId: '',
+      status: 'active',
+      bio: ''
+    });
+  };
+  
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">Gestion des Grossistes</h1>
+        <Button onClick={() => setIsAddDialogOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" />
+          Ajouter un grossiste
+        </Button>
+      </div>
       
-      {/* Profile Modal */}
-      {selectedWholesaler && (
-        <WholesalerProfileModal
-          isOpen={isProfileModalOpen}
-          onClose={() => setIsProfileModalOpen(false)}
-          wholesaler={selectedWholesaler}
-        />
-      )}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="mb-4">
+          <TabsTrigger value="list">Liste des grossistes</TabsTrigger>
+          {selectedWholesaler && (
+            <TabsTrigger value="detail">Détails du grossiste</TabsTrigger>
+          )}
+        </TabsList>
+        
+        <TabsContent value="list" className="w-full">
+          <WholesalersTable 
+            wholesalers={mockWholesalers}
+            onSelect={handleSelectWholesaler}
+            onEdit={handleEditWholesaler}
+            onDelete={handleOpenDeleteDialog}
+          />
+        </TabsContent>
+        
+        <TabsContent value="detail">
+          {selectedWholesaler && <WholesalerDetail wholesaler={selectedWholesaler} />}
+        </TabsContent>
+      </Tabs>
+      
+      {/* Add/Edit Wholesaler Dialog */}
+      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Ajouter un grossiste</DialogTitle>
+            <DialogDescription>
+              Remplissez les champs pour ajouter un nouveau grossiste au système.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Nom complet</Label>
+                <Input 
+                  id="name" 
+                  value={formData.name} 
+                  onChange={e => setFormData({...formData, name: e.target.value})}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input 
+                  id="email" 
+                  type="email" 
+                  value={formData.email} 
+                  onChange={e => setFormData({...formData, email: e.target.value})}
+                />
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="phone">Téléphone</Label>
+                <Input 
+                  id="phone" 
+                  value={formData.phone} 
+                  onChange={e => setFormData({...formData, phone: e.target.value})}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="site">Site assigné</Label>
+                <Select 
+                  value={formData.assignedSiteId} 
+                  onValueChange={(value) => setFormData({...formData, assignedSiteId: value})}
+                >
+                  <SelectTrigger id="site">
+                    <SelectValue placeholder="Sélectionner un site" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {sites.map(site => (
+                      <SelectItem key={site.id} value={site.id}>
+                        {site.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="status">Statut</Label>
+              <Select 
+                value={formData.status} 
+                onValueChange={(value: 'active' | 'inactive') => setFormData({...formData, status: value})}
+              >
+                <SelectTrigger id="status">
+                  <SelectValue placeholder="Sélectionner un statut" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="active">Actif</SelectItem>
+                  <SelectItem value="inactive">Inactif</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="bio">Bio / Notes</Label>
+              <Input 
+                id="bio" 
+                value={formData.bio} 
+                onChange={e => setFormData({...formData, bio: e.target.value})}
+              />
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+              Annuler
+            </Button>
+            <Button onClick={handleAddWholesaler}>
+              Enregistrer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Confirmer la suppression</DialogTitle>
+            <DialogDescription>
+              Êtes-vous sûr de vouloir supprimer ce grossiste ? Cette action ne peut pas être annulée.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
+              Annuler
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteWholesaler}>
+              Supprimer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
