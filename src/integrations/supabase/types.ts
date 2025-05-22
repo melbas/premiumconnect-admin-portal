@@ -9,6 +9,231 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      ad_videos: {
+        Row: {
+          active: boolean | null
+          created_at: string | null
+          id: string
+          min_view_percentage: number | null
+          priority: number | null
+          skip_after_seconds: number | null
+          thumbnail_url: string | null
+          title: string
+          updated_at: string | null
+          video_url: string
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string | null
+          id?: string
+          min_view_percentage?: number | null
+          priority?: number | null
+          skip_after_seconds?: number | null
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string | null
+          video_url: string
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string | null
+          id?: string
+          min_view_percentage?: number | null
+          priority?: number | null
+          skip_after_seconds?: number | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string | null
+          video_url?: string
+        }
+        Relationships: []
+      }
+      auth_config: {
+        Row: {
+          auto_disconnect: boolean | null
+          created_at: string | null
+          email_enabled: boolean | null
+          id: string
+          max_attempts: number | null
+          referral_enabled: boolean | null
+          session_duration_minutes: number | null
+          sms_enabled: boolean | null
+          timeout_seconds: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          auto_disconnect?: boolean | null
+          created_at?: string | null
+          email_enabled?: boolean | null
+          id?: string
+          max_attempts?: number | null
+          referral_enabled?: boolean | null
+          session_duration_minutes?: number | null
+          sms_enabled?: boolean | null
+          timeout_seconds?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          auto_disconnect?: boolean | null
+          created_at?: string | null
+          email_enabled?: boolean | null
+          id?: string
+          max_attempts?: number | null
+          referral_enabled?: boolean | null
+          session_duration_minutes?: number | null
+          sms_enabled?: boolean | null
+          timeout_seconds?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      games: {
+        Row: {
+          active: boolean | null
+          category: string | null
+          config: Json | null
+          created_at: string | null
+          description: string | null
+          game_type: string
+          id: string
+          minutes_reward: number | null
+          points_reward: number | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          category?: string | null
+          config?: Json | null
+          created_at?: string | null
+          description?: string | null
+          game_type: string
+          id?: string
+          minutes_reward?: number | null
+          points_reward?: number | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          category?: string | null
+          config?: Json | null
+          created_at?: string | null
+          description?: string | null
+          game_type?: string
+          id?: string
+          minutes_reward?: number | null
+          points_reward?: number | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      loyalty_levels: {
+        Row: {
+          benefits: Json | null
+          color: string | null
+          created_at: string | null
+          id: string
+          min_points: number
+          name: string
+        }
+        Insert: {
+          benefits?: Json | null
+          color?: string | null
+          created_at?: string | null
+          id?: string
+          min_points: number
+          name: string
+        }
+        Update: {
+          benefits?: Json | null
+          color?: string | null
+          created_at?: string | null
+          id?: string
+          min_points?: number
+          name?: string
+        }
+        Relationships: []
+      }
+      payment_methods: {
+        Row: {
+          active: boolean | null
+          commission_percentage: number | null
+          config: Json | null
+          created_at: string | null
+          id: string
+          name: string
+          provider: string
+          updated_at: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          commission_percentage?: number | null
+          config?: Json | null
+          created_at?: string | null
+          id?: string
+          name: string
+          provider: string
+          updated_at?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          commission_percentage?: number | null
+          config?: Json | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          provider?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      portal_config: {
+        Row: {
+          available_languages: Json | null
+          bandwidth_limit_kbps: number | null
+          created_at: string | null
+          custom_css: string | null
+          default_language: string | null
+          id: string
+          logo_url: string | null
+          redirect_url: string | null
+          success_message: string | null
+          theme_color: string | null
+          updated_at: string | null
+          welcome_message: string | null
+        }
+        Insert: {
+          available_languages?: Json | null
+          bandwidth_limit_kbps?: number | null
+          created_at?: string | null
+          custom_css?: string | null
+          default_language?: string | null
+          id?: string
+          logo_url?: string | null
+          redirect_url?: string | null
+          success_message?: string | null
+          theme_color?: string | null
+          updated_at?: string | null
+          welcome_message?: string | null
+        }
+        Update: {
+          available_languages?: Json | null
+          bandwidth_limit_kbps?: number | null
+          created_at?: string | null
+          custom_css?: string | null
+          default_language?: string | null
+          id?: string
+          logo_url?: string | null
+          redirect_url?: string | null
+          success_message?: string | null
+          theme_color?: string | null
+          updated_at?: string | null
+          welcome_message?: string | null
+        }
+        Relationships: []
+      }
       portal_statistics: {
         Row: {
           date: string | null
@@ -39,35 +264,342 @@ export type Database = {
         }
         Relationships: []
       }
+      quiz_options: {
+        Row: {
+          id: string
+          is_correct: boolean | null
+          option_text: string
+          order_num: number | null
+          question_id: string | null
+        }
+        Insert: {
+          id?: string
+          is_correct?: boolean | null
+          option_text: string
+          order_num?: number | null
+          question_id?: string | null
+        }
+        Update: {
+          id?: string
+          is_correct?: boolean | null
+          option_text?: string
+          order_num?: number | null
+          question_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_options_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quiz_questions: {
+        Row: {
+          created_at: string | null
+          id: string
+          order_num: number | null
+          question: string
+          question_type: string
+          quiz_id: string | null
+          required: boolean | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          order_num?: number | null
+          question: string
+          question_type?: string
+          quiz_id?: string | null
+          required?: boolean | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          order_num?: number | null
+          question?: string
+          question_type?: string
+          quiz_id?: string | null
+          required?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_questions_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "quizzes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quizzes: {
+        Row: {
+          active: boolean | null
+          created_at: string | null
+          description: string | null
+          id: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          code: string | null
+          completed_at: string | null
+          created_at: string | null
+          id: string
+          referred_id: string | null
+          referred_reward: number | null
+          referrer_id: string | null
+          referrer_reward: number | null
+          status: string | null
+        }
+        Insert: {
+          code?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          referred_id?: string | null
+          referred_reward?: number | null
+          referrer_id?: string | null
+          referrer_reward?: number | null
+          status?: string | null
+        }
+        Update: {
+          code?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          referred_id?: string | null
+          referred_reward?: number | null
+          referrer_id?: string | null
+          referrer_reward?: number | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_referred_id_fkey"
+            columns: ["referred_id"]
+            isOneToOne: false
+            referencedRelation: "wifi_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_referrer_id_fkey"
+            columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "wifi_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rewards: {
+        Row: {
+          active: boolean | null
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          points_cost: number
+          reward_type: string
+          value: string
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          points_cost: number
+          reward_type: string
+          value: string
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          points_cost?: number
+          reward_type?: string
+          value?: string
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          amount: number
+          completed_at: string | null
+          created_at: string | null
+          id: string
+          payment_method_id: string | null
+          plan_id: string | null
+          status: string
+          transaction_reference: string | null
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          payment_method_id?: string | null
+          plan_id?: string | null
+          status: string
+          transaction_reference?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          payment_method_id?: string | null
+          plan_id?: string | null
+          status?: string
+          transaction_reference?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_payment_method_id_fkey"
+            columns: ["payment_method_id"]
+            isOneToOne: false
+            referencedRelation: "payment_methods"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "wifi_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "wifi_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wifi_plans: {
+        Row: {
+          active: boolean | null
+          created_at: string | null
+          description: string | null
+          duration_minutes: number
+          id: string
+          is_family_plan: boolean | null
+          is_subscription: boolean | null
+          max_members: number | null
+          name: string
+          price: number
+          recurring_interval: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string | null
+          description?: string | null
+          duration_minutes: number
+          id?: string
+          is_family_plan?: boolean | null
+          is_subscription?: boolean | null
+          max_members?: number | null
+          name: string
+          price: number
+          recurring_interval?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string | null
+          description?: string | null
+          duration_minutes?: number
+          id?: string
+          is_family_plan?: boolean | null
+          is_subscription?: boolean | null
+          max_members?: number | null
+          name?: string
+          price?: number
+          recurring_interval?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       wifi_sessions: {
         Row: {
+          device_info: Json | null
           duration_minutes: number | null
           engagement_data: Json | null
           engagement_type: string | null
           id: string
           is_active: boolean | null
+          plan_id: string | null
           started_at: string | null
+          transaction_id: string | null
           user_id: string | null
         }
         Insert: {
+          device_info?: Json | null
           duration_minutes?: number | null
           engagement_data?: Json | null
           engagement_type?: string | null
           id?: string
           is_active?: boolean | null
+          plan_id?: string | null
           started_at?: string | null
+          transaction_id?: string | null
           user_id?: string | null
         }
         Update: {
+          device_info?: Json | null
           duration_minutes?: number | null
           engagement_data?: Json | null
           engagement_type?: string | null
           id?: string
           is_active?: boolean | null
+          plan_id?: string | null
           started_at?: string | null
+          transaction_id?: string | null
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "wifi_sessions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "wifi_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wifi_sessions_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "transactions"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "wifi_sessions_user_id_fkey"
             columns: ["user_id"]
@@ -82,31 +614,46 @@ export type Database = {
           auth_method: string
           created_at: string | null
           email: string | null
+          family_id: string | null
+          family_role: string | null
           id: string
           last_connection: string | null
+          loyalty_points: number | null
           mac_address: string | null
           name: string | null
           phone: string | null
+          preferences: Json | null
+          referral_code: string | null
         }
         Insert: {
           auth_method: string
           created_at?: string | null
           email?: string | null
+          family_id?: string | null
+          family_role?: string | null
           id?: string
           last_connection?: string | null
+          loyalty_points?: number | null
           mac_address?: string | null
           name?: string | null
           phone?: string | null
+          preferences?: Json | null
+          referral_code?: string | null
         }
         Update: {
           auth_method?: string
           created_at?: string | null
           email?: string | null
+          family_id?: string | null
+          family_role?: string | null
           id?: string
           last_connection?: string | null
+          loyalty_points?: number | null
           mac_address?: string | null
           name?: string | null
           phone?: string | null
+          preferences?: Json | null
+          referral_code?: string | null
         }
         Relationships: []
       }

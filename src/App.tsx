@@ -65,6 +65,16 @@ const AppContent = () => {
           } 
         />
 
+        {/* Captive Portal Routes */}
+        <Route 
+          path="/captive-portal" 
+          element={
+            <ProtectedRoute allowedRoles={['superadmin', 'technical', 'marketing']}>
+              <SuperAdminDashboard initialTab="captive-portal" />
+            </ProtectedRoute>
+          } 
+        />
+
         {/* Show unauthorized message */}
         <Route path="/unauthorized" element={
           <div className="flex h-screen items-center justify-center bg-background flex-col gap-4">

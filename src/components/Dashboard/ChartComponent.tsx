@@ -14,7 +14,8 @@ import {
   DoughnutController,
   ArcElement,
   Title,
-  ChartTypeRegistry
+  ChartTypeRegistry,
+  ChartType
 } from 'chart.js';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -188,7 +189,7 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
     const ctx = chartRef.current.getContext('2d');
     if (ctx) {
       chartInstance.current = new ChartJS(ctx, {
-        type: type as keyof ChartTypeRegistry,
+        type: type as ChartType,
         data: data as any,
         options: { ...getDefaultOptions(), ...options },
       });
@@ -200,7 +201,7 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
         chartInstance.current.destroy();
         if (ctx) {
           chartInstance.current = new ChartJS(ctx, {
-            type: type as keyof ChartTypeRegistry,
+            type: type as ChartType,
             data: data as any,
             options: { ...getDefaultOptions(), ...options },
           });
