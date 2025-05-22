@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import AdminLayout from './AdminLayout';
+import AdminLayout, { AdminTab } from './AdminLayout';
 import SuperAdminOverview from './Tabs/SuperAdminOverview';
 import SuperAdminTechnical from './Tabs/SuperAdminTechnical';
 import SuperAdminMarketing from './Tabs/SuperAdminMarketing';
@@ -9,7 +8,6 @@ import SuperAdminUsers from './Tabs/SuperAdminUsers';
 import SuperAdminWholesalers from './Tabs/SuperAdminWholesalers';
 import SuperAdminSettings from './Tabs/SuperAdminSettings';
 import SuperAdminSites from './Tabs/SuperAdminSites';
-import { AdminTab } from './AdminLayout';
 
 interface SuperAdminDashboardProps {
   initialTab?: AdminTab | 'captive-portal';

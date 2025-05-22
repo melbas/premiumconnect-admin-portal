@@ -3,25 +3,35 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { vouchers, Voucher, voucherChartData } from '../mockData';
 import { 
-  Button, 
-  Dialog, 
+  Button,
+} from '@/components/ui/button';
+import {
+  Dialog,
   DialogTitle, 
   DialogDescription, 
   DialogHeader,
   DialogContent,
   DialogFooter,
+} from '@/components/ui/dialog';
+import {
   Tabs, 
   TabsList, 
   TabsTrigger, 
   TabsContent,
+} from '@/components/ui/tabs';
+import {
   Input,
+} from '@/components/ui/input';
+import {
   Label,
+} from '@/components/ui/label';
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue
-} from '@/components/ui';
+} from '@/components/ui/select';
 import { ChartComponent } from '@/components/Dashboard/Chart';
 import { Mail, Search, Plus, FilterX, Download, Trash } from 'lucide-react';
 
