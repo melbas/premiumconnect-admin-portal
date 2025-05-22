@@ -10,11 +10,16 @@ import Discussions from "@/components/Dashboard/Discussions";
 import Settings from "@/components/Dashboard/Settings";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
+import { useEventTracking } from "@/hooks/use-event-tracking";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [mounted, setMounted] = useState(false);
   const { isAuthenticated } = useAuth();
+  const { usePageViewTracking } = useEventTracking();
+  
+  // Track page view
+  usePageViewTracking('index-dashboard', { tab: activeTab });
 
   // Handle initial theme setup
   useEffect(() => {

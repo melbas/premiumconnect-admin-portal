@@ -67,7 +67,7 @@ const AppContent = () => {
           path="/technical" 
           element={
             <ProtectedRoute allowedRoles={['superadmin', 'technical']}>
-              <SuperAdminDashboard />
+              <SuperAdminDashboard initialTab="technical" />
             </ProtectedRoute>
           } 
         />
@@ -76,7 +76,7 @@ const AppContent = () => {
           path="/marketing" 
           element={
             <ProtectedRoute allowedRoles={['superadmin', 'marketing']}>
-              <SuperAdminDashboard />
+              <SuperAdminDashboard initialTab="marketing" />
             </ProtectedRoute>
           } 
         />
@@ -85,7 +85,7 @@ const AppContent = () => {
           path="/vouchers" 
           element={
             <ProtectedRoute allowedRoles={['superadmin', 'voucher_manager', 'technical']}>
-              <SuperAdminDashboard />
+              <SuperAdminDashboard initialTab="vouchers" />
             </ProtectedRoute>
           } 
         />
@@ -96,6 +96,16 @@ const AppContent = () => {
           element={
             <ProtectedRoute allowedRoles={['superadmin', 'technical', 'marketing']}>
               <SuperAdminDashboard initialTab="captive-portal" />
+            </ProtectedRoute>
+          } 
+        />
+
+        {/* Analytics Route */}
+        <Route 
+          path="/analytics" 
+          element={
+            <ProtectedRoute allowedRoles={['superadmin', 'marketing', 'technical']}>
+              <SuperAdminDashboard initialTab="analytics" />
             </ProtectedRoute>
           } 
         />

@@ -1,221 +1,178 @@
-
 import { supabase } from "@/integrations/supabase/client";
+import { format } from "date-fns";
 
-// Authentification
-export const getAuthConfig = async () => {
-  const { data, error } = await supabase.from('auth_config').select('*').single();
-  
-  if (error) {
-    console.error("Error fetching auth config:", error);
-    return null;
-  }
-  
-  return data;
-};
+// Keep existing types and interfaces
 
-// Statistiques du portail
-export const getPortalStatistics = async (startDate?: string, endDate?: string) => {
-  let query = supabase.from('portal_statistics').select('*');
-  
-  if (startDate) {
-    query = query.gte('date', startDate);
-  }
-  
-  if (endDate) {
-    query = query.lte('date', endDate);
-  }
-  
-  const { data, error } = await query.order('date', { ascending: true });
-  
-  if (error) {
-    console.error("Error fetching portal statistics:", error);
-    return [];
-  }
-  
-  return data;
-};
+export interface PortalStatistics {
+  id: string;
+  date: string;
+  total_connections: number;
+  video_views: number;
+  quiz_completions: number;
+  games_played: number;
+  leads_collected: number;
+  avg_session_duration: number;
+  game_completion_rate: number;
+  conversion_rate: number;
+  returning_users: number;
+}
 
-// Utilisateurs WiFi
-export const getWifiUsers = async (limit = 10, offset = 0) => {
-  const { data, error, count } = await supabase
-    .from('wifi_users')
-    .select('*', { count: 'exact' })
-    .range(offset, offset + limit - 1);
-  
-  if (error) {
-    console.error("Error fetching WiFi users:", error);
+// Get WiFi users with optional limit
+export async function getWifiUsers(limit = 10) {
+  try {
+    const { data: users, error } = await supabase
+      .from('wifi_users')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      console.error('Error fetching WiFi users:', error);
+      return { users: [], count: 0 };
+    }
+
+    const { count, error: countError } = await supabase
+      .from('wifi_users')
+      .select('*', { count: 'exact', head: true });
+
+    if (countError) {
+      console.error('Error counting WiFi users:', countError);
+    }
+
+    return { users: users || [], count: count || 0 };
+  } catch (error) {
+    console.error('Failed to fetch WiFi users:', error);
     return { users: [], count: 0 };
   }
-  
-  return { users: data, count };
-};
+}
 
-// Sessions WiFi
-export const getWifiSessions = async (limit = 10, offset = 0, userId?: string) => {
-  let query = supabase.from('wifi_sessions').select('*, wifi_users!inner(*)');
-  
-  if (userId) {
-    query = query.eq('user_id', userId);
-  }
-  
-  const { data, error, count } = await query
-    .order('started_at', { ascending: false })
-    .range(offset, offset + limit - 1);
-  
-  if (error) {
-    console.error("Error fetching WiFi sessions:", error);
-    return { sessions: [], count: 0 };
-  }
-  
-  return { sessions: data, count };
-};
+// Get portal statistics for a specified date range
+export async function getPortalStatistics(startDate?: string, endDate?: string) {
+  try {
+    let query = supabase
+      .from('portal_statistics')
+      .select('*')
+      .order('date', { ascending: true });
+    
+    if (startDate) {
+      query = query.gte('date', startDate);
+    }
+    
+    if (endDate) {
+      query = query.lte('date', endDate);
+    }
 
-// Vidéos publicitaires
-export const getAdVideos = async () => {
-  const { data, error } = await supabase
-    .from('ad_videos')
-    .select('*')
-    .order('priority', { ascending: false });
-  
-  if (error) {
-    console.error("Error fetching ad videos:", error);
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('Error fetching portal statistics:', error);
+      return [];
+    }
+
+    return data || [];
+  } catch (error) {
+    console.error('Failed to fetch portal statistics:', error);
     return [];
   }
-  
-  return data;
-};
+}
 
-// Quiz marketing
-export const getQuizzes = async (includeQuestions = false) => {
-  let query = supabase.from('quizzes').select('*');
-  
-  if (includeQuestions) {
-    query = supabase.from('quizzes').select(`
-      *,
-      quiz_questions(
-        *,
-        quiz_options(*)
-      )
-    `);
+// Increment a specific statistic for today
+export async function incrementStatistic(field: keyof PortalStatistics, amount = 1) {
+  try {
+    const today = format(new Date(), 'yyyy-MM-dd');
+    
+    // Try to get today's record
+    const { data: todayData, error: fetchError } = await supabase
+      .from('portal_statistics')
+      .select('*')
+      .eq('date', today)
+      .maybeSingle();
+    
+    if (fetchError) {
+      console.error('Error fetching today statistics:', fetchError);
+      return false;
+    }
+    
+    if (todayData) {
+      // Update existing record
+      const updateValue = typeof todayData[field] === 'number' 
+        ? (todayData[field] as number) + amount 
+        : amount;
+      
+      const { error: updateError } = await supabase
+        .from('portal_statistics')
+        .update({ [field]: updateValue })
+        .eq('id', todayData.id);
+      
+      if (updateError) {
+        console.error('Error updating statistic:', updateError);
+        return false;
+      }
+    } else {
+      // Create new record for today
+      const { error: insertError } = await supabase
+        .from('portal_statistics')
+        .insert({ date: today, [field]: amount });
+      
+      if (insertError) {
+        console.error('Error creating statistic:', insertError);
+        return false;
+      }
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Failed to increment statistic:', error);
+    return false;
   }
-  
-  const { data, error } = await query.order('created_at', { ascending: false });
-  
-  if (error) {
-    console.error("Error fetching quizzes:", error);
-    return [];
-  }
-  
-  return data;
-};
+}
 
-// Mini-jeux
-export const getGames = async () => {
-  const { data, error } = await supabase
-    .from('games')
-    .select('*')
-    .order('created_at', { ascending: false });
-  
-  if (error) {
-    console.error("Error fetching games:", error);
-    return [];
-  }
-  
-  return data;
-};
-
-// Niveaux de fidélité
-export const getLoyaltyLevels = async () => {
-  const { data, error } = await supabase
-    .from('loyalty_levels')
-    .select('*')
-    .order('min_points', { ascending: true });
-  
-  if (error) {
-    console.error("Error fetching loyalty levels:", error);
-    return [];
-  }
-  
-  return data;
-};
-
-// Récompenses
-export const getRewards = async () => {
-  const { data, error } = await supabase
-    .from('rewards')
-    .select('*')
-    .order('points_cost', { ascending: true });
-  
-  if (error) {
-    console.error("Error fetching rewards:", error);
-    return [];
-  }
-  
-  return data;
-};
-
-// Forfaits WiFi
-export const getWifiPlans = async () => {
-  const { data, error } = await supabase
-    .from('wifi_plans')
-    .select('*')
-    .order('price', { ascending: true });
-  
-  if (error) {
-    console.error("Error fetching WiFi plans:", error);
-    return [];
-  }
-  
-  return data;
-};
-
-// Méthodes de paiement
-export const getPaymentMethods = async () => {
-  const { data, error } = await supabase
-    .from('payment_methods')
-    .select('*');
-  
-  if (error) {
-    console.error("Error fetching payment methods:", error);
-    return [];
-  }
-  
-  return data;
-};
-
-// Transactions
-export const getTransactions = async (limit = 10, offset = 0, userId?: string) => {
-  let query = supabase.from('transactions').select(`
-    *,
-    wifi_users(*),
-    wifi_plans(*),
-    payment_methods(*)
-  `);
-  
-  if (userId) {
-    query = query.eq('user_id', userId);
-  }
-  
-  const { data, error, count } = await query
-    .order('created_at', { ascending: false })
-    .range(offset, offset + limit - 1);
-  
-  if (error) {
-    console.error("Error fetching transactions:", error);
-    return { transactions: [], count: 0 };
-  }
-  
-  return { transactions: data, count };
-};
-
-// Configuration du portail
-export const getPortalConfig = async () => {
-  const { data, error } = await supabase.from('portal_config').select('*').single();
-  
-  if (error) {
-    console.error("Error fetching portal config:", error);
+// Get aggregated user statistics
+export async function getAggregatedUserStats(days = 30) {
+  try {
+    const { data, error } = await supabase.rpc('get_user_stats', { days_back: days });
+    
+    if (error) {
+      console.error('Error getting aggregated user stats:', error);
+      return null;
+    }
+    
+    return data;
+  } catch (error) {
+    console.error('Failed to get aggregated user stats:', error);
     return null;
   }
+}
+
+// Get trends for a specific metric
+export async function getMetricTrend(metric: keyof PortalStatistics, days = 30) {
+  const startDate = format(new Date(Date.now() - days * 24 * 60 * 60 * 1000), 'yyyy-MM-dd');
+  const statistics = await getPortalStatistics(startDate);
   
-  return data;
-};
+  // Calculate trend
+  if (statistics.length > 1) {
+    const firstValue = statistics[0][metric] as number || 0;
+    const lastValue = statistics[statistics.length - 1][metric] as number || 0;
+    const trend = firstValue === 0 ? 100 : ((lastValue - firstValue) / firstValue) * 100;
+    
+    return {
+      data: statistics.map(stat => ({
+        date: stat.date,
+        value: stat[metric]
+      })),
+      trend,
+      firstValue,
+      lastValue
+    };
+  }
+  
+  return {
+    data: statistics.map(stat => ({
+      date: stat.date,
+      value: stat[metric]
+    })),
+    trend: 0,
+    firstValue: 0,
+    lastValue: 0
+  };
+}

@@ -87,6 +87,44 @@ export type Database = {
         }
         Relationships: []
       }
+      events: {
+        Row: {
+          created_at: string | null
+          device_info: Json | null
+          event_data: Json | null
+          event_name: string
+          event_type: string
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          device_info?: Json | null
+          event_data?: Json | null
+          event_name: string
+          event_type: string
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          device_info?: Json | null
+          event_data?: Json | null
+          event_name?: string
+          event_type?: string
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "wifi_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       games: {
         Row: {
           active: boolean | null
@@ -236,29 +274,41 @@ export type Database = {
       }
       portal_statistics: {
         Row: {
+          avg_session_duration: number | null
+          conversion_rate: number | null
           date: string | null
+          game_completion_rate: number | null
           games_played: number | null
           id: string
           leads_collected: number | null
           quiz_completions: number | null
+          returning_users: number | null
           total_connections: number | null
           video_views: number | null
         }
         Insert: {
+          avg_session_duration?: number | null
+          conversion_rate?: number | null
           date?: string | null
+          game_completion_rate?: number | null
           games_played?: number | null
           id?: string
           leads_collected?: number | null
           quiz_completions?: number | null
+          returning_users?: number | null
           total_connections?: number | null
           video_views?: number | null
         }
         Update: {
+          avg_session_duration?: number | null
+          conversion_rate?: number | null
           date?: string | null
+          game_completion_rate?: number | null
           games_played?: number | null
           id?: string
           leads_collected?: number | null
           quiz_completions?: number | null
+          returning_users?: number | null
           total_connections?: number | null
           video_views?: number | null
         }
@@ -502,6 +552,69 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_segment_memberships: {
+        Row: {
+          created_at: string | null
+          id: string
+          segment_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          segment_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          segment_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_segment_memberships_segment_id_fkey"
+            columns: ["segment_id"]
+            isOneToOne: false
+            referencedRelation: "user_segments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_segment_memberships_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "wifi_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_segments: {
+        Row: {
+          created_at: string | null
+          criteria: Json
+          description: string | null
+          id: string
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          criteria: Json
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          criteria?: Json
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       wifi_plans: {
         Row: {
