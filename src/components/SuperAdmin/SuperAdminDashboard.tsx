@@ -9,13 +9,14 @@ import SuperAdminUsers from './Tabs/SuperAdminUsers';
 import SuperAdminWholesalers from './Tabs/SuperAdminWholesalers';
 import SuperAdminSettings from './Tabs/SuperAdminSettings';
 import SuperAdminSites from './Tabs/SuperAdminSites';
+import { AdminTab } from './AdminLayout';
 
 interface SuperAdminDashboardProps {
-  initialTab?: string;
+  initialTab?: AdminTab | 'captive-portal';
 }
 
 const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ initialTab = 'overview' }) => {
-  const [activeTab, setActiveTab] = useState(initialTab);
+  const [activeTab, setActiveTab] = useState<AdminTab | 'captive-portal'>(initialTab as AdminTab);
   
   const renderTabContent = () => {
     switch (activeTab) {
@@ -43,7 +44,7 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ initialTab = 
   };
   
   return (
-    <AdminLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+    <AdminLayout activeTab={activeTab as AdminTab} setActiveTab={setActiveTab as (tab: AdminTab) => void}>
       {renderTabContent()}
     </AdminLayout>
   );

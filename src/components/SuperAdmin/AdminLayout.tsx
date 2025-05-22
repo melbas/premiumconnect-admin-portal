@@ -1,15 +1,14 @@
-
 import React, { useState, useEffect } from 'react';
 import SuperAdminSidebar from './SuperAdminSidebar';
 import SuperAdminHeader from './SuperAdminHeader';
 import { useAuth, UserRole } from '@/context/AuthContext';
 
 // Define tab types for navigation
-export type AdminTab = 'overview' | 'wholesalers' | 'sites' | 'marketing' | 'technical' | 'vouchers' | 'settings';
+export type AdminTab = 'overview' | 'wholesalers' | 'sites' | 'marketing' | 'technical' | 'vouchers' | 'users' | 'settings';
 
 // Define which roles can access which tabs
 export const rolePermissions: Record<UserRole, AdminTab[]> = {
-  superadmin: ['overview', 'wholesalers', 'sites', 'marketing', 'technical', 'vouchers', 'settings'],
+  superadmin: ['overview', 'wholesalers', 'sites', 'marketing', 'technical', 'vouchers', 'users', 'settings'],
   marketing: ['marketing', 'overview'],
   technical: ['technical', 'sites', 'overview'],
   voucher_manager: ['vouchers', 'overview']

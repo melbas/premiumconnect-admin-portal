@@ -317,7 +317,7 @@ export const overviewMetrics = [
 ];
 
 // Add revenue chart data
-export const revenueChartData = {
+export const revenueData = {
   labels: ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin"],
   datasets: [
     {
@@ -338,77 +338,202 @@ export const revenueChartData = {
   ]
 };
 
-// Add technical issues data with proper types
-export const technicalIssues = [
-  {
-    id: "T1",
-    description: "Instabilité réseau - Dakar Central",
-    siteId: "1",
-    siteName: "Dakar Central",
-    severity: "medium" as "low" | "medium" | "high" | "critical",
-    status: "open" as "open" | "in-progress" | "resolved",
-    reportedAt: "2023-04-28T09:15:00",
-    resolvedAt: null
-  },
-  {
-    id: "T2",
-    description: "Problème d'alimentation - Thiès Connect",
-    siteId: "2", 
-    siteName: "Thiès Connect",
-    severity: "high" as "low" | "medium" | "high" | "critical",
-    status: "in-progress" as "open" | "in-progress" | "resolved",
-    reportedAt: "2023-04-27T14:30:00",
-    resolvedAt: null
-  },
-  {
-    id: "T3",
-    description: "Interruption fibre - Saint-Louis WiFi",
-    siteId: "3",
-    siteName: "Saint-Louis WiFi",
-    severity: "critical" as "low" | "medium" | "high" | "critical",
-    status: "open" as "open" | "in-progress" | "resolved",
-    reportedAt: "2023-04-29T08:45:00",
-    resolvedAt: null
-  },
-  {
-    id: "T4", 
-    description: "Pic de latence - Ziguinchor Net",
-    siteId: "4",
-    siteName: "Ziguinchor Net",
-    severity: "low" as "low" | "medium" | "high" | "critical",
-    status: "resolved" as "open" | "in-progress" | "resolved",
-    reportedAt: "2023-04-25T10:20:00",
-    resolvedAt: "2023-04-26T11:30:00"
-  }
-];
-
-// Add uptime chart data
-export const uptimeChartData = {
-  labels: ["1", "5", "10", "15", "20", "25", "30"],
+// Add user growth data
+export const userGrowthData = {
+  labels: ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin"],
   datasets: [
     {
-      label: "Dakar Central",
-      data: [99.9, 99.8, 99.9, 99.7, 99.8, 99.9, 99.8],
-      borderColor: "rgba(37, 99, 235, 0.7)",
-      backgroundColor: "rgba(37, 99, 235, 0.1)",
-      fill: true,
-      tension: 0.3
-    },
-    {
-      label: "Thiès Connect",
-      data: [99.5, 98.9, 99.2, 98.7, 98.1, 98.4, 98.2],
-      borderColor: "rgba(239, 68, 68, 0.7)",
-      backgroundColor: "rgba(239, 68, 68, 0.1)",
-      fill: true,
-      tension: 0.3
-    },
-    {
-      label: "Saint-Louis WiFi",
-      data: [98.5, 97.9, 97.4, 97.8, 97.3, 97.6, 97.5],
+      label: 'Nouveaux utilisateurs',
+      data: [120, 150, 180, 210, 290, 350],
       borderColor: "rgba(16, 185, 129, 0.7)",
       backgroundColor: "rgba(16, 185, 129, 0.1)",
       fill: true,
       tension: 0.3
     }
   ]
+};
+
+// Add device usage data
+export const deviceUsageData = {
+  labels: ["Mobile", "Tablette", "Ordinateur", "Autre"],
+  datasets: [
+    {
+      label: "Utilisations par appareil",
+      data: [65, 20, 12, 3],
+      backgroundColor: [
+        "rgba(37, 99, 235, 0.7)",
+        "rgba(16, 185, 129, 0.7)",
+        "rgba(239, 68, 68, 0.7)",
+        "rgba(245, 158, 11, 0.7)"
+      ]
+    }
+  ]
+};
+
+// Add technical data
+export const networkStats = {
+  labels: ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"],
+  datasets: [
+    {
+      label: "Trafic (GB)",
+      data: [120, 180, 200, 170, 220, 250, 210],
+      borderColor: "rgba(37, 99, 235, 0.7)",
+      backgroundColor: "rgba(37, 99, 235, 0.2)",
+      fill: true,
+      tension: 0.4
+    },
+    {
+      label: "Latence (ms)",
+      data: [25, 30, 28, 32, 27, 25, 26],
+      borderColor: "rgba(239, 68, 68, 0.7)",
+      backgroundColor: "rgba(239, 68, 68, 0.2)",
+      fill: true,
+      tension: 0.4
+    }
+  ]
+};
+
+export const deviceData = {
+  labels: ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"],
+  datasets: [
+    {
+      label: "Appareils connectés",
+      data: [450, 520, 580, 540, 610, 720, 680],
+      backgroundColor: "rgba(16, 185, 129, 0.6)"
+    }
+  ]
+};
+
+// Add voucher data for voucher tab
+export interface Voucher {
+  id: string;
+  code: string;
+  type: 'time' | 'data';
+  value: string;
+  status: 'active' | 'used' | 'expired';
+  createdAt: string;
+  usedAt?: string;
+  createdBy: string;
+  batchId?: string;
+}
+
+export const vouchers: Voucher[] = [
+  {
+    id: '1',
+    code: 'WIFI-123456',
+    type: 'time',
+    value: '120',
+    status: 'active',
+    createdAt: '2023-03-15T10:00:00',
+    createdBy: '1'
+  },
+  {
+    id: '2',
+    code: 'WIFI-234567',
+    type: 'data',
+    value: '1000',
+    status: 'used',
+    createdAt: '2023-03-14T14:30:00',
+    usedAt: '2023-03-16T09:45:00',
+    createdBy: '3'
+  },
+  {
+    id: '3',
+    code: 'WIFI-345678',
+    type: 'time',
+    value: '60',
+    status: 'expired',
+    createdAt: '2023-03-10T16:20:00',
+    createdBy: '1'
+  },
+  {
+    id: '4',
+    code: 'WIFI-456789',
+    type: 'time',
+    value: '30',
+    status: 'active',
+    createdAt: '2023-03-17T11:15:00',
+    createdBy: '2'
+  },
+  {
+    id: '5',
+    code: 'WIFI-567890',
+    type: 'data',
+    value: '500',
+    status: 'active',
+    createdAt: '2023-03-18T09:30:00',
+    createdBy: '3'
+  }
+];
+
+export const voucherChartData = {
+  labels: ['Actifs', 'Utilisés', 'Expirés'],
+  datasets: [
+    {
+      label: 'Status des Coupons',
+      data: [3, 1, 1],
+      backgroundColor: [
+        'rgba(16, 185, 129, 0.7)',
+        'rgba(37, 99, 235, 0.7)',
+        'rgba(239, 68, 68, 0.7)'
+      ]
+    }
+  ]
+};
+
+// Mock wholesalers data
+export const mockWholesalers: UserData[] = [
+  {
+    id: 'w1',
+    name: 'Fatou Ndiaye',
+    email: 'fatou@wholesale.sn',
+    role: 'technical',
+    status: 'active',
+    lastActive: '2023-03-19T10:15:00',
+    assignedSiteId: '1',
+    revenue: 1250000,
+    users: 75,
+    totalIssues: 5,
+    resolvedIssues: 3
+  },
+  {
+    id: 'w2',
+    name: 'Moussa Sow',
+    email: 'moussa@wholesale.sn',
+    role: 'technical',
+    status: 'active',
+    lastActive: '2023-03-18T14:25:00',
+    assignedSiteId: '2',
+    revenue: 980000,
+    users: 62,
+    totalIssues: 3,
+    resolvedIssues: 3
+  },
+  {
+    id: 'w3',
+    name: 'Aida Diop',
+    email: 'aida@wholesale.sn',
+    role: 'technical',
+    status: 'inactive',
+    lastActive: '2023-03-10T09:30:00',
+    assignedSiteId: '3',
+    revenue: 750000,
+    users: 48,
+    totalIssues: 8,
+    resolvedIssues: 4
+  }
+];
+
+// Add missing data for overview tab (previous exports are kept)
+export const dashboardStats = {
+  totalUsers: 3600,
+  totalRevenue: 8850000,
+  totalSites: 5,
+  activeIssues: 8,
+  growth: {
+    users: 8.5,
+    revenue: 12,
+    sites: 25,
+    issues: -5
+  }
 };

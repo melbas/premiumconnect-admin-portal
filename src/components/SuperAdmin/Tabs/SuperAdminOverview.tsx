@@ -1,9 +1,53 @@
+
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { ChartComponent } from '@/components/Dashboard/Chart';
-import { dashboardStats, revenueData, userGrowthData, deviceUsageData } from '../mockData';
+import { dashboardStats, revenueData, userGrowthData, deviceUsageData, overviewMetrics, campaignChartData, users, sites } from '../mockData';
+import { 
+  Users, 
+  DollarSign, 
+  AlertTriangle, 
+  LayoutDashboard as Layout, 
+  MapPin, 
+  BarChart, 
+  PlusCircle, 
+  UserPlus 
+} from 'lucide-react';
+import { 
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "@/components/ui/table";
+import { useToast } from "@/hooks/use-toast";
+
+// Component to render metrics
+const MetricCard = ({ title, value, icon, change }) => {
+  return (
+    <Card className="overflow-hidden">
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-muted-foreground">{title}</p>
+            <h2 className="text-3xl font-bold mt-1">{value}</h2>
+            {change && (
+              <p className={`text-xs flex items-center mt-1 ${change.isPositive ? "text-success" : "text-danger"}`}>
+                {change.isPositive ? "↑" : "↓"} {change.value}%
+              </p>
+            )}
+          </div>
+          <div className="p-3 bg-primary/10 rounded-full">
+            {icon}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
 
 // Component to render metrics
 const MetricsOverview = () => {
@@ -146,20 +190,6 @@ const QuickActions = () => {
 
 // User Growth Chart component
 const UserGrowthChart = () => {
-  const userGrowthData = {
-    labels: ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin"],
-    datasets: [
-      {
-        label: 'Nouveaux utilisateurs',
-        data: [120, 150, 180, 210, 290, 350],
-        borderColor: "rgba(16, 185, 129, 0.7)",
-        backgroundColor: "rgba(16, 185, 129, 0.1)",
-        fill: true,
-        tension: 0.3
-      }
-    ]
-  };
-
   return (
     <Card>
       <CardHeader>
