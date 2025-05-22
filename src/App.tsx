@@ -3,21 +3,25 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import Index from "./pages/Index";
+import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import SuperAdminDashboard from "./components/SuperAdmin/SuperAdminDashboard";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { ThemeProvider } from "./context/ThemeContext";
+import { useEffect } from "react";
 
 const queryClient = new QueryClient();
 
-// Protected route component
+// Protected route component with redirection to login
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   const { user, isAuthenticated } = useAuth();
+  const location = useLocation();
   
   if (!isAuthenticated) {
-    return <Navigate to="/" replace />;
+    // Save the current location to redirect back after login
+    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
   
   if (allowedRoles.length > 0 && user && !allowedRoles.includes(user.role)) {
@@ -27,15 +31,36 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   return children;
 };
 
+// Login redirect component
+const LoginRedirect = () => {
+  const { isAuthenticated } = useAuth();
+  const location = useLocation();
+  const from = location.state?.from || "/super-admin";
+  
+  if (isAuthenticated) {
+    return <Navigate to={from} replace />;
+  }
+  
+  return <Login />;
+};
+
 // Main App component
 const AppContent = () => {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Index />} />
+        <Route path="/login" element={<LoginRedirect />} />
         
         {/* Admin Dashboard Routes with Role Protection */}
-        <Route path="/super-admin" element={<SuperAdminDashboard />} />
+        <Route 
+          path="/super-admin" 
+          element={
+            <ProtectedRoute allowedRoles={['superadmin']}>
+              <SuperAdminDashboard />
+            </ProtectedRoute>
+          } 
+        />
         
         {/* Role-specific Routes */}
         <Route 

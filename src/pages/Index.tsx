@@ -9,10 +9,12 @@ import Statistics from "@/components/Dashboard/Statistics";
 import Discussions from "@/components/Dashboard/Discussions";
 import Settings from "@/components/Dashboard/Settings";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/AuthContext";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [mounted, setMounted] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   // Handle initial theme setup
   useEffect(() => {
@@ -36,10 +38,16 @@ const Index = () => {
       case "dashboard":
         return (
           <>
-            <div className="mb-6 flex justify-end">
-              <Link to="/super-admin">
-                <Button variant="outline">Accéder au Super Admin Dashboard</Button>
-              </Link>
+            <div className="mb-6 flex justify-end gap-3">
+              {!isAuthenticated ? (
+                <Link to="/login">
+                  <Button variant="default">Connexion Admin</Button>
+                </Link>
+              ) : (
+                <Link to="/super-admin">
+                  <Button variant="outline">Accéder au Super Admin Dashboard</Button>
+                </Link>
+              )}
             </div>
             <DashboardOverview />
           </>

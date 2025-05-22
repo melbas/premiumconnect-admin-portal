@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
-import { Menu, Bell, User, Edit } from 'lucide-react';
+import { Menu, Bell, User, Edit, LogOut } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +23,7 @@ interface SuperAdminHeaderProps {
 const SuperAdminHeader: React.FC<SuperAdminHeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
   const { user, logout, setCurrentUser } = useAuth();
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
+  const navigate = useNavigate();
 
   const handleProfileImageUpdate = (avatarUrl: string) => {
     if (user) {
@@ -30,6 +32,11 @@ const SuperAdminHeader: React.FC<SuperAdminHeaderProps> = ({ sidebarOpen, setSid
         avatar: avatarUrl
       });
     }
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
   };
 
   return (
@@ -112,8 +119,9 @@ const SuperAdminHeader: React.FC<SuperAdminHeaderProps> = ({ sidebarOpen, setSid
               <User className="mr-2 h-4 w-4" />
               <span>Profil</span>
             </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer" onClick={logout}>
-              Déconnexion
+            <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Déconnexion</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
