@@ -1,6 +1,10 @@
 
 import React from "react";
 import ChartComponent from "../ChartComponent";
+import {
+  LineElement,
+  ChartData as ChartJSData
+} from 'chart.js';
 
 interface UserActivityData {
   labels: string[];

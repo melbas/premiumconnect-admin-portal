@@ -1,7 +1,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import { 
-  Chart, 
+  Chart as ChartJS, 
   LineController, 
   LineElement, 
   PointElement, 
@@ -13,12 +13,13 @@ import {
   BarElement,
   DoughnutController,
   ArcElement,
-  Title
+  Title,
+  ChartTypeRegistry
 } from 'chart.js';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 // Register Chart.js components
-Chart.register(
+ChartJS.register(
   LineController, 
   LineElement, 
   PointElement, 
@@ -65,7 +66,7 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
   height = 300 
 }) => {
   const chartRef = useRef<HTMLCanvasElement>(null);
-  const chartInstance = useRef<Chart | null>(null);
+  const chartInstance = useRef<ChartJS | null>(null);
   const isMobile = useIsMobile();
   
   // Default options based on chart type
@@ -183,12 +184,12 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
       chartInstance.current.destroy();
     }
     
-    // Create new chart
+    // Create new chart with appropriate type assertion
     const ctx = chartRef.current.getContext('2d');
     if (ctx) {
-      chartInstance.current = new Chart(ctx, {
-        type,
-        data,
+      chartInstance.current = new ChartJS(ctx, {
+        type: type as keyof ChartTypeRegistry,
+        data: data as any,
         options: { ...getDefaultOptions(), ...options },
       });
     }
@@ -198,9 +199,9 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
       if (chartInstance.current) {
         chartInstance.current.destroy();
         if (ctx) {
-          chartInstance.current = new Chart(ctx, {
-            type,
-            data,
+          chartInstance.current = new ChartJS(ctx, {
+            type: type as keyof ChartTypeRegistry,
+            data: data as any,
             options: { ...getDefaultOptions(), ...options },
           });
         }
