@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import Table from "./Table";
-import ChartComponent from "./ChartComponent";
+import { ChartComponent } from "./Chart";
 import { Search, Phone, Edit, Eye, Filter, RefreshCw } from "lucide-react";
 
 const ClientsManagement = () => {

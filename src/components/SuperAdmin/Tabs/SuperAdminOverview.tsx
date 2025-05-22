@@ -1,13 +1,9 @@
-
-import React, { useEffect, useRef } from 'react';
-import { AlertTriangle, DollarSign, Layout, Users, MapPin, BarChart, PlusCircle, UserPlus, LineChart } from 'lucide-react';
-import MetricCard from '@/components/Dashboard/MetricCard';
-import ChartComponent from '@/components/Dashboard/ChartComponent';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { overviewMetrics, revenueChartData, sites, campaignChartData, users } from '../mockData';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { useToast } from '@/hooks/use-toast';
+import { ChartComponent } from '@/components/Dashboard/Chart';
+import { dashboardStats, revenueData, userGrowthData, deviceUsageData } from '../mockData';
 
 // Component to render metrics
 const MetricsOverview = () => {
@@ -253,8 +249,8 @@ const SuperAdminOverview: React.FC = () => {
               <ChartComponent
                 type="bar"
                 data={{
-                  labels: revenueChartData.labels,
-                  datasets: revenueChartData.datasets
+                  labels: revenueData.labels,
+                  datasets: revenueData.datasets
                 }}
                 options={{
                   plugins: {

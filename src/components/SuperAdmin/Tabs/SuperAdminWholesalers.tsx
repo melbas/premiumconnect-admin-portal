@@ -1,13 +1,14 @@
-
 import React, { useState } from 'react';
-import { users as mockWholesalers, UserData, sites } from '../mockData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/context/AuthContext';
-import { Edit, Plus, Search, Trash, ExternalLink, Phone, Mail, User } from 'lucide-react';
-import ChartComponent from '@/components/Dashboard/ChartComponent';
+import { ChartComponent } from '@/components/Dashboard/Chart';
+import { Plus, Search } from 'lucide-react';
 
 // Calculate performance score for wholesalers
 const calculatePerformanceScore = (wholesaler: UserData) => {
@@ -588,27 +589,27 @@ const SuperAdminWholesalers: React.FC = () => {
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
-            <table className="dashboard-table">
-              <thead>
-                <tr>
-                  <th>Nom</th>
-                  <th>Email</th>
-                  <th>Téléphone</th>
-                  <th>Site Assigné</th>
-                  <th>Revenu</th>
-                  <th>Performance</th>
-                  <th>Statut</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nom</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Téléphone</TableHead>
+                  <TableHead>Site Assigné</TableHead>
+                  <TableHead>Revenu</TableHead>
+                  <TableHead>Performance</TableHead>
+                  <TableHead>Statut</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {filteredWholesalers.map((wholesaler) => {
                   const performanceScore = calculatePerformanceScore(wholesaler);
                   const assignedSite = sites.find(site => site.id === wholesaler.assignedSiteId);
                   
                   return (
-                    <tr key={wholesaler.id}>
-                      <td className="font-medium">
+                    <TableRow key={wholesaler.id}>
+                      <TableCell>
                         <div className="flex items-center space-x-3">
                           <div className="h-8 w-8 overflow-hidden rounded-full">
                             {wholesaler.avatar && (
@@ -621,12 +622,12 @@ const SuperAdminWholesalers: React.FC = () => {
                           </div>
                           {wholesaler.name}
                         </div>
-                      </td>
-                      <td>{wholesaler.email}</td>
-                      <td>{wholesaler.phone || "+221 78 123 4567"}</td>
-                      <td>{assignedSite ? assignedSite.name : "--"}</td>
-                      <td>{(wholesaler.revenue || 0).toLocaleString()} FCFA</td>
-                      <td>
+                      </TableCell>
+                      <TableCell>{wholesaler.email}</TableCell>
+                      <TableCell>{wholesaler.phone || "+221 78 123 4567"}</TableCell>
+                      <TableCell>{assignedSite ? assignedSite.name : "--"}</TableCell>
+                      <TableCell>{(wholesaler.revenue || 0).toLocaleString()} FCFA</TableCell>
+                      <TableCell>
                         <div className="flex items-center space-x-2">
                           <div className="h-2 w-16 rounded-full bg-muted overflow-hidden">
                             <div 
@@ -639,8 +640,8 @@ const SuperAdminWholesalers: React.FC = () => {
                           </div>
                           <span>{performanceScore}</span>
                         </div>
-                      </td>
-                      <td>
+                      </TableCell>
+                      <TableCell>
                         <span 
                           className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
                             ${wholesaler.status === 'active' 
@@ -649,8 +650,8 @@ const SuperAdminWholesalers: React.FC = () => {
                         >
                           {wholesaler.status === 'active' ? 'Actif' : 'Suspendu'}
                         </span>
-                      </td>
-                      <td>
+                      </TableCell>
+                      <TableCell>
                         <div className="flex space-x-2">
                           <Button 
                             variant="outline" 
@@ -685,12 +686,12 @@ const SuperAdminWholesalers: React.FC = () => {
                             </>
                           )}
                         </div>
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   );
                 })}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
         </CardContent>
       </Card>

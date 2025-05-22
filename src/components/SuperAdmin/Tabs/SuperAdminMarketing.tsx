@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { campaigns, Campaign, campaignChartData } from '../mockData';
@@ -5,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/AuthContext';
-import ChartComponent from '@/components/Dashboard/ChartComponent';
+import { ChartComponent } from '@/components/Dashboard/Chart';
 import { Plus } from 'lucide-react';
 
 // Modal component for adding/editing campaigns
