@@ -9,6 +9,7 @@ export * from './campaigns';
 export * from './issues';
 export * from './metrics';
 export * from './network';
+export * from './networkConfig';
 
 // Additional data that might be needed
 export const revenueData = {
