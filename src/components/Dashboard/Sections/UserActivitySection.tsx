@@ -1,27 +1,10 @@
 
 import React from "react";
-import ChartComponent from "../ChartComponent";
-import { ChartTypeRegistry } from 'chart.js';
-
-interface UserActivityData {
-  labels: string[];
-  datasets: Array<{
-    label: string;
-    data: number[];
-    backgroundColor?: string;
-    borderColor?: string;
-    borderWidth?: number;
-    tension?: number;
-    fill?: boolean;
-    pointBackgroundColor?: string;
-    pointBorderColor?: string;
-    pointHoverBackgroundColor?: string;
-    pointHoverBorderColor?: string;
-  }>;
-}
+import { ChartComponent } from "../Chart";
+import { ChartData } from "../Chart/chartTypes";
 
 interface UserActivitySectionProps {
-  chartData: UserActivityData;
+  chartData: ChartData;
 }
 
 const UserActivitySection = ({ chartData }: UserActivitySectionProps) => {

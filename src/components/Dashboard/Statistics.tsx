@@ -1,6 +1,5 @@
-
 import React from "react";
-import ChartComponent from "./ChartComponent";
+import { ChartComponent } from "./Chart";
 import { Activity, Clock, Laptop, Smartphone, Tablet, MapPin } from "lucide-react";
 
 const Statistics = () => {

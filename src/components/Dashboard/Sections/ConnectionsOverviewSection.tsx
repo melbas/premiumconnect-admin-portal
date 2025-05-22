@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useUserStatistics } from '@/hooks/use-user-statistics';
-import ChartComponent from '../ChartComponent';
+import { ChartComponent } from '../Chart';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useQuery } from '@tanstack/react-query';
 import { getWifiUsers } from '@/services/captivePortalService';
