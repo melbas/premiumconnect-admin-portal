@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 
@@ -46,6 +47,26 @@ export async function getWifiUsers(limit = 10) {
   }
 }
 
+// Get WiFi sessions data - new function to fix missing export
+export async function getWifiSessions() {
+  try {
+    const { data: sessions, error } = await supabase
+      .from('wifi_users')
+      .select('created_at, loyalty_points')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching WiFi sessions:', error);
+      return [];
+    }
+
+    return sessions || [];
+  } catch (error) {
+    console.error('Failed to fetch WiFi sessions:', error);
+    return [];
+  }
+}
+
 // Get portal statistics for a specified date range
 export async function getPortalStatistics(startDate?: string, endDate?: string) {
   try {
@@ -77,7 +98,7 @@ export async function getPortalStatistics(startDate?: string, endDate?: string) 
 }
 
 // Increment a specific statistic for today
-export async function incrementStatistic(field: keyof PortalStatistics, amount = 1) {
+export async function incrementStatistic(field: keyof Omit<PortalStatistics, 'id' | 'date'>, amount = 1) {
   try {
     const today = format(new Date(), 'yyyy-MM-dd');
     
@@ -95,9 +116,8 @@ export async function incrementStatistic(field: keyof PortalStatistics, amount =
     
     if (todayData) {
       // Update existing record
-      const updateValue = typeof todayData[field] === 'number' 
-        ? (todayData[field] as number) + amount 
-        : amount;
+      const currentValue = todayData[field] as number || 0;
+      const updateValue = currentValue + amount;
       
       const { error: updateError } = await supabase
         .from('portal_statistics')
@@ -158,7 +178,7 @@ export async function getMetricTrend(metric: keyof PortalStatistics, days = 30) 
     return {
       data: statistics.map(stat => ({
         date: stat.date,
-        value: stat[metric]
+        value: stat[metric] as number || 0
       })),
       trend,
       firstValue,
@@ -169,7 +189,7 @@ export async function getMetricTrend(metric: keyof PortalStatistics, days = 30) 
   return {
     data: statistics.map(stat => ({
       date: stat.date,
-      value: stat[metric]
+      value: stat[metric] as number || 0
     })),
     trend: 0,
     firstValue: 0,

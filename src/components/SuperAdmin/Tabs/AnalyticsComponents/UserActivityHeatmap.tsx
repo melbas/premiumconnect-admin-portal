@@ -9,22 +9,27 @@ const generateMockHeatmapData = () => {
   // Days of week
   const days = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
   
-  // Hours of day
-  const hours = Array.from({ length: 24 }, (_, i) => i);
-  
-  // Generate random data for each day/hour combination
-  const datasets = days.map((day, index) => {
+  // Generate data for each day
+  const datasets = days.map((day, dayIndex) => {
+    const data = Array.from({ length: 24 }, (_, hour) => {
+      // Higher activity during daytime hours (8-22)
+      const baseActivity = hour >= 8 && hour <= 22 ? 20 : 5;
+      // Add some randomness
+      const randomVariation = Math.floor(Math.random() * 30);
+      return baseActivity + randomVariation;
+    });
+    
     return {
       label: day,
-      data: hours.map(hour => ({
-        x: hour,
-        y: index,
-        v: Math.floor(Math.random() * 50) + (hour >= 8 && hour <= 22 ? 20 : 0)
-      }))
+      data,
+      backgroundColor: `rgba(59, 130, 246, ${0.3 + (dayIndex * 0.1)})`,
+      borderColor: 'rgba(59, 130, 246, 1)',
+      borderWidth: 1
     };
   });
   
   return {
+    labels: Array.from({ length: 24 }, (_, i) => `${i}h`),
     datasets
   };
 };
@@ -40,54 +45,39 @@ const UserActivityHeatmap: React.FC = () => {
   const data = generateMockHeatmapData();
   const isLoading = false;
   
-  // Configure the chart
-  const chartConfig = {
-    type: 'matrix',
-    data,
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        x: {
-          type: 'linear',
-          position: 'bottom',
-          min: 0,
-          max: 23,
-          ticks: {
-            stepSize: 1,
-            callback: function(value) {
-              return `${value}h`;
-            }
-          },
-          title: {
-            display: true,
-            text: 'Heure de la journée'
-          }
-        },
-        y: {
-          type: 'category',
-          labels: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
-          offset: true,
-          title: {
-            display: true,
-            text: 'Jour de la semaine'
-          }
+  // Configure the chart options
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Heure de la journée'
         }
       },
-      plugins: {
-        legend: {
-          display: false
+      y: {
+        title: {
+          display: true,
+          text: 'Nombre de connexions'
         },
-        tooltip: {
-          callbacks: {
-            title: function(context) {
-              const day = context[0].dataset.label;
-              const hour = context[0].parsed.x;
-              return `${day} à ${hour}h`;
-            },
-            label: function(context) {
-              return `${context.raw.v} connexions`;
-            }
+        beginAtZero: true
+      }
+    },
+    plugins: {
+      legend: {
+        display: true,
+        position: 'top' as const
+      },
+      tooltip: {
+        callbacks: {
+          title: function(context: any) {
+            const hour = context[0].label;
+            const day = context[0].dataset.label;
+            return `${day} à ${hour}`;
+          },
+          label: function(context: any) {
+            return `${context.parsed.y} connexions`;
           }
         }
       }
@@ -99,9 +89,9 @@ const UserActivityHeatmap: React.FC = () => {
   ) : (
     <div id="user-activity-heatmap" className="w-full h-full">
       <ChartComponent
-        type="matrix"
+        type="bar"
         data={data}
-        options={chartConfig.options}
+        options={chartOptions}
         height={350}
       />
     </div>

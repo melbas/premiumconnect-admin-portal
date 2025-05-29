@@ -159,7 +159,7 @@ const SuperAdminAnalytics: React.FC = () => {
                       datasets: [
                         {
                           label: 'Connexions',
-                          data: connectionsData.data.map(item => item.value || 0),
+                          data: connectionsData.data.map(item => Number(item.value) || 0),
                           fill: true,
                           tension: 0.4,
                           backgroundColor: 'rgba(59, 130, 246, 0.2)',
@@ -198,7 +198,7 @@ const SuperAdminAnalytics: React.FC = () => {
                       datasets: [
                         {
                           label: 'Minutes',
-                          data: sessionsData.data.map(item => item.value || 0),
+                          data: sessionsData.data.map(item => Number(item.value) || 0),
                           fill: true,
                           tension: 0.4,
                           backgroundColor: 'rgba(139, 92, 246, 0.2)',

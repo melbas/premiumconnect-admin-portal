@@ -36,7 +36,12 @@ export const userSegmentationService = {
         return [];
       }
 
-      return data || [];
+      return (data || []).map(segment => ({
+        ...segment,
+        criteria: typeof segment.criteria === 'string' 
+          ? JSON.parse(segment.criteria) 
+          : segment.criteria || {}
+      }));
     } catch (error) {
       console.error('Failed to fetch segments:', error);
       return [];
@@ -59,7 +64,12 @@ export const userSegmentationService = {
         return null;
       }
 
-      return data || null;
+      return data ? {
+        ...data,
+        criteria: typeof data.criteria === 'string' 
+          ? JSON.parse(data.criteria) 
+          : data.criteria || {}
+      } : null;
     } catch (error) {
       console.error('Failed to create segment:', error);
       return null;
@@ -83,7 +93,12 @@ export const userSegmentationService = {
         return null;
       }
 
-      return data || null;
+      return data ? {
+        ...data,
+        criteria: typeof data.criteria === 'string' 
+          ? JSON.parse(data.criteria) 
+          : data.criteria || {}
+      } : null;
     } catch (error) {
       console.error('Failed to update segment:', error);
       return null;
