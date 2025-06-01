@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import SuperAdminHeader from './SuperAdminHeader';
 import SuperAdminSidebar from './SuperAdminSidebar';
@@ -9,13 +8,14 @@ export type AdminTab =
   | 'overview' 
   | 'technical' 
   | 'marketing' 
-  | 'vouchers'
-  | 'users'
+  | 'vouchers' 
+  | 'users' 
   | 'sites' 
-  | 'wholesalers'
+  | 'wholesalers' 
+  | 'captive-portal' 
   | 'analytics'
-  | 'settings'
-  | 'captive-portal';
+  | 'ai'
+  | 'settings';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
