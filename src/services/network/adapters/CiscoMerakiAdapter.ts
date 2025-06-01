@@ -1,4 +1,3 @@
-
 import { NetworkAdapter, NetworkEquipment } from '../NetworkAdapterFactory';
 
 export class CiscoMerakiAdapter implements NetworkAdapter {
@@ -228,6 +227,43 @@ export class CiscoMerakiAdapter implements NetworkAdapter {
       return true;
     } catch (error) {
       console.error('❌ Cisco Meraki: Splash configuration failed', error);
+      return false;
+    }
+  }
+
+  async testConnection(): Promise<boolean> {
+    try {
+      console.log('🔍 Cisco Meraki: Testing connection...');
+      
+      // Simulate Meraki API connection test
+      await this.simulateApiCall('/organizations');
+      
+      console.log('✅ Cisco Meraki: Connection test successful');
+      return true;
+    } catch (error) {
+      console.error('❌ Cisco Meraki: Connection test failed', error);
+      return false;
+    }
+  }
+
+  async configureConnection(): Promise<boolean> {
+    try {
+      console.log('⚙️ Cisco Meraki: Configuring connection...');
+      
+      // Simulate initial API setup and validation
+      const connectionConfig = {
+        apiKey: this.apiKey,
+        organizationAccess: true,
+        networkAccess: true,
+        rateLimitCompliance: true
+      };
+
+      await this.simulateApiCall('/organizations', connectionConfig);
+      
+      console.log('✅ Cisco Meraki: Connection configured');
+      return true;
+    } catch (error) {
+      console.error('❌ Cisco Meraki: Connection configuration failed', error);
       return false;
     }
   }

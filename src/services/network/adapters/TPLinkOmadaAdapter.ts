@@ -1,4 +1,3 @@
-
 import { NetworkAdapter, NetworkEquipment } from '../NetworkAdapterFactory';
 
 export class TPLinkOmadaAdapter implements NetworkAdapter {
@@ -223,6 +222,43 @@ export class TPLinkOmadaAdapter implements NetworkAdapter {
       return true;
     } catch (error) {
       console.error('❌ TP-Link Omada: Portal configuration failed', error);
+      return false;
+    }
+  }
+
+  async testConnection(): Promise<boolean> {
+    try {
+      console.log('🔍 TP-Link Omada: Testing connection...');
+      
+      // Simulate Omada controller connection test
+      await this.simulateApiCall('/api/v2/login/status');
+      
+      console.log('✅ TP-Link Omada: Connection test successful');
+      return true;
+    } catch (error) {
+      console.error('❌ TP-Link Omada: Connection test failed', error);
+      return false;
+    }
+  }
+
+  async configureConnection(): Promise<boolean> {
+    try {
+      console.log('⚙️ TP-Link Omada: Configuring connection...');
+      
+      // Simulate initial connection setup and authentication
+      const connectionConfig = {
+        controllerUrl: this.baseUrl,
+        authToken: this.token,
+        apiVersion: 'v2',
+        sslVerify: false
+      };
+
+      await this.simulateApiCall('/api/v2/login', connectionConfig);
+      
+      console.log('✅ TP-Link Omada: Connection configured');
+      return true;
+    } catch (error) {
+      console.error('❌ TP-Link Omada: Connection configuration failed', error);
       return false;
     }
   }

@@ -1,4 +1,3 @@
-
 import { NetworkAdapter, NetworkEquipment } from '../NetworkAdapterFactory';
 import { unifiApiService, UnifiClient, UnifiDevice } from '../../unifiService';
 
@@ -199,6 +198,43 @@ export class UbiquitiAdapter implements NetworkAdapter {
       return true;
     } catch (error) {
       console.error('❌ Ubiquiti UniFi: Portal configuration failed', error);
+      return false;
+    }
+  }
+
+  async testConnection(): Promise<boolean> {
+    try {
+      console.log('🔍 Ubiquiti UniFi: Testing connection...');
+      
+      // Test UniFi controller connectivity
+      const devices = await unifiApiService.getDevices();
+      
+      console.log('✅ Ubiquiti UniFi: Connection test successful');
+      return true;
+    } catch (error) {
+      console.error('❌ Ubiquiti UniFi: Connection test failed', error);
+      return false;
+    }
+  }
+
+  async configureConnection(): Promise<boolean> {
+    try {
+      console.log('⚙️ Ubiquiti UniFi: Configuring connection...');
+      
+      // Initialize UniFi service with equipment credentials
+      const connectionConfig = {
+        baseUrl: `https://${this.equipment.ipAddress}:8443`,
+        username: this.equipment.credentials?.username || 'admin',
+        password: this.equipment.credentials?.password || 'password',
+        siteId: 'default'
+      };
+
+      unifiApiService.initialize(connectionConfig);
+      
+      console.log('✅ Ubiquiti UniFi: Connection configured');
+      return true;
+    } catch (error) {
+      console.error('❌ Ubiquiti UniFi: Connection configuration failed', error);
       return false;
     }
   }

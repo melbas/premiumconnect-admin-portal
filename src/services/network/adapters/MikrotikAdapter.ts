@@ -201,6 +201,44 @@ export class MikrotikAdapter implements NetworkAdapter {
     }
   }
 
+  async testConnection(): Promise<boolean> {
+    try {
+      console.log('🔍 MikroTik: Testing connection...');
+      
+      // Simulate connection test via API ping
+      await this.simulateApiCall('/rest/system/identity/print');
+      
+      console.log('✅ MikroTik: Connection test successful');
+      return true;
+    } catch (error) {
+      console.error('❌ MikroTik: Connection test failed', error);
+      return false;
+    }
+  }
+
+  async configureConnection(): Promise<boolean> {
+    try {
+      console.log('⚙️ MikroTik: Configuring connection...');
+      
+      // Simulate initial connection setup
+      const connectionConfig = {
+        apiPort: 8728,
+        httpPort: 80,
+        httpsPort: 443,
+        enableApi: true,
+        enableWww: true
+      };
+
+      await this.simulateApiCall('/rest/ip/service/set', connectionConfig);
+      
+      console.log('✅ MikroTik: Connection configured');
+      return true;
+    } catch (error) {
+      console.error('❌ MikroTik: Connection configuration failed', error);
+      return false;
+    }
+  }
+
   getSupportedFeatures(): string[] {
     return [
       'user_authentication',

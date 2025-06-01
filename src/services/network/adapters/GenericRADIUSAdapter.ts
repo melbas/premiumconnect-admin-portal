@@ -1,4 +1,3 @@
-
 import { NetworkAdapter, NetworkEquipment } from '../NetworkAdapterFactory';
 
 export class GenericRADIUSAdapter implements NetworkAdapter {
@@ -224,6 +223,44 @@ export class GenericRADIUSAdapter implements NetworkAdapter {
     }
   }
 
+  async testConnection(): Promise<boolean> {
+    try {
+      console.log('🔍 Generic RADIUS: Testing connection...');
+      
+      // Simulate RADIUS server connectivity test
+      await this.simulateRadiusRequest('Status-Server', {});
+      
+      console.log('✅ Generic RADIUS: Connection test successful');
+      return true;
+    } catch (error) {
+      console.error('❌ Generic RADIUS: Connection test failed', error);
+      return false;
+    }
+  }
+
+  async configureConnection(): Promise<boolean> {
+    try {
+      console.log('⚙️ Generic RADIUS: Configuring connection...');
+      
+      // Simulate RADIUS server configuration setup
+      const connectionConfig = {
+        server: this.radiusConfig.server,
+        port: this.radiusConfig.port,
+        secret: this.radiusConfig.secret,
+        timeout: 5,
+        retries: 3
+      };
+
+      await this.simulateRadiusConfig(connectionConfig);
+      
+      console.log('✅ Generic RADIUS: Connection configured');
+      return true;
+    } catch (error) {
+      console.error('❌ Generic RADIUS: Connection configuration failed', error);
+      return false;
+    }
+  }
+
   getSupportedFeatures(): string[] {
     return [
       'universal_authentication',
@@ -259,6 +296,8 @@ export class GenericRADIUSAdapter implements NetworkAdapter {
         return { code: 'Accounting-Response' };
       case 'CoA-Request':
         return { code: 'CoA-ACK' };
+      case 'Status-Server':
+        return { code: 'Access-Accept' };
       default:
         return { code: 'Unknown' };
     }
