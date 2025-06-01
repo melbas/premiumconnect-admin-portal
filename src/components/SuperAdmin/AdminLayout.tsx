@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Outlet } from 'react-router-dom';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { AdminSidebar } from './AdminSidebar';
 import { AdminHeader } from './AdminHeader';
@@ -27,7 +26,7 @@ export type AdminTab =
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children, activeTab, setActiveTab }) => {
   return (
-    <SidebarProvider defaultOpen={true} collapsedSize="4rem">
+    <SidebarProvider defaultOpen={true}>
       <div className="min-h-screen flex w-full bg-background">
         <AdminSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
         <div className="flex-1 flex flex-col overflow-hidden">
