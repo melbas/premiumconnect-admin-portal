@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { PortalStatistics, MetricTrend, StatisticField } from "@/types/portal";
@@ -143,12 +142,24 @@ export class StatisticsService {
     }
   }
 
-  // Helper function to safely get metric value
+  // Helper function to safely get metric value with proper typing
   private static getMetricValue(stat: PortalStatistics, field: StatisticField): number {
     if (!stat || typeof stat !== 'object') return 0;
     
-    // Use keyof PortalStatistics to ensure type safety
-    const value = stat[field as keyof PortalStatistics];
-    return typeof value === 'number' ? value : 0;
+    // Create a mapping to ensure type safety
+    const fieldMap: Record<StatisticField, (stat: PortalStatistics) => number> = {
+      total_connections: (s) => s.total_connections || 0,
+      video_views: (s) => s.video_views || 0,
+      quiz_completions: (s) => s.quiz_completions || 0,
+      games_played: (s) => s.games_played || 0,
+      leads_collected: (s) => s.leads_collected || 0,
+      avg_session_duration: (s) => s.avg_session_duration || 0,
+      game_completion_rate: (s) => s.game_completion_rate || 0,
+      conversion_rate: (s) => s.conversion_rate || 0,
+      returning_users: (s) => s.returning_users || 0,
+    };
+    
+    const getter = fieldMap[field];
+    return getter ? getter(stat) : 0;
   }
 }

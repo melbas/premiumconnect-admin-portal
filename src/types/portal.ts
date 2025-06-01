@@ -49,4 +49,14 @@ export interface MetricTrend {
   lastValue: number;
 }
 
-export type StatisticField = keyof Omit<PortalStatistics, 'id' | 'date'>;
+// Use explicit union type instead of keyof Omit for better TypeScript inference
+export type StatisticField = 
+  | 'total_connections'
+  | 'video_views'
+  | 'quiz_completions'
+  | 'games_played'
+  | 'leads_collected'
+  | 'avg_session_duration'
+  | 'game_completion_rate'
+  | 'conversion_rate'
+  | 'returning_users';
