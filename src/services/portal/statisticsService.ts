@@ -99,7 +99,7 @@ export class StatisticsService {
     const statistics = await this.getPortalStatistics(startDate);
     
     // Helper function to safely get metric value
-    const getMetricValue = (stat: PortalStatistics, metricKey: StatisticField): number => {
+    const getMetricValue = (stat: PortalStatistics, metricKey: string): number => {
       const value = (stat as any)[metricKey];
       return typeof value === 'number' ? value : 0;
     };
