@@ -145,7 +145,10 @@ export class StatisticsService {
 
   // Helper function to safely get metric value
   private static getMetricValue(stat: PortalStatistics, field: StatisticField): number {
-    const value = (stat as any)[field];
+    if (!stat || typeof stat !== 'object') return 0;
+    
+    // Use type assertion to access the field safely
+    const value = (stat as Record<string, any>)[field];
     return typeof value === 'number' ? value : 0;
   }
 }
