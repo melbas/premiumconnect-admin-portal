@@ -126,9 +126,13 @@ export async function incrementStatistic(field: string, amount = 1) {
       const currentValue = (todayData as any)[field] as number || 0;
       const updateValue = currentValue + amount;
       
+      // Create the update object with proper typing
+      const updateData: Record<string, any> = {};
+      updateData[field] = updateValue;
+      
       const { error: updateError } = await supabase
         .from('portal_statistics')
-        .update({ [field]: updateValue })
+        .update(updateData)
         .eq('id', todayData.id);
       
       if (updateError) {
@@ -137,9 +141,12 @@ export async function incrementStatistic(field: string, amount = 1) {
       }
     } else {
       // Create new record for today
+      const insertData: Record<string, any> = { date: today };
+      insertData[field] = amount;
+      
       const { error: insertError } = await supabase
         .from('portal_statistics')
-        .insert({ date: today, [field]: amount });
+        .insert(insertData);
       
       if (insertError) {
         console.error('Error creating statistic:', insertError);
