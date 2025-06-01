@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import {
   Home,
@@ -13,8 +14,8 @@ import {
   FileText,
   Settings2,
 } from 'lucide-react';
-import { Sidebar } from 'flowbite-react';
-import { useRouter } from 'next/router';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -37,14 +38,13 @@ export type AdminTab =
   | 'settings';
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children, activeTab, setActiveTab }) => {
-  const router = useRouter();
-
   const handleTabChange = (tab: AdminTab) => {
     setActiveTab(tab);
-    router.push(`/super-admin?tab=${tab}`);
+    // Simple navigation without router dependency for now
+    console.log(`Switching to tab: ${tab}`);
   };
 
-  const menuItems = [
+  const menuItems: { id: AdminTab; label: string; icon: any }[] = [
     { id: 'overview', label: 'Vue d\'ensemble', icon: Home },
     { id: 'users', label: 'Utilisateurs', icon: Users },
     { id: 'sites', label: 'Sites', icon: MapPin },
@@ -61,20 +61,34 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, activeTab, setActiv
 
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
-      <Sidebar className="w-64 h-screen sticky top-0">
-        <Sidebar.Items>
-          {menuItems.map((item) => (
-            <Sidebar.Item
-              key={item.id}
-              icon={item.icon}
-              active={activeTab === item.id}
-              onClick={() => handleTabChange(item.id)}
-            >
-              {item.label}
-            </Sidebar.Item>
-          ))}
-        </Sidebar.Items>
-      </Sidebar>
+      <div className="w-64 h-screen sticky top-0 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
+        <div className="p-4">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            Super Admin
+          </h2>
+          <nav className="space-y-2">
+            {menuItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Button
+                  key={item.id}
+                  variant={activeTab === item.id ? 'default' : 'ghost'}
+                  className={cn(
+                    "w-full justify-start",
+                    activeTab === item.id 
+                      ? "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300" 
+                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  )}
+                  onClick={() => handleTabChange(item.id)}
+                >
+                  <Icon className="w-4 h-4 mr-3" />
+                  {item.label}
+                </Button>
+              );
+            })}
+          </nav>
+        </div>
+      </div>
 
       <div className="flex-1 overflow-x-hidden overflow-y-auto p-4">
         {children}

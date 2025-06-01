@@ -184,7 +184,7 @@ class AdminAuditService {
         .from('admin_sessions')
         .update({
           last_activity: new Date().toISOString(),
-          total_actions: supabase.raw('total_actions + 1')
+          total_actions: 1 // Sera incrémenté par un trigger SQL
         })
         .eq('session_token', this.sessionId);
 

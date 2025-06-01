@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -72,14 +71,30 @@ const SuperAdminAudit: React.FC = () => {
         limit: 100
       });
 
-      setLogs(auditLogs);
+      // Convertir les données reçues avec les types corrects
+      const typedLogs: AuditLog[] = auditLogs.map(log => ({
+        id: log.id,
+        admin_user_id: log.admin_user_id,
+        action_type: log.action_type,
+        action_description: log.action_description,
+        target_entity: log.target_entity,
+        target_id: log.target_id,
+        previous_data: log.previous_data,
+        new_data: log.new_data,
+        criticality: log.criticality as 'low' | 'medium' | 'high' | 'critical',
+        created_at: log.created_at,
+        user_agent: log.user_agent,
+        ip_address: log.ip_address
+      }));
+
+      setLogs(typedLogs);
 
       // Calculer les statistiques
       setStats({
-        totalActions: auditLogs.length,
-        criticalActions: auditLogs.filter(log => log.criticality === 'critical').length,
-        activeUsers: new Set(auditLogs.map(log => log.admin_user_id)).size,
-        recentAlerts: auditLogs.filter(log => 
+        totalActions: typedLogs.length,
+        criticalActions: typedLogs.filter(log => log.criticality === 'critical').length,
+        activeUsers: new Set(typedLogs.map(log => log.admin_user_id)).size,
+        recentAlerts: typedLogs.filter(log => 
           new Date(log.created_at) > new Date(Date.now() - 24 * 60 * 60 * 1000)
         ).length
       });

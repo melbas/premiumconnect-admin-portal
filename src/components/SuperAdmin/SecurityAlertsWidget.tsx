@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -30,7 +29,18 @@ const SecurityAlertsWidget: React.FC = () => {
       .on('postgres_changes', 
         { event: 'INSERT', schema: 'public', table: 'security_alerts' },
         (payload) => {
-          setAlerts(prev => [payload.new as SecurityAlert, ...prev]);
+          const newAlert = payload.new as any;
+          const typedAlert: SecurityAlert = {
+            id: newAlert.id,
+            alert_type: newAlert.alert_type,
+            severity: newAlert.severity as 'info' | 'warning' | 'danger' | 'critical',
+            title: newAlert.title,
+            description: newAlert.description,
+            admin_user_id: newAlert.admin_user_id,
+            is_resolved: newAlert.is_resolved,
+            created_at: newAlert.created_at
+          };
+          setAlerts(prev => [typedAlert, ...prev]);
         }
       )
       .subscribe();
@@ -54,7 +64,19 @@ const SecurityAlertsWidget: React.FC = () => {
         return;
       }
 
-      setAlerts(data || []);
+      if (data) {
+        const typedAlerts: SecurityAlert[] = data.map(alert => ({
+          id: alert.id,
+          alert_type: alert.alert_type,
+          severity: alert.severity as 'info' | 'warning' | 'danger' | 'critical',
+          title: alert.title,
+          description: alert.description,
+          admin_user_id: alert.admin_user_id || undefined,
+          is_resolved: alert.is_resolved,
+          created_at: alert.created_at
+        }));
+        setAlerts(typedAlerts);
+      }
     } catch (error) {
       console.error('Erreur:', error);
     } finally {
