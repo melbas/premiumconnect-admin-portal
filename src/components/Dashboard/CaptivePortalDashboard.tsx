@@ -7,6 +7,7 @@ import UserActivitySection from './Sections/UserActivitySection';
 import EnhancedChatSection from './Sections/EnhancedChatSection';
 import AIOnboardingAssistant from './CaptivePortal/AIOnboardingAssistant';
 import AIInsightsDashboard from './CaptivePortal/AIInsightsDashboard';
+import TensorFlowBehaviorDashboard from './CaptivePortal/TensorFlowBehaviorDashboard';
 import { MobileMoneyAssistant } from '../AI/MobileMoneyAssistant';
 import { useUserStatistics } from '@/hooks/use-user-statistics';
 
@@ -21,9 +22,10 @@ const CaptivePortalDashboard = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
           <TabsTrigger value="ai-insights">Insights IA</TabsTrigger>
+          <TabsTrigger value="tensorflow">TensorFlow.js</TabsTrigger>
           <TabsTrigger value="chat">Assistant IA</TabsTrigger>
           <TabsTrigger value="onboarding">Accueil IA</TabsTrigger>
           <TabsTrigger value="payments">Mobile Money IA</TabsTrigger>
@@ -45,6 +47,10 @@ const CaptivePortalDashboard = () => {
 
         <TabsContent value="ai-insights" className="space-y-6">
           <AIInsightsDashboard />
+        </TabsContent>
+
+        <TabsContent value="tensorflow" className="space-y-6">
+          <TensorFlowBehaviorDashboard />
         </TabsContent>
 
         <TabsContent value="chat" className="space-y-6">
