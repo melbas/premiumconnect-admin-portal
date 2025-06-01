@@ -147,8 +147,8 @@ export class StatisticsService {
   private static getMetricValue(stat: PortalStatistics, field: StatisticField): number {
     if (!stat || typeof stat !== 'object') return 0;
     
-    // Use type assertion to access the field safely
-    const value = (stat as Record<string, any>)[field];
+    // Use keyof PortalStatistics to ensure type safety
+    const value = stat[field as keyof PortalStatistics];
     return typeof value === 'number' ? value : 0;
   }
 }

@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { PortalStatistics, MetricTrend, StatisticField } from "@/types/portal";
@@ -272,7 +271,7 @@ export class EnhancedStatisticsService {
   private static getMetricValue(stat: PortalStatistics, field: StatisticField): number {
     if (!stat || typeof stat !== 'object') return 0;
     
-    const value = (stat as Record<string, any>)[field];
+    const value = stat[field as keyof PortalStatistics];
     return typeof value === 'number' ? value : 0;
   }
 
