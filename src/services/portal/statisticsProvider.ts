@@ -1,14 +1,11 @@
 
 import { PortalStatistics, MetricTrend, StatisticField } from "@/types/portal";
-import { EnhancedStatisticsService } from "./enhancedStatisticsService";
+import { UnifiedStatisticsService } from "./unifiedStatisticsService";
 import { MockStatisticsService } from "./mockStatisticsService";
-
-// Configuration for switching between real and mock data
-const USE_MOCK_DATA = true; // Set to false when ready to use real data
 
 export class StatisticsProvider {
   private static get service() {
-    return USE_MOCK_DATA ? MockStatisticsService : EnhancedStatisticsService;
+    return UnifiedStatisticsService;
   }
 
   static async getPortalStatistics(startDate?: string, endDate?: string): Promise<PortalStatistics[]> {
@@ -65,18 +62,11 @@ export class StatisticsProvider {
     }
   }
 
-  // Initialize real-time updates (only for real service)
   static initializeRealtime(onUpdate?: (data: PortalStatistics) => void): void {
-    if (!USE_MOCK_DATA && 'initializeRealtime' in this.service) {
-      (this.service as typeof EnhancedStatisticsService).initializeRealtime(onUpdate);
-    } else {
-      console.log('[MOCK MODE] Real-time updates simulated');
-    }
+    this.service.initializeRealtime(onUpdate);
   }
 
   static cleanup(): void {
-    if (!USE_MOCK_DATA && 'cleanup' in this.service) {
-      (this.service as typeof EnhancedStatisticsService).cleanup();
-    }
+    this.service.cleanup();
   }
 }

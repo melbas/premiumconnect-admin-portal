@@ -11,35 +11,35 @@ export const useEnhancedStatistics = (days = 30) => {
 
   const startDate = format(subDays(new Date(), days), 'yyyy-MM-dd');
   
-  // Main statistics query using the provider
+  // Main statistics query
   const { data: statistics, isLoading, error, refetch } = useQuery({
-    queryKey: ['enhanced-portal-statistics', startDate],
+    queryKey: ['unified-portal-statistics', startDate],
     queryFn: () => StatisticsProvider.getPortalStatistics(startDate),
-    staleTime: 2 * 60 * 1000, // 2 minutes
-    refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
+    staleTime: 2 * 60 * 1000,
+    refetchInterval: 5 * 60 * 1000,
   });
 
-  // Today's statistics with more frequent updates
+  // Today's statistics
   const { data: todayStats, isLoading: isTodayLoading } = useQuery({
     queryKey: ['today-statistics'],
     queryFn: () => StatisticsProvider.getTodayStatistics(),
-    staleTime: 30 * 1000, // 30 seconds
-    refetchInterval: 2 * 60 * 1000, // Refetch every 2 minutes
+    staleTime: 30 * 1000,
+    refetchInterval: 2 * 60 * 1000,
   });
 
   // System health monitoring
   const { data: systemHealth } = useQuery({
     queryKey: ['system-health'],
     queryFn: () => StatisticsProvider.getSystemHealth(),
-    staleTime: 60 * 1000, // 1 minute
-    refetchInterval: 5 * 60 * 1000, // Check every 5 minutes
+    staleTime: 60 * 1000,
+    refetchInterval: 5 * 60 * 1000,
   });
 
   // Initialize real-time updates
   useEffect(() => {
     const handleRealtimeUpdate = (updatedData: PortalStatistics) => {
       console.log('Real-time update received, invalidating queries');
-      queryClient.invalidateQueries({ queryKey: ['enhanced-portal-statistics'] });
+      queryClient.invalidateQueries({ queryKey: ['unified-portal-statistics'] });
       queryClient.invalidateQueries({ queryKey: ['today-statistics'] });
       setIsRealtime(true);
     };
@@ -52,24 +52,23 @@ export const useEnhancedStatistics = (days = 30) => {
     };
   }, [queryClient]);
 
-  // Get metric trend with caching
+  // Get metric trend
   const getMetricTrend = useCallback(async (metric: StatisticField, trendDays = 30): Promise<MetricTrend> => {
     return StatisticsProvider.getMetricTrend(metric, trendDays);
   }, []);
 
-  // Increment statistic with optimistic update
+  // Increment statistic
   const incrementStatistic = useCallback(async (field: StatisticField, amount = 1): Promise<boolean> => {
     const success = await StatisticsProvider.incrementStatistic(field, amount);
     if (success) {
-      // Trigger immediate refresh of today's stats
       queryClient.invalidateQueries({ queryKey: ['today-statistics'] });
     }
     return success;
   }, [queryClient]);
 
-  // Force refresh all data
+  // Force refresh
   const forceRefresh = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: ['enhanced-portal-statistics'] });
+    queryClient.invalidateQueries({ queryKey: ['unified-portal-statistics'] });
     queryClient.invalidateQueries({ queryKey: ['today-statistics'] });
     queryClient.invalidateQueries({ queryKey: ['system-health'] });
     refetch();
