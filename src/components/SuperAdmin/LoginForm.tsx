@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useAuth, mockUsers, User } from '@/context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -14,11 +15,34 @@ const LoginForm = () => {
   const { login } = useAuth();
   const { toast } = useToast();
   const { theme } = useTheme();
+  const navigate = useNavigate();
+  const location = useLocation();
+  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'quick' | 'credentials'>('quick');
+  
+  // Get redirect path from location state or default based on role
+  const getRedirectPath = (user: User) => {
+    const from = location.state?.from;
+    if (from) return from;
+    
+    // Default redirect based on role
+    switch (user.role) {
+      case 'superadmin':
+        return '/super-admin';
+      case 'marketing':
+        return '/marketing';
+      case 'technical':
+        return '/technical';
+      case 'voucher_manager':
+        return '/vouchers';
+      default:
+        return '/super-admin';
+    }
+  };
   
   // Handle login with credentials
   const handleCredentialsLogin = (e: React.FormEvent) => {
@@ -29,14 +53,22 @@ const LoginForm = () => {
     const user = mockUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
     
     setTimeout(() => {
-      if (user && password) { // In a real app, verify password here
+      if (user && password) {
+        console.log('🔐 Login successful for user:', user);
         login(user);
+        
+        const redirectPath = getRedirectPath(user);
+        console.log('🔐 Redirecting to:', redirectPath);
+        
         toast({
           title: `Bienvenue ${user.name}`,
-          description: `Vous êtes connecté en tant que ${user.role}`,
+          description: `Connexion réussie en tant que ${getRoleDisplay(user.role)}`,
           variant: "default",
         });
+        
+        navigate(redirectPath, { replace: true });
       } else {
+        console.log('🔐 Login failed - invalid credentials');
         toast({
           title: "Échec de connexion",
           description: "Email ou mot de passe incorrect",
@@ -52,12 +84,19 @@ const LoginForm = () => {
     setIsLoading(true);
     
     setTimeout(() => {
+      console.log('🔐 Quick login successful for user:', user);
       login(user);
+      
+      const redirectPath = getRedirectPath(user);
+      console.log('🔐 Redirecting to:', redirectPath);
+      
       toast({
         title: `Bienvenue ${user.name}`,
-        description: `Vous êtes connecté en tant que ${user.role}`,
+        description: `Connexion réussie en tant que ${getRoleDisplay(user.role)}`,
         variant: "default",
       });
+      
+      navigate(redirectPath, { replace: true });
       setIsLoading(false);
     }, 500);
   };

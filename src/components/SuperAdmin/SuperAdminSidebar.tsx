@@ -17,7 +17,8 @@ import {
   ShoppingBag,
   BadgePercent,
   UserSquare,
-  X
+  X,
+  LogOut
 } from "lucide-react";
 
 interface SuperAdminSidebarProps {
@@ -42,6 +43,8 @@ const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({
   setSidebarOpen,
   user
 }) => {
+  const { logout } = useAuth();
+
   // Define navigation items with optional role restrictions
   const items: SidebarItem[] = [
     {
@@ -97,7 +100,13 @@ const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({
 
   // Filter items based on user role if needed
   const filteredItems = user?.role 
-    ? items.filter(item => !item.roles || item.roles.includes(user.role))
+    ? items.filter(item => {
+        const hasAccess = !item.roles || item.roles.includes(user.role);
+        if (!hasAccess) {
+          console.log(`🚫 User ${user.role} blocked from ${item.label}`);
+        }
+        return hasAccess;
+      })
     : items;
 
   // Close sidebar when clicking outside on mobile
@@ -105,6 +114,13 @@ const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({
     if (window.innerWidth < 1024) {
       setSidebarOpen(false);
     }
+  };
+
+  // Handle logout
+  const handleLogout = () => {
+    console.log('🔐 User logout requested');
+    logout();
+    setSidebarOpen(false);
   };
 
   return (
@@ -145,6 +161,7 @@ const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({
                 variant={activeTab === item.value ? "secondary" : "ghost"}
                 className="justify-start"
                 onClick={() => {
+                  console.log(`📍 Navigating to ${item.label} (${item.value})`);
                   setActiveTab(item.value);
                   handleCloseSidebar();
                 }}
@@ -157,15 +174,25 @@ const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({
         </ScrollArea>
 
         <div className="p-4 border-t">
-          <div className="flex items-center">
+          <div className="flex items-center mb-3">
             <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
               {user?.name?.charAt(0) || <UserSquare className="h-5 w-5" />}
             </div>
-            <div className="ml-3">
+            <div className="ml-3 flex-1">
               <p className="text-sm font-medium">{user?.name || 'Utilisateur'}</p>
               <p className="text-xs text-muted-foreground">{user?.role || 'Admin'}</p>
             </div>
           </div>
+          
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="w-full"
+            onClick={handleLogout}
+          >
+            <LogOut className="h-4 w-4 mr-2" />
+            Se déconnecter
+          </Button>
         </div>
       </aside>
     </>

@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 // Define the user roles
 export type UserRole = 'superadmin' | 'marketing' | 'technical' | 'voucher_manager';
@@ -20,6 +20,7 @@ interface AuthContextType {
   login: (user: User) => void;
   logout: () => void;
   setCurrentUser: (user: User) => void;
+  isLoading: boolean;
 }
 
 // Create the context
@@ -60,20 +61,50 @@ export const mockUsers: User[] = [
 // Provider component
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Login handler
+  // Initialize auth state from localStorage on mount
+  useEffect(() => {
+    const initializeAuth = () => {
+      try {
+        const storedUser = localStorage.getItem('wifisenegal_user');
+        if (storedUser) {
+          const parsedUser = JSON.parse(storedUser);
+          console.log('🔐 Restored user from localStorage:', parsedUser);
+          setUser(parsedUser);
+        } else {
+          console.log('🔐 No stored user found');
+        }
+      } catch (error) {
+        console.error('🔐 Error parsing stored user:', error);
+        localStorage.removeItem('wifisenegal_user');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeAuth();
+  }, []);
+
+  // Login handler with persistence
   const login = (userData: User) => {
+    console.log('🔐 Logging in user:', userData);
     setUser(userData);
+    localStorage.setItem('wifisenegal_user', JSON.stringify(userData));
   };
 
-  // Logout handler
+  // Logout handler with cleanup
   const logout = () => {
+    console.log('🔐 Logging out user');
     setUser(null);
+    localStorage.removeItem('wifisenegal_user');
   };
 
-  // Update current user
+  // Update current user with persistence
   const setCurrentUser = (userData: User) => {
+    console.log('🔐 Updating current user:', userData);
     setUser(userData);
+    localStorage.setItem('wifisenegal_user', JSON.stringify(userData));
   };
 
   // Context value
@@ -82,7 +113,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     isAuthenticated: !!user,
     login,
     logout,
-    setCurrentUser
+    setCurrentUser,
+    isLoading
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
