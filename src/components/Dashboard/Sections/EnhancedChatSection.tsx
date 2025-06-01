@@ -122,9 +122,9 @@ const EnhancedChatSection: React.FC<EnhancedChatSectionProps> = ({
           sender: 'ai',
           timestamp: new Date().toISOString(),
           language: detectedLanguage,
-          sentiment: response.sentiment || null,
-          recommendations: response.recommendations || [],
-          culturalAdaptation: response.culturalAdaptation || false
+          sentiment: 'sentiment' in response ? response.sentiment : null,
+          recommendations: 'recommendations' in response ? response.recommendations : [],
+          culturalAdaptation: 'culturalAdaptation' in response ? response.culturalAdaptation : false
         };
 
         setMessages(prev => [...prev, aiMessage]);
