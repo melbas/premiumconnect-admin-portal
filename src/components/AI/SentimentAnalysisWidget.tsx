@@ -181,7 +181,7 @@ const SentimentAnalysisWidget: React.FC<SentimentAnalysisWidgetProps> = ({
                   </div>
                   <div className="flex items-center gap-1">
                     <span>{getLanguageFlag(recent.language)}</span>
-                    <Badge size="sm" className={getSentimentColor(recent.sentiment)}>
+                    <Badge className={getSentimentColor(recent.sentiment)}>
                       {recent.sentiment}
                     </Badge>
                   </div>
