@@ -14,7 +14,7 @@ import {
   Route
 } from 'lucide-react';
 import ThemeSelector from './ThemeSelector';
-import ModuleConfigurationPanel from './ModuleConfigurationPanel';
+import { ModuleConfigurationPanel } from './ModuleConfigurationPanel';
 import CustomerJourneyPanel from './CustomerJourneyPanel';
 
 const PortalConfigurationStudio: React.FC = () => {
