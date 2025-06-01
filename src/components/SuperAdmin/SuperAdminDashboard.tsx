@@ -12,11 +12,11 @@ import SuperAdminSites from './Tabs/SuperAdminSites';
 import SuperAdminAnalytics from './Tabs/SuperAdminAnalytics';
 
 interface SuperAdminDashboardProps {
-  initialTab?: AdminTab | 'captive-portal' | 'analytics';
+  initialTab?: AdminTab;
 }
 
 const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ initialTab = 'overview' }) => {
-  const [activeTab, setActiveTab] = useState<AdminTab | 'captive-portal' | 'analytics'>(initialTab);
+  const [activeTab, setActiveTab] = useState<AdminTab>(initialTab);
   
   const renderTabContent = () => {
     switch (activeTab) {
@@ -46,7 +46,7 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ initialTab = 
   };
   
   return (
-    <AdminLayout activeTab={activeTab as AdminTab} setActiveTab={setActiveTab as (tab: AdminTab) => void}>
+    <AdminLayout activeTab={activeTab} setActiveTab={setActiveTab}>
       {renderTabContent()}
     </AdminLayout>
   );

@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 
 interface SuperAdminSidebarProps {
-  activeTab: AdminTab | string;
+  activeTab: AdminTab;
   setActiveTab: (tab: AdminTab) => void;
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;

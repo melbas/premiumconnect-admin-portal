@@ -14,7 +14,8 @@ export type AdminTab =
   | 'sites' 
   | 'wholesalers'
   | 'analytics'
-  | 'settings';
+  | 'settings'
+  | 'captive-portal';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
