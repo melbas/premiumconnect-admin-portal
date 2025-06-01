@@ -53,7 +53,7 @@ export class StatisticsService {
       
       if (todayData) {
         // Update existing record
-        const currentValue = (todayData as any)[field] as number || 0;
+        const currentValue = (todayData as Record<string, any>)[field] as number || 0;
         const updateValue = currentValue + amount;
         
         const updateData: Record<string, any> = {};
@@ -97,14 +97,14 @@ export class StatisticsService {
     
     // Calculate trend
     if (statistics.length > 1) {
-      const firstValue = (statistics[0] as any)[metric] as number || 0;
-      const lastValue = (statistics[statistics.length - 1] as any)[metric] as number || 0;
+      const firstValue = (statistics[0] as Record<string, any>)[metric] as number || 0;
+      const lastValue = (statistics[statistics.length - 1] as Record<string, any>)[metric] as number || 0;
       const trend = firstValue === 0 ? 100 : ((lastValue - firstValue) / firstValue) * 100;
       
       return {
         data: statistics.map(stat => ({
           date: stat.date,
-          value: (stat as any)[metric] as number || 0
+          value: (stat as Record<string, any>)[metric] as number || 0
         })),
         trend,
         firstValue,
@@ -115,7 +115,7 @@ export class StatisticsService {
     return {
       data: statistics.map(stat => ({
         date: stat.date,
-        value: (stat as any)[metric] as number || 0
+        value: (stat as Record<string, any>)[metric] as number || 0
       })),
       trend: 0,
       firstValue: 0,
