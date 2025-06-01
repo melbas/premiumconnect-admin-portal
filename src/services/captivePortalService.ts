@@ -178,20 +178,20 @@ export async function getAggregatedUserStats(days = 30) {
 }
 
 // Get trends for a specific metric
-export async function getMetricTrend(metric: string, days = 30) {
+export async function getMetricTrend(metric: keyof PortalStatistics, days = 30) {
   const startDate = format(new Date(Date.now() - days * 24 * 60 * 60 * 1000), 'yyyy-MM-dd');
   const statistics = await getPortalStatistics(startDate);
   
   // Calculate trend
   if (statistics.length > 1) {
-    const firstValue = (statistics[0] as any)[metric] as number || 0;
-    const lastValue = (statistics[statistics.length - 1] as any)[metric] as number || 0;
+    const firstValue = (statistics[0][metric] as number) || 0;
+    const lastValue = (statistics[statistics.length - 1][metric] as number) || 0;
     const trend = firstValue === 0 ? 100 : ((lastValue - firstValue) / firstValue) * 100;
     
     return {
       data: statistics.map(stat => ({
         date: stat.date,
-        value: (stat as any)[metric] as number || 0
+        value: (stat[metric] as number) || 0
       })),
       trend,
       firstValue,
@@ -202,7 +202,7 @@ export async function getMetricTrend(metric: string, days = 30) {
   return {
     data: statistics.map(stat => ({
       date: stat.date,
-      value: (stat as any)[metric] as number || 0
+      value: (stat[metric] as number) || 0
     })),
     trend: 0,
     firstValue: 0,
