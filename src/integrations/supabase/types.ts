@@ -462,6 +462,59 @@ export type Database = {
         }
         Relationships: []
       }
+      portal_analytics: {
+        Row: {
+          avg_session_duration_minutes: number | null
+          bounce_rate: number | null
+          conversion_rate: number | null
+          created_at: string | null
+          id: string
+          metric_date: string | null
+          popular_modules: Json | null
+          portal_config_id: string | null
+          revenue_generated: number | null
+          successful_authentications: number | null
+          total_visitors: number | null
+          user_satisfaction_score: number | null
+        }
+        Insert: {
+          avg_session_duration_minutes?: number | null
+          bounce_rate?: number | null
+          conversion_rate?: number | null
+          created_at?: string | null
+          id?: string
+          metric_date?: string | null
+          popular_modules?: Json | null
+          portal_config_id?: string | null
+          revenue_generated?: number | null
+          successful_authentications?: number | null
+          total_visitors?: number | null
+          user_satisfaction_score?: number | null
+        }
+        Update: {
+          avg_session_duration_minutes?: number | null
+          bounce_rate?: number | null
+          conversion_rate?: number | null
+          created_at?: string | null
+          id?: string
+          metric_date?: string | null
+          popular_modules?: Json | null
+          portal_config_id?: string | null
+          revenue_generated?: number | null
+          successful_authentications?: number | null
+          total_visitors?: number | null
+          user_satisfaction_score?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portal_analytics_portal_config_id_fkey"
+            columns: ["portal_config_id"]
+            isOneToOne: false
+            referencedRelation: "portal_config"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       portal_config: {
         Row: {
           available_languages: Json | null
@@ -471,11 +524,17 @@ export type Database = {
           default_language: string | null
           id: string
           logo_url: string | null
+          portal_name: string | null
+          portal_status: string | null
+          portal_version: number | null
           redirect_url: string | null
+          site_id: string | null
           success_message: string | null
+          template_id: string | null
           theme_color: string | null
           updated_at: string | null
           welcome_message: string | null
+          wholesaler_id: string | null
         }
         Insert: {
           available_languages?: Json | null
@@ -485,11 +544,17 @@ export type Database = {
           default_language?: string | null
           id?: string
           logo_url?: string | null
+          portal_name?: string | null
+          portal_status?: string | null
+          portal_version?: number | null
           redirect_url?: string | null
+          site_id?: string | null
           success_message?: string | null
+          template_id?: string | null
           theme_color?: string | null
           updated_at?: string | null
           welcome_message?: string | null
+          wholesaler_id?: string | null
         }
         Update: {
           available_languages?: Json | null
@@ -499,11 +564,180 @@ export type Database = {
           default_language?: string | null
           id?: string
           logo_url?: string | null
+          portal_name?: string | null
+          portal_status?: string | null
+          portal_version?: number | null
           redirect_url?: string | null
+          site_id?: string | null
           success_message?: string | null
+          template_id?: string | null
           theme_color?: string | null
           updated_at?: string | null
           welcome_message?: string | null
+          wholesaler_id?: string | null
+        }
+        Relationships: []
+      }
+      portal_customer_journeys: {
+        Row: {
+          conditions: Json | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          is_default: boolean | null
+          journey_name: string
+          journey_steps: Json
+          portal_config_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          conditions?: Json | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_default?: boolean | null
+          journey_name: string
+          journey_steps?: Json
+          portal_config_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          conditions?: Json | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_default?: boolean | null
+          journey_name?: string
+          journey_steps?: Json
+          portal_config_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portal_customer_journeys_portal_config_id_fkey"
+            columns: ["portal_config_id"]
+            isOneToOne: false
+            referencedRelation: "portal_config"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      portal_customizations: {
+        Row: {
+          created_at: string | null
+          customization_data: Json
+          customization_type: string
+          id: string
+          is_active: boolean | null
+          portal_config_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          customization_data?: Json
+          customization_type: string
+          id?: string
+          is_active?: boolean | null
+          portal_config_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          customization_data?: Json
+          customization_type?: string
+          id?: string
+          is_active?: boolean | null
+          portal_config_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portal_customizations_portal_config_id_fkey"
+            columns: ["portal_config_id"]
+            isOneToOne: false
+            referencedRelation: "portal_config"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      portal_enabled_modules: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_enabled: boolean | null
+          module_config: Json | null
+          module_id: string | null
+          portal_config_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          module_config?: Json | null
+          module_id?: string | null
+          portal_config_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          module_config?: Json | null
+          module_id?: string | null
+          portal_config_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portal_enabled_modules_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "portal_modules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "portal_enabled_modules_portal_config_id_fkey"
+            columns: ["portal_config_id"]
+            isOneToOne: false
+            referencedRelation: "portal_config"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      portal_modules: {
+        Row: {
+          category: string
+          config_schema: Json | null
+          created_at: string | null
+          description: string | null
+          display_name: string
+          id: string
+          is_active: boolean | null
+          module_name: string
+          module_type: string
+          pricing_tier: string | null
+        }
+        Insert: {
+          category: string
+          config_schema?: Json | null
+          created_at?: string | null
+          description?: string | null
+          display_name: string
+          id?: string
+          is_active?: boolean | null
+          module_name: string
+          module_type: string
+          pricing_tier?: string | null
+        }
+        Update: {
+          category?: string
+          config_schema?: Json | null
+          created_at?: string | null
+          description?: string | null
+          display_name?: string
+          id?: string
+          is_active?: boolean | null
+          module_name?: string
+          module_type?: string
+          pricing_tier?: string | null
         }
         Relationships: []
       }
@@ -546,6 +780,48 @@ export type Database = {
           returning_users?: number | null
           total_connections?: number | null
           video_views?: number | null
+        }
+        Relationships: []
+      }
+      portal_themes: {
+        Row: {
+          color_scheme: Json
+          created_at: string | null
+          cultural_context: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          layout_config: Json | null
+          name: string
+          theme_type: string
+          typography: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          color_scheme?: Json
+          created_at?: string | null
+          cultural_context?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          layout_config?: Json | null
+          name: string
+          theme_type: string
+          typography?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          color_scheme?: Json
+          created_at?: string | null
+          cultural_context?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          layout_config?: Json | null
+          name?: string
+          theme_type?: string
+          typography?: Json | null
+          updated_at?: string | null
         }
         Relationships: []
       }

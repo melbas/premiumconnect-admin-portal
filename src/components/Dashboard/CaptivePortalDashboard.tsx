@@ -86,39 +86,33 @@ const CaptivePortalDashboard = () => {
         <TabsContent value="payments" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <MobileMoneyAssistant 
-              amount={500}
-              context="wifi_payment"
-              language="fr"
-              onPaymentSelected={(provider, amount) => {
-                console.log('💰 Payment selected:', provider, amount);
-              }}
+              userId="payment-user-1"
+              initialLanguage="fr"
+              location="Dakar"
             />
             <MobileMoneyAssistant 
-              amount={1000}
-              context="wifi_payment"
-              language="wo"
-              onPaymentSelected={(provider, amount) => {
-                console.log('💰 Payment selected:', provider, amount);
-              }}
+              userId="payment-user-2"
+              initialLanguage="wo"
+              location="Thiès"
             />
           </div>
           
           {/* Section recommandations familiales */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <MobileMoneyAssistant 
-              amount={300}
-              context="family_plan"
-              language="fr"
+              userId="family-user"
+              initialLanguage="fr"
+              location="Rufisque"
             />
             <MobileMoneyAssistant 
-              amount={750}
-              context="business_plan"
-              language="fr"
+              userId="business-user"
+              initialLanguage="fr"
+              location="Dakar"
             />
             <MobileMoneyAssistant 
-              amount={150}
-              context="student_plan"
-              language="wo"
+              userId="student-user"
+              initialLanguage="wo"
+              location="Saint-Louis"
             />
           </div>
         </TabsContent>

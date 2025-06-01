@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { ChartComponent } from '@/components/Dashboard/Chart';
 import { NetworkConfigPanel, ServerMonitoring } from './TechnicalComponents';
+import SuperAdminPortals from './SuperAdminPortals';
 import { networkStats, deviceData } from '../mockData';
 
 interface SuperAdminTechnicalProps {
@@ -19,10 +20,11 @@ const SuperAdminTechnical: React.FC<SuperAdminTechnicalProps> = ({ initialView =
       </div>
 
       <Tabs defaultValue={initialView} className="w-full">
-        <TabsList className="grid grid-cols-3">
+        <TabsList className="grid grid-cols-4">
           <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
           <TabsTrigger value="network">Network</TabsTrigger>
-          <TabsTrigger value="captive-portal">Captive Portal</TabsTrigger>
+          <TabsTrigger value="captive-portal">Portails Captifs</TabsTrigger>
+          <TabsTrigger value="server">Serveurs</TabsTrigger>
         </TabsList>
 
         <TabsContent value="dashboard" className="mt-6">
@@ -68,13 +70,17 @@ const SuperAdminTechnical: React.FC<SuperAdminTechnicalProps> = ({ initialView =
         </TabsContent>
 
         <TabsContent value="captive-portal" className="mt-6">
+          <SuperAdminPortals />
+        </TabsContent>
+
+        <TabsContent value="server" className="mt-6">
           <Card>
             <CardHeader>
-              <CardTitle>Captive Portal Management</CardTitle>
+              <CardTitle>Server Management</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p>Captive portal management content would go here.</p>
-              <Button>Configure Portal</Button>
+              <p>Server management content would go here.</p>
+              <Button>Configure Servers</Button>
             </CardContent>
           </Card>
         </TabsContent>
