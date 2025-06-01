@@ -272,7 +272,7 @@ export class EnhancedStatisticsService {
   private static getMetricValue(stat: PortalStatistics, field: StatisticField): number {
     if (!stat || typeof stat !== 'object') return 0;
     
-    const value = (stat as any)[field];
+    const value = (stat as Record<string, any>)[field];
     return typeof value === 'number' ? value : 0;
   }
 

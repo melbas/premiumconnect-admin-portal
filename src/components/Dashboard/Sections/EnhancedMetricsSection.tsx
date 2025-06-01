@@ -17,7 +17,15 @@ import {
   AlertTriangle
 } from "lucide-react";
 
-const MetricCard = ({ title, value, icon, isLoading, trend, onClick }) => {
+interface SimpleMetricCardProps {
+  title: string;
+  value: string | number;
+  icon: React.ReactNode;
+  isLoading: boolean;
+  onClick?: () => void;
+}
+
+const SimpleMetricCard = ({ title, value, icon, isLoading, onClick }: SimpleMetricCardProps) => {
   return (
     <div className="dashboard-card cursor-pointer hover:shadow-md transition-shadow" onClick={onClick}>
       <div className="flex items-center justify-between">
@@ -34,11 +42,6 @@ const MetricCard = ({ title, value, icon, isLoading, trend, onClick }) => {
             )}
           </div>
         </div>
-        {trend !== undefined && (
-          <div className={`text-sm font-medium ${trend > 0 ? 'text-green-600' : trend < 0 ? 'text-red-600' : 'text-gray-600'}`}>
-            {trend > 0 ? '+' : ''}{trend.toFixed(1)}%
-          </div>
-        )}
       </div>
     </div>
   );
@@ -116,7 +119,7 @@ const EnhancedMetricsSection = () => {
       />
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <MetricCard
+        <SimpleMetricCard
           title="Connexions totales"
           value={todayStats?.total_connections || 0}
           icon={<Users className="h-6 w-6" />}
@@ -124,7 +127,7 @@ const EnhancedMetricsSection = () => {
           onClick={() => handleMetricClick('total_connections')}
         />
         
-        <MetricCard
+        <SimpleMetricCard
           title="Vues de vidéos"
           value={todayStats?.video_views || 0}
           icon={<VideoIcon className="h-6 w-6" />}
@@ -132,7 +135,7 @@ const EnhancedMetricsSection = () => {
           onClick={() => handleMetricClick('video_views')}
         />
         
-        <MetricCard
+        <SimpleMetricCard
           title="Quiz complétés"
           value={todayStats?.quiz_completions || 0}
           icon={<FileCheck className="h-6 w-6" />}
@@ -140,7 +143,7 @@ const EnhancedMetricsSection = () => {
           onClick={() => handleMetricClick('quiz_completions')}
         />
         
-        <MetricCard
+        <SimpleMetricCard
           title="Jeux joués"
           value={todayStats?.games_played || 0}
           icon={<Gamepad2 className="h-6 w-6" />}
@@ -148,7 +151,7 @@ const EnhancedMetricsSection = () => {
           onClick={() => handleMetricClick('games_played')}
         />
         
-        <MetricCard
+        <SimpleMetricCard
           title="Leads collectés"
           value={todayStats?.leads_collected || 0}
           icon={<UserPlus className="h-6 w-6" />}
@@ -156,7 +159,7 @@ const EnhancedMetricsSection = () => {
           onClick={() => handleMetricClick('leads_collected')}
         />
         
-        <MetricCard
+        <SimpleMetricCard
           title="Durée moyenne (min)"
           value={Math.round(todayStats?.avg_session_duration || 0)}
           icon={<Timer className="h-6 w-6" />}
