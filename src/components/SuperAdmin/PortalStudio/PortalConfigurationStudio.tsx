@@ -1,9 +1,10 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   Monitor, 
   Smartphone, 
@@ -12,20 +13,56 @@ import {
   EyeOff, 
   Settings,
   Palette,
-  Layout
+  Layout,
+  Plus,
+  Save,
+  Loader2
 } from 'lucide-react';
 import { usePortalConfigStore } from '@/stores/portalConfigStore';
 import PortalPreview from './PortalPreview';
 import ConfigurationPanel from './ConfigurationPanel';
+import { useToast } from '@/hooks/use-toast';
 
 const PortalConfigurationStudio: React.FC = () => {
   const { 
+    currentConfig,
+    availableConfigs,
     previewDevice, 
     isPreviewMode, 
+    unsavedChanges,
+    isLoading,
     setPreviewDevice, 
     togglePreviewMode,
-    unsavedChanges 
+    loadConfigurations,
+    loadConfiguration,
+    saveConfiguration,
+    createNewConfiguration
   } = usePortalConfigStore();
+
+  const { toast } = useToast();
+
+  useEffect(() => {
+    loadConfigurations();
+  }, [loadConfigurations]);
+
+  const handleConfigSelect = (configId: string) => {
+    if (configId === 'new') {
+      const name = prompt('Nom de la nouvelle configuration:');
+      if (name) {
+        createNewConfiguration(name, 'business');
+      }
+    } else {
+      loadConfiguration(configId);
+    }
+  };
+
+  const handleSave = async () => {
+    await saveConfiguration();
+    toast({
+      title: "Configuration sauvegardée",
+      description: "Les modifications ont été appliquées avec succès.",
+    });
+  };
 
   return (
     <div className="h-screen flex flex-col">
@@ -34,6 +71,32 @@ const PortalConfigurationStudio: React.FC = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <h1 className="text-2xl font-bold">Studio de Configuration Portail</h1>
+            
+            {/* Configuration Selector */}
+            <Select 
+              value={currentConfig.id} 
+              onValueChange={handleConfigSelect}
+              disabled={isLoading}
+            >
+              <SelectTrigger className="w-64">
+                <SelectValue placeholder="Sélectionner une configuration" />
+              </SelectTrigger>
+              <SelectContent>
+                {availableConfigs.map(config => (
+                  <SelectItem key={config.id} value={config.id}>
+                    {config.name}
+                    {config.isActive && <Badge variant="secondary" className="ml-2">Actif</Badge>}
+                  </SelectItem>
+                ))}
+                <SelectItem value="new">
+                  <div className="flex items-center gap-2">
+                    <Plus className="h-4 w-4" />
+                    Nouvelle configuration
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+
             {unsavedChanges && (
               <Badge variant="destructive">Modifications non sauvegardées</Badge>
             )}
@@ -64,6 +127,20 @@ const PortalConfigurationStudio: React.FC = () => {
                 <Monitor className="h-4 w-4" />
               </Button>
             </div>
+
+            {/* Save Button */}
+            <Button
+              onClick={handleSave}
+              disabled={!unsavedChanges || isLoading}
+              className="flex items-center gap-2"
+            >
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Save className="h-4 w-4" />
+              )}
+              Sauvegarder
+            </Button>
 
             {/* Preview Toggle */}
             <Button

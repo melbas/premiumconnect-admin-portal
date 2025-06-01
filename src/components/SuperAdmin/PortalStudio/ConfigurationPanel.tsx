@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Settings, 
   Eye, 
@@ -18,6 +19,7 @@ import {
 } from 'lucide-react';
 import { usePortalConfigStore } from '@/stores/portalConfigStore';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import ThemeSelector from './ThemeSelector';
 
 const ConfigurationPanel: React.FC = () => {
   const { 
@@ -44,245 +46,265 @@ const ConfigurationPanel: React.FC = () => {
 
   return (
     <div className="space-y-4 h-full overflow-y-auto">
-      {/* Header Actions */}
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Configuration</h3>
-        <div className="flex gap-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={resetConfiguration}
-          >
-            <RotateCcw className="h-4 w-4 mr-2" />
-            Reset
-          </Button>
-          <Button 
-            size="sm" 
-            onClick={saveConfiguration}
-            className="relative"
-          >
-            <Save className="h-4 w-4 mr-2" />
-            Sauvegarder
-            {unsavedChanges && (
-              <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full" />
-            )}
-          </Button>
-        </div>
-      </div>
+      <Tabs defaultValue="modules" className="h-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="modules">Modules</TabsTrigger>
+          <TabsTrigger value="themes">Thèmes</TabsTrigger>
+        </TabsList>
 
-      {/* Authentication Methods */}
-      <Card>
-        <Collapsible 
-          open={openSections.auth} 
-          onOpenChange={() => toggleSection('auth')}
-        >
-          <CollapsibleTrigger asChild>
-            <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
-              <CardTitle className="flex items-center justify-between text-base">
-                <span>Méthodes d'Authentification</span>
-                {openSections.auth ? 
-                  <ChevronUp className="h-4 w-4" /> : 
-                  <ChevronDown className="h-4 w-4" />
-                }
-              </CardTitle>
-            </CardHeader>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <CardContent className="space-y-3">
-              {currentConfig.authMethods.map(method => (
-                <div key={method.id} className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <Checkbox
-                      id={method.id}
-                      checked={method.enabled}
-                      onCheckedChange={(checked) => 
-                        updateAuthMethod(method.id, { enabled: !!checked })
-                      }
-                    />
-                    <Label htmlFor={method.id} className="cursor-pointer">
-                      {method.name}
-                    </Label>
+        <TabsContent value="modules" className="space-y-4 mt-4">
+          {/* Header Actions */}
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">Configuration des Modules</h3>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={resetConfiguration}
+              >
+                <RotateCcw className="h-4 w-4 mr-2" />
+                Reset
+              </Button>
+              <Button 
+                size="sm" 
+                onClick={saveConfiguration}
+                className="relative"
+              >
+                <Save className="h-4 w-4 mr-2" />
+                Sauvegarder
+                {unsavedChanges && (
+                  <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full" />
+                )}
+              </Button>
+            </div>
+          </div>
+
+          {/* Authentication Methods */}
+          <Card>
+            <Collapsible 
+              open={openSections.auth} 
+              onOpenChange={() => toggleSection('auth')}
+            >
+              <CollapsibleTrigger asChild>
+                <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
+                  <CardTitle className="flex items-center justify-between text-base">
+                    <span>Méthodes d'Authentification</span>
+                    {openSections.auth ? 
+                      <ChevronUp className="h-4 w-4" /> : 
+                      <ChevronDown className="h-4 w-4" />
+                    }
+                  </CardTitle>
+                </CardHeader>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <CardContent className="space-y-3">
+                  {currentConfig.authMethods.map(method => (
+                    <div key={method.id} className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <Checkbox
+                          id={method.id}
+                          checked={method.enabled}
+                          onCheckedChange={(checked) => 
+                            updateAuthMethod(method.id, { enabled: !!checked })
+                          }
+                        />
+                        <Label htmlFor={method.id} className="cursor-pointer">
+                          {method.name}
+                        </Label>
+                      </div>
+                      {method.enabled && (
+                        <Button variant="ghost" size="sm">
+                          <Settings className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </CardContent>
+              </CollapsibleContent>
+            </Collapsible>
+          </Card>
+
+          {/* Engagement Modules */}
+          <Card>
+            <Collapsible 
+              open={openSections.engagement} 
+              onOpenChange={() => toggleSection('engagement')}
+            >
+              <CollapsibleTrigger asChild>
+                <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
+                  <CardTitle className="flex items-center justify-between text-base">
+                    <span>Modules d'Engagement</span>
+                    {openSections.engagement ? 
+                      <ChevronUp className="h-4 w-4" /> : 
+                      <ChevronDown className="h-4 w-4" />
+                    }
+                  </CardTitle>
+                </CardHeader>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <CardContent className="space-y-3">
+                  {currentConfig.engagementModules
+                    .sort((a, b) => a.order - b.order)
+                    .map(module => (
+                    <div key={module.id} className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <Checkbox
+                          id={module.id}
+                          checked={module.enabled}
+                          onCheckedChange={(checked) => 
+                            updateEngagementModule(module.id, { enabled: !!checked })
+                          }
+                        />
+                        <Label htmlFor={module.id} className="cursor-pointer">
+                          {module.name}
+                        </Label>
+                        <Badge variant="outline" className="text-xs">
+                          #{module.order}
+                        </Badge>
+                      </div>
+                      {module.enabled && (
+                        <Button variant="ghost" size="sm">
+                          <Settings className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </CardContent>
+              </CollapsibleContent>
+            </Collapsible>
+          </Card>
+
+          {/* Payment Modules */}
+          <Card>
+            <Collapsible 
+              open={openSections.payment} 
+              onOpenChange={() => toggleSection('payment')}
+            >
+              <CollapsibleTrigger asChild>
+                <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
+                  <CardTitle className="flex items-center justify-between text-base">
+                    <span>Modules de Paiement</span>
+                    {openSections.payment ? 
+                      <ChevronUp className="h-4 w-4" /> : 
+                      <ChevronDown className="h-4 w-4" />
+                    }
+                  </CardTitle>
+                </CardHeader>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <CardContent className="space-y-3">
+                  {currentConfig.paymentModules.map(module => (
+                    <div key={module.id} className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <Checkbox
+                          id={module.id}
+                          checked={module.enabled}
+                          onCheckedChange={(checked) => 
+                            updatePaymentModule(module.id, { enabled: !!checked })
+                          }
+                        />
+                        <Label htmlFor={module.id} className="cursor-pointer">
+                          {module.name}
+                        </Label>
+                      </div>
+                      {module.enabled && (
+                        <Button variant="ghost" size="sm">
+                          <Settings className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </CardContent>
+              </CollapsibleContent>
+            </Collapsible>
+          </Card>
+
+          {/* Branding Quick Settings */}
+          <Card>
+            <Collapsible 
+              open={openSections.branding} 
+              onOpenChange={() => toggleSection('branding')}
+            >
+              <CollapsibleTrigger asChild>
+                <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
+                  <CardTitle className="flex items-center justify-between text-base">
+                    <div className="flex items-center gap-2">
+                      <Palette className="h-4 w-4" />
+                      <span>Style Rapide</span>
+                    </div>
+                    {openSections.branding ? 
+                      <ChevronUp className="h-4 w-4" /> : 
+                      <ChevronDown className="h-4 w-4" />
+                    }
+                  </CardTitle>
+                </CardHeader>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="primaryColor">Couleur Principale</Label>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          id="primaryColor"
+                          type="color"
+                          value={currentConfig.branding.primaryColor}
+                          onChange={(e) => updateBranding({ primaryColor: e.target.value })}
+                          className="w-12 h-8 p-1 rounded"
+                        />
+                        <Input
+                          value={currentConfig.branding.primaryColor}
+                          onChange={(e) => updateBranding({ primaryColor: e.target.value })}
+                          className="flex-1"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="secondaryColor">Couleur Secondaire</Label>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          id="secondaryColor"
+                          type="color"
+                          value={currentConfig.branding.secondaryColor}
+                          onChange={(e) => updateBranding({ secondaryColor: e.target.value })}
+                          className="w-12 h-8 p-1 rounded"
+                        />
+                        <Input
+                          value={currentConfig.branding.secondaryColor}
+                          onChange={(e) => updateBranding({ secondaryColor: e.target.value })}
+                          className="flex-1"
+                        />
+                      </div>
+                    </div>
                   </div>
-                  {method.enabled && (
-                    <Button variant="ghost" size="sm">
-                      <Settings className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-              ))}
-            </CardContent>
-          </CollapsibleContent>
-        </Collapsible>
-      </Card>
 
-      {/* Engagement Modules */}
-      <Card>
-        <Collapsible 
-          open={openSections.engagement} 
-          onOpenChange={() => toggleSection('engagement')}
-        >
-          <CollapsibleTrigger asChild>
-            <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
-              <CardTitle className="flex items-center justify-between text-base">
-                <span>Modules d'Engagement</span>
-                {openSections.engagement ? 
-                  <ChevronUp className="h-4 w-4" /> : 
-                  <ChevronDown className="h-4 w-4" />
-                }
-              </CardTitle>
-            </CardHeader>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <CardContent className="space-y-3">
-              {currentConfig.engagementModules
-                .sort((a, b) => a.order - b.order)
-                .map(module => (
-                <div key={module.id} className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <Checkbox
-                      id={module.id}
-                      checked={module.enabled}
-                      onCheckedChange={(checked) => 
-                        updateEngagementModule(module.id, { enabled: !!checked })
-                      }
-                    />
-                    <Label htmlFor={module.id} className="cursor-pointer">
-                      {module.name}
-                    </Label>
-                    <Badge variant="outline" className="text-xs">
-                      #{module.order}
-                    </Badge>
-                  </div>
-                  {module.enabled && (
-                    <Button variant="ghost" size="sm">
-                      <Settings className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-              ))}
-            </CardContent>
-          </CollapsibleContent>
-        </Collapsible>
-      </Card>
-
-      {/* Payment Modules */}
-      <Card>
-        <Collapsible 
-          open={openSections.payment} 
-          onOpenChange={() => toggleSection('payment')}
-        >
-          <CollapsibleTrigger asChild>
-            <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
-              <CardTitle className="flex items-center justify-between text-base">
-                <span>Modules de Paiement</span>
-                {openSections.payment ? 
-                  <ChevronUp className="h-4 w-4" /> : 
-                  <ChevronDown className="h-4 w-4" />
-                }
-              </CardTitle>
-            </CardHeader>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <CardContent className="space-y-3">
-              {currentConfig.paymentModules.map(module => (
-                <div key={module.id} className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <Checkbox
-                      id={module.id}
-                      checked={module.enabled}
-                      onCheckedChange={(checked) => 
-                        updatePaymentModule(module.id, { enabled: !!checked })
-                      }
-                    />
-                    <Label htmlFor={module.id} className="cursor-pointer">
-                      {module.name}
-                    </Label>
-                  </div>
-                  {module.enabled && (
-                    <Button variant="ghost" size="sm">
-                      <Settings className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-              ))}
-            </CardContent>
-          </CollapsibleContent>
-        </Collapsible>
-      </Card>
-
-      {/* Branding */}
-      <Card>
-        <Collapsible 
-          open={openSections.branding} 
-          onOpenChange={() => toggleSection('branding')}
-        >
-          <CollapsibleTrigger asChild>
-            <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
-              <CardTitle className="flex items-center justify-between text-base">
-                <div className="flex items-center gap-2">
-                  <Palette className="h-4 w-4" />
-                  <span>Style & Branding</span>
-                </div>
-                {openSections.branding ? 
-                  <ChevronUp className="h-4 w-4" /> : 
-                  <ChevronDown className="h-4 w-4" />
-                }
-              </CardTitle>
-            </CardHeader>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="primaryColor">Couleur Principale</Label>
-                  <div className="flex items-center gap-2">
+                  <div>
+                    <Label htmlFor="fontFamily">Police</Label>
                     <Input
-                      id="primaryColor"
-                      type="color"
-                      value={currentConfig.branding.primaryColor}
-                      onChange={(e) => updateBranding({ primaryColor: e.target.value })}
-                      className="w-12 h-8 p-1 rounded"
-                    />
-                    <Input
-                      value={currentConfig.branding.primaryColor}
-                      onChange={(e) => updateBranding({ primaryColor: e.target.value })}
-                      className="flex-1"
+                      id="fontFamily"
+                      value={currentConfig.branding.fontFamily}
+                      onChange={(e) => updateBranding({ fontFamily: e.target.value })}
+                      placeholder="Inter, Arial, sans-serif"
                     />
                   </div>
-                </div>
-                
-                <div>
-                  <Label htmlFor="secondaryColor">Couleur Secondaire</Label>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      id="secondaryColor"
-                      type="color"
-                      value={currentConfig.branding.secondaryColor}
-                      onChange={(e) => updateBranding({ secondaryColor: e.target.value })}
-                      className="w-12 h-8 p-1 rounded"
-                    />
-                    <Input
-                      value={currentConfig.branding.secondaryColor}
-                      onChange={(e) => updateBranding({ secondaryColor: e.target.value })}
-                      className="flex-1"
-                    />
-                  </div>
-                </div>
-              </div>
+                </CardContent>
+              </CollapsibleContent>
+            </Collapsible>
+          </Card>
+        </TabsContent>
 
-              <div>
-                <Label htmlFor="fontFamily">Police</Label>
-                <Input
-                  id="fontFamily"
-                  value={currentConfig.branding.fontFamily}
-                  onChange={(e) => updateBranding({ fontFamily: e.target.value })}
-                  placeholder="Inter, Arial, sans-serif"
-                />
-              </div>
+        <TabsContent value="themes" className="mt-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Sélection de Thème</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ThemeSelector />
             </CardContent>
-          </CollapsibleContent>
-        </Collapsible>
-      </Card>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
