@@ -6,7 +6,7 @@ import {
   PlusCircle,
   UserPlus,
   BarChart,
-  AlertTriangle
+  MessageCircle
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 
@@ -56,10 +56,10 @@ const QuickActions: React.FC = () => {
           <Button 
             variant="outline" 
             className="flex items-center justify-start space-x-2 h-auto py-3"
-            onClick={() => handleAction("Surveiller les problèmes")}
+            onClick={() => handleAction("Accéder au Chat IA")}
           >
-            <AlertTriangle size={16} />
-            <span>Surveiller les problèmes</span>
+            <MessageCircle size={16} />
+            <span>Chat IA Support</span>
           </Button>
         </div>
       </CardContent>

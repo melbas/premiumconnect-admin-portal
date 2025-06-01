@@ -1,7 +1,7 @@
 
 import React from "react";
 import Table from "../Table";
-import { Phone } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 
 interface UserItem {
   id: string;
@@ -27,7 +27,7 @@ const NewUsersSection = ({ users }: NewUsersSectionProps) => {
       <div className="flex space-x-2">
         <button className="btn btn-primary py-1 px-2 text-xs">View</button>
         <button className="btn btn-success py-1 px-2 text-xs flex items-center">
-          <Phone size={12} className="mr-1" /> WhatsApp
+          <MessageCircle size={12} className="mr-1" /> Chat IA
         </button>
       </div>
     )}
