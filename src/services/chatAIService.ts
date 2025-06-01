@@ -69,7 +69,7 @@ export interface ChatAnalytics {
   avg_response_time_ms: number;
   total_cost: number;
   satisfaction_avg: number;
-  provider_usage: Record<string, number>;
+  provider_usage: any; // Changed from Record<string, number> to any to match Supabase Json type
   popular_questions: any;
   created_at: string;
 }
@@ -315,7 +315,12 @@ export const chatAIService = {
         return [];
       }
 
-      return data || [];
+      // Cast the data to match our interface
+      return (data || []).map(item => ({
+        ...item,
+        provider_usage: item.provider_usage || {},
+        popular_questions: item.popular_questions || {}
+      })) as ChatAnalytics[];
     } catch (error) {
       console.error('Failed to fetch chat analytics:', error);
       return [];

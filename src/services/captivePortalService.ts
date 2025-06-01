@@ -2,8 +2,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 
-// Keep existing types and interfaces
-
 export interface PortalStatistics {
   id: string;
   date: string;
@@ -18,14 +16,14 @@ export interface PortalStatistics {
   returning_users: number;
 }
 
-// Get WiFi users with optional limit
-export async function getWifiUsers(limit = 10) {
+// Get WiFi users with optional limit and offset
+export async function getWifiUsers(limit = 10, offset = 0) {
   try {
     const { data: users, error } = await supabase
       .from('wifi_users')
       .select('*')
       .order('created_at', { ascending: false })
-      .limit(limit);
+      .range(offset, offset + limit - 1);
 
     if (error) {
       console.error('Error fetching WiFi users:', error);
@@ -47,23 +45,32 @@ export async function getWifiUsers(limit = 10) {
   }
 }
 
-// Get WiFi sessions data - new function to fix missing export
-export async function getWifiSessions() {
+// Get WiFi sessions count with optional limit and offset
+export async function getWifiSessions(limit = 10, offset = 0) {
   try {
     const { data: sessions, error } = await supabase
-      .from('wifi_users')
-      .select('created_at, loyalty_points')
-      .order('created_at', { ascending: false });
+      .from('wifi_sessions')
+      .select('*')
+      .order('started_at', { ascending: false })
+      .range(offset, offset + limit - 1);
 
     if (error) {
       console.error('Error fetching WiFi sessions:', error);
-      return [];
+      return { sessions: [], count: 0 };
     }
 
-    return sessions || [];
+    const { count, error: countError } = await supabase
+      .from('wifi_sessions')
+      .select('*', { count: 'exact', head: true });
+
+    if (countError) {
+      console.error('Error counting WiFi sessions:', countError);
+    }
+
+    return { sessions: sessions || [], count: count || 0 };
   } catch (error) {
     console.error('Failed to fetch WiFi sessions:', error);
-    return [];
+    return { sessions: [], count: 0 };
   }
 }
 

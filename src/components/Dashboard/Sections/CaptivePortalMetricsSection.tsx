@@ -50,16 +50,14 @@ const CaptivePortalMetricsSection = () => {
   const { data: usersData, isLoading: isLoadingUsers } = useQuery({
     queryKey: ['totalUsers'],
     queryFn: async () => {
-      const { count } = await getWifiUsers(1, 0);
-      return { count };
+      return await getWifiUsers(1, 0);
     }
   });
 
   const { data: sessionsData, isLoading: isLoadingSessions } = useQuery({
     queryKey: ['activeSessions'],
     queryFn: async () => {
-      const { count } = await getWifiSessions(1, 0);
-      return { count };
+      return await getWifiSessions(1, 0);
     }
   });
 
