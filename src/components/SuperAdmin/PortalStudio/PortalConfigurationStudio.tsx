@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,13 +18,14 @@ import {
   Save,
   Loader2,
   MapPin,
-  Building
+  Building,
+  Network
 } from 'lucide-react';
 import { usePortalConfigStore } from '@/stores/portalConfigStore';
 import PortalPreview from './PortalPreview';
-import ConfigurationPanel from './ConfigurationPanel';
 import { useToast } from '@/hooks/use-toast';
 import { ModuleConfigurationPanel } from './ModuleConfigurationPanel';
+import NetworkConnectionPanel from './NetworkConnectionPanel';
 
 const PortalConfigurationStudio: React.FC = () => {
   const { 
@@ -78,7 +80,6 @@ const PortalConfigurationStudio: React.FC = () => {
   };
 
   const currentSite = sites.find(s => s.id === selectedSite);
-  const currentWholesaler = wholesalers.find(w => w.id === selectedWholesaler);
 
   return (
     <div className="h-screen flex flex-col">
@@ -254,10 +255,14 @@ const PortalConfigurationStudio: React.FC = () => {
         <div className={`${isPreviewMode ? 'w-96' : 'flex-1'} border-l bg-background`}>
           <div className="h-full">
             <Tabs defaultValue="modules" className="h-full flex flex-col">
-              <TabsList className="grid w-full grid-cols-3 m-4">
+              <TabsList className="grid w-full grid-cols-4 m-4">
                 <TabsTrigger value="modules" className="flex items-center gap-2">
                   <Layout className="h-4 w-4" />
                   Modules
+                </TabsTrigger>
+                <TabsTrigger value="network" className="flex items-center gap-2">
+                  <Network className="h-4 w-4" />
+                  Réseau
                 </TabsTrigger>
                 <TabsTrigger value="style" className="flex items-center gap-2">
                   <Palette className="h-4 w-4" />
@@ -271,6 +276,10 @@ const PortalConfigurationStudio: React.FC = () => {
 
               <TabsContent value="modules" className="flex-1 m-4 mt-0 overflow-y-auto">
                 <ModuleConfigurationPanel />
+              </TabsContent>
+
+              <TabsContent value="network" className="flex-1 m-4 mt-0 overflow-y-auto">
+                <NetworkConnectionPanel />
               </TabsContent>
 
               <TabsContent value="style" className="flex-1 m-4 mt-0">
