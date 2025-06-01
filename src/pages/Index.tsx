@@ -50,7 +50,7 @@ const Index = () => {
                 </Link>
               ) : (
                 <Link to="/super-admin">
-                  <Button variant="outline">Accéder au Super Admin Dashboard</Button>
+                  <Button variant="outline">Accéder au Back-Office</Button>
                 </Link>
               )}
             </div>

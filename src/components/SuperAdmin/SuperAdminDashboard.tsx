@@ -1,5 +1,7 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 import AdminLayout, { AdminTab } from './AdminLayout';
 import SuperAdminOverview from './Tabs/SuperAdminOverview';
 import SuperAdminTechnical from './Tabs/SuperAdminTechnical';
@@ -18,7 +20,37 @@ interface SuperAdminDashboardProps {
 }
 
 const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ initialTab = 'overview' }) => {
-  const [activeTab, setActiveTab] = useState<AdminTab>(initialTab);
+  const { tab } = useParams<{ tab: string }>();
+  const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuth();
+  
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login', { 
+        state: { from: window.location.pathname },
+        replace: true 
+      });
+      return;
+    }
+  }, [isAuthenticated, navigate]);
+
+  // Determine initial active tab from URL or props
+  const getInitialTab = (): AdminTab => {
+    if (tab && ['overview', 'technical', 'marketing', 'vouchers', 'users', 'sites', 'wholesalers', 'captive-portal', 'analytics', 'ai', 'audit', 'settings'].includes(tab)) {
+      return tab as AdminTab;
+    }
+    return initialTab;
+  };
+
+  const [activeTab, setActiveTab] = useState<AdminTab>(getInitialTab());
+
+  // Update URL when tab changes
+  const handleTabChange = (newTab: AdminTab) => {
+    setActiveTab(newTab);
+    // Update URL without causing a full page reload
+    window.history.pushState({}, '', `/super-admin/${newTab}`);
+  };
   
   const renderTabContent = () => {
     switch (activeTab) {
@@ -50,10 +82,27 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ initialTab = 
         return <SuperAdminOverview />;
     }
   };
+
+  // Don't render if not authenticated
+  if (!isAuthenticated) {
+    return null;
+  }
   
   return (
-    <AdminLayout activeTab={activeTab} setActiveTab={setActiveTab}>
-      {renderTabContent()}
+    <AdminLayout activeTab={activeTab} setActiveTab={handleTabChange}>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Back-Office Wifi Sénégal
+            </h1>
+            <p className="text-muted-foreground">
+              Connecté en tant que {user?.name} ({user?.role})
+            </p>
+          </div>
+        </div>
+        {renderTabContent()}
+      </div>
     </AdminLayout>
   );
 };

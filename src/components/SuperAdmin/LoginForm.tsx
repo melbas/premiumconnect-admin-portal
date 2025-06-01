@@ -24,24 +24,11 @@ const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'quick' | 'credentials'>('quick');
   
-  // Get redirect path from location state or default based on role
-  const getRedirectPath = (user: User) => {
+  // Get redirect path from location state or default to super admin
+  const getRedirectPath = () => {
     const from = location.state?.from;
-    if (from) return from;
-    
-    // Default redirect based on role
-    switch (user.role) {
-      case 'superadmin':
-        return '/super-admin';
-      case 'marketing':
-        return '/marketing';
-      case 'technical':
-        return '/technical';
-      case 'voucher_manager':
-        return '/vouchers';
-      default:
-        return '/super-admin';
-    }
+    if (from && from !== '/login') return from;
+    return '/super-admin'; // Tous les utilisateurs vont au super admin
   };
   
   // Handle login with credentials
@@ -57,7 +44,7 @@ const LoginForm = () => {
         console.log('🔐 Login successful for user:', user);
         login(user);
         
-        const redirectPath = getRedirectPath(user);
+        const redirectPath = getRedirectPath();
         console.log('🔐 Redirecting to:', redirectPath);
         
         toast({
@@ -87,7 +74,7 @@ const LoginForm = () => {
       console.log('🔐 Quick login successful for user:', user);
       login(user);
       
-      const redirectPath = getRedirectPath(user);
+      const redirectPath = getRedirectPath();
       console.log('🔐 Redirecting to:', redirectPath);
       
       toast({
