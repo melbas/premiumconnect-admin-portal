@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -20,8 +19,10 @@ import {
   Globe,
   Zap,
   Heart,
-  Gamepad2
+  Gamepad2,
+  Wrench
 } from 'lucide-react';
+import PortalConfigurationStudio from '../PortalStudio/PortalConfigurationStudio';
 
 const SuperAdminPortals = () => {
   const [activePortalsTab, setActivePortalsTab] = useState('overview');
@@ -90,13 +91,14 @@ const SuperAdminPortals = () => {
       </div>
 
       <Tabs value={activePortalsTab} onValueChange={setActivePortalsTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
           <TabsTrigger value="sites">Par Sites</TabsTrigger>
           <TabsTrigger value="wholesalers">Par Grossistes</TabsTrigger>
           <TabsTrigger value="studio">Studio Design</TabsTrigger>
           <TabsTrigger value="modules">Modules</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="configuration">Configuration Live</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -405,6 +407,12 @@ const SuperAdminPortals = () => {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="configuration" className="h-screen">
+          <div className="bg-white rounded-lg border h-full">
+            <PortalConfigurationStudio />
+          </div>
         </TabsContent>
       </Tabs>
     </div>
