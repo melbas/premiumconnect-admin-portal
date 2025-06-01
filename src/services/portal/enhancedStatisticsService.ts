@@ -121,8 +121,7 @@ export class EnhancedStatisticsService {
       if (cachedData && cachedData.length > 0) {
         const updatedData = [...cachedData];
         const currentValue = this.getMetricValue(updatedData[0], field);
-        // Use type assertion to bypass TypeScript inference issues
-        (updatedData[0] as any)[field] = currentValue + amount;
+        this.setMetricValue(updatedData[0], field, currentValue + amount);
         CacheService.set(cacheKey, updatedData, 5 * 60 * 1000);
       }
 
@@ -143,8 +142,7 @@ export class EnhancedStatisticsService {
         const currentValue = this.getMetricValue(todayData, field);
         const updateValue = currentValue + amount;
         
-        const updateData: Record<string, any> = {};
-        updateData[field] = updateValue;
+        const updateData = this.createUpdateData(field, updateValue);
         
         const { error: updateError } = await supabase
           .from('portal_statistics')
@@ -157,10 +155,7 @@ export class EnhancedStatisticsService {
         }
       } else {
         // Create new record for today
-        const insertData: Record<string, any> = {
-          date: today,
-        };
-        insertData[field] = amount;
+        const insertData = this.createInsertData(field, amount, today);
         
         const { error: insertError } = await supabase
           .from('portal_statistics')
@@ -268,38 +263,123 @@ export class EnhancedStatisticsService {
     );
   }
 
-  // Type-safe helper function for getting metric values - completely rewritten to avoid TS errors
+  // Type-safe helper function for getting metric values
   private static getMetricValue(stat: PortalStatistics, field: StatisticField): number {
     if (!stat || typeof stat !== 'object') return 0;
     
-    try {
-      // Use direct property access with safe fallback
-      switch (field) {
-        case 'total_connections':
-          return stat.total_connections || 0;
-        case 'video_views':
-          return stat.video_views || 0;
-        case 'quiz_completions':
-          return stat.quiz_completions || 0;
-        case 'games_played':
-          return stat.games_played || 0;
-        case 'leads_collected':
-          return stat.leads_collected || 0;
-        case 'avg_session_duration':
-          return stat.avg_session_duration || 0;
-        case 'game_completion_rate':
-          return stat.game_completion_rate || 0;
-        case 'conversion_rate':
-          return stat.conversion_rate || 0;
-        case 'returning_users':
-          return stat.returning_users || 0;
-        default:
-          console.warn(`Unknown field: ${field}`);
-          return 0;
-      }
-    } catch (error) {
-      console.warn(`Error accessing field ${field}:`, error);
-      return 0;
+    switch (field) {
+      case 'total_connections':
+        return stat.total_connections || 0;
+      case 'video_views':
+        return stat.video_views || 0;
+      case 'quiz_completions':
+        return stat.quiz_completions || 0;
+      case 'games_played':
+        return stat.games_played || 0;
+      case 'leads_collected':
+        return stat.leads_collected || 0;
+      case 'avg_session_duration':
+        return stat.avg_session_duration || 0;
+      case 'game_completion_rate':
+        return stat.game_completion_rate || 0;
+      case 'conversion_rate':
+        return stat.conversion_rate || 0;
+      case 'returning_users':
+        return stat.returning_users || 0;
+      default:
+        console.warn(`Unknown field: ${field}`);
+        return 0;
+    }
+  }
+
+  // Type-safe helper function for setting metric values
+  private static setMetricValue(stat: PortalStatistics, field: StatisticField, value: number): void {
+    switch (field) {
+      case 'total_connections':
+        stat.total_connections = value;
+        break;
+      case 'video_views':
+        stat.video_views = value;
+        break;
+      case 'quiz_completions':
+        stat.quiz_completions = value;
+        break;
+      case 'games_played':
+        stat.games_played = value;
+        break;
+      case 'leads_collected':
+        stat.leads_collected = value;
+        break;
+      case 'avg_session_duration':
+        stat.avg_session_duration = value;
+        break;
+      case 'game_completion_rate':
+        stat.game_completion_rate = value;
+        break;
+      case 'conversion_rate':
+        stat.conversion_rate = value;
+        break;
+      case 'returning_users':
+        stat.returning_users = value;
+        break;
+      default:
+        console.warn(`Unknown field: ${field}`);
+        break;
+    }
+  }
+
+  // Type-safe helper function for creating update data
+  private static createUpdateData(field: StatisticField, value: number): Partial<PortalStatistics> {
+    switch (field) {
+      case 'total_connections':
+        return { total_connections: value };
+      case 'video_views':
+        return { video_views: value };
+      case 'quiz_completions':
+        return { quiz_completions: value };
+      case 'games_played':
+        return { games_played: value };
+      case 'leads_collected':
+        return { leads_collected: value };
+      case 'avg_session_duration':
+        return { avg_session_duration: value };
+      case 'game_completion_rate':
+        return { game_completion_rate: value };
+      case 'conversion_rate':
+        return { conversion_rate: value };
+      case 'returning_users':
+        return { returning_users: value };
+      default:
+        console.warn(`Unknown field: ${field}`);
+        return {};
+    }
+  }
+
+  // Type-safe helper function for creating insert data
+  private static createInsertData(field: StatisticField, value: number, date: string): Partial<PortalStatistics> {
+    const baseData = { date };
+    switch (field) {
+      case 'total_connections':
+        return { ...baseData, total_connections: value };
+      case 'video_views':
+        return { ...baseData, video_views: value };
+      case 'quiz_completions':
+        return { ...baseData, quiz_completions: value };
+      case 'games_played':
+        return { ...baseData, games_played: value };
+      case 'leads_collected':
+        return { ...baseData, leads_collected: value };
+      case 'avg_session_duration':
+        return { ...baseData, avg_session_duration: value };
+      case 'game_completion_rate':
+        return { ...baseData, game_completion_rate: value };
+      case 'conversion_rate':
+        return { ...baseData, conversion_rate: value };
+      case 'returning_users':
+        return { ...baseData, returning_users: value };
+      default:
+        console.warn(`Unknown field: ${field}`);
+        return baseData;
     }
   }
 
