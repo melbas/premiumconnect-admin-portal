@@ -1,9 +1,9 @@
-
 import React from "react";
 import { useEnhancedStatistics } from "@/hooks/use-enhanced-statistics";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import DevelopmentPanel from "../DevelopmentPanel";
 import {
   Users,
   Timer,
@@ -107,11 +107,18 @@ const EnhancedMetricsSection = () => {
   };
 
   const handleTestIncrement = async (field: string) => {
-    await incrementStatistic(field as any, 1);
+    try {
+      await incrementStatistic(field as any, 1);
+      console.log(`Successfully incremented ${field}`);
+    } catch (error) {
+      console.error(`Failed to increment ${field}:`, error);
+    }
   };
 
   return (
     <div className="space-y-6">
+      <DevelopmentPanel />
+      
       <SystemHealthIndicator 
         systemHealth={systemHealth}
         isRealtime={isRealtime}
@@ -168,9 +175,9 @@ const EnhancedMetricsSection = () => {
         />
       </div>
 
-      {/* Development testing buttons - remove in production */}
+      {/* Development testing buttons */}
       <div className="flex flex-wrap gap-2 p-4 bg-gray-50 rounded-lg">
-        <p className="text-sm text-gray-600 w-full mb-2">Tests (développement uniquement):</p>
+        <p className="text-sm text-gray-600 w-full mb-2">Tests d'incrémentation :</p>
         <Button size="sm" variant="outline" onClick={() => handleTestIncrement('total_connections')}>
           +1 Connexion
         </Button>

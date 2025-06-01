@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { EnhancedStatisticsService } from '@/services/portal/enhancedStatisticsService';
+import { StatisticsProvider } from '@/services/portal/statisticsProvider';
 import { PortalStatistics, MetricTrend, StatisticField } from '@/types/portal';
 import { format, subDays } from 'date-fns';
 
@@ -11,10 +11,10 @@ export const useEnhancedStatistics = (days = 30) => {
 
   const startDate = format(subDays(new Date(), days), 'yyyy-MM-dd');
   
-  // Main statistics query
+  // Main statistics query using the provider
   const { data: statistics, isLoading, error, refetch } = useQuery({
     queryKey: ['enhanced-portal-statistics', startDate],
-    queryFn: () => EnhancedStatisticsService.getPortalStatistics(startDate),
+    queryFn: () => StatisticsProvider.getPortalStatistics(startDate),
     staleTime: 2 * 60 * 1000, // 2 minutes
     refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
   });
@@ -22,7 +22,7 @@ export const useEnhancedStatistics = (days = 30) => {
   // Today's statistics with more frequent updates
   const { data: todayStats, isLoading: isTodayLoading } = useQuery({
     queryKey: ['today-statistics'],
-    queryFn: () => EnhancedStatisticsService.getTodayStatistics(),
+    queryFn: () => StatisticsProvider.getTodayStatistics(),
     staleTime: 30 * 1000, // 30 seconds
     refetchInterval: 2 * 60 * 1000, // Refetch every 2 minutes
   });
@@ -30,7 +30,7 @@ export const useEnhancedStatistics = (days = 30) => {
   // System health monitoring
   const { data: systemHealth } = useQuery({
     queryKey: ['system-health'],
-    queryFn: () => EnhancedStatisticsService.getSystemHealth(),
+    queryFn: () => StatisticsProvider.getSystemHealth(),
     staleTime: 60 * 1000, // 1 minute
     refetchInterval: 5 * 60 * 1000, // Check every 5 minutes
   });
@@ -44,22 +44,22 @@ export const useEnhancedStatistics = (days = 30) => {
       setIsRealtime(true);
     };
 
-    EnhancedStatisticsService.initializeRealtime(handleRealtimeUpdate);
+    StatisticsProvider.initializeRealtime(handleRealtimeUpdate);
 
     return () => {
-      EnhancedStatisticsService.cleanup();
+      StatisticsProvider.cleanup();
       setIsRealtime(false);
     };
   }, [queryClient]);
 
   // Get metric trend with caching
   const getMetricTrend = useCallback(async (metric: StatisticField, trendDays = 30): Promise<MetricTrend> => {
-    return EnhancedStatisticsService.getMetricTrend(metric, trendDays);
+    return StatisticsProvider.getMetricTrend(metric, trendDays);
   }, []);
 
   // Increment statistic with optimistic update
   const incrementStatistic = useCallback(async (field: StatisticField, amount = 1): Promise<boolean> => {
-    const success = await EnhancedStatisticsService.incrementStatistic(field, amount);
+    const success = await StatisticsProvider.incrementStatistic(field, amount);
     if (success) {
       // Trigger immediate refresh of today's stats
       queryClient.invalidateQueries({ queryKey: ['today-statistics'] });

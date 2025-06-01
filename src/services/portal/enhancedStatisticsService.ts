@@ -267,25 +267,19 @@ export class EnhancedStatisticsService {
     );
   }
 
-  // Helper function to safely get metric value with proper typing
+  // Safe helper function with fallback error handling
   private static getMetricValue(stat: PortalStatistics, field: StatisticField): number {
     if (!stat || typeof stat !== 'object') return 0;
     
-    // Create a mapping to ensure type safety
-    const fieldMap: Record<StatisticField, (stat: PortalStatistics) => number> = {
-      total_connections: (s) => s.total_connections || 0,
-      video_views: (s) => s.video_views || 0,
-      quiz_completions: (s) => s.quiz_completions || 0,
-      games_played: (s) => s.games_played || 0,
-      leads_collected: (s) => s.leads_collected || 0,
-      avg_session_duration: (s) => s.avg_session_duration || 0,
-      game_completion_rate: (s) => s.game_completion_rate || 0,
-      conversion_rate: (s) => s.conversion_rate || 0,
-      returning_users: (s) => s.returning_users || 0,
-    };
-    
-    const getter = fieldMap[field];
-    return getter ? getter(stat) : 0;
+    try {
+      // Use safer approach with explicit mapping and type assertion
+      const safeField = String(field) as keyof PortalStatistics;
+      const value = stat[safeField];
+      return typeof value === 'number' ? value : 0;
+    } catch (error) {
+      console.warn(`Error accessing field ${field}:`, error);
+      return 0;
+    }
   }
 
   // Get system health indicators
