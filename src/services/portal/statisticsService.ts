@@ -53,11 +53,12 @@ export class StatisticsService {
       
       if (todayData) {
         // Update existing record
-        const currentValue = (todayData as Record<string, any>)[field] as number || 0;
+        const currentValue = (todayData[field as keyof typeof todayData] as number) || 0;
         const updateValue = currentValue + amount;
         
-        const updateData: Record<string, any> = {};
-        updateData[field] = updateValue;
+        const updateData: Partial<PortalStatistics> = {
+          [field]: updateValue
+        } as Partial<PortalStatistics>;
         
         const { error: updateError } = await supabase
           .from('portal_statistics')
@@ -70,8 +71,10 @@ export class StatisticsService {
         }
       } else {
         // Create new record for today
-        const insertData: Record<string, any> = { date: today };
-        insertData[field] = amount;
+        const insertData: Partial<PortalStatistics> = {
+          date: today,
+          [field]: amount
+        } as Partial<PortalStatistics>;
         
         const { error: insertError } = await supabase
           .from('portal_statistics')
@@ -95,16 +98,21 @@ export class StatisticsService {
     const startDate = format(new Date(Date.now() - days * 24 * 60 * 60 * 1000), 'yyyy-MM-dd');
     const statistics = await this.getPortalStatistics(startDate);
     
+    // Helper function to safely get metric value
+    const getMetricValue = (stat: PortalStatistics, metricKey: StatisticField): number => {
+      return (stat[metricKey as keyof PortalStatistics] as number) || 0;
+    };
+    
     // Calculate trend
     if (statistics.length > 1) {
-      const firstValue = (statistics[0] as Record<string, any>)[metric] as number || 0;
-      const lastValue = (statistics[statistics.length - 1] as Record<string, any>)[metric] as number || 0;
+      const firstValue = getMetricValue(statistics[0], metric);
+      const lastValue = getMetricValue(statistics[statistics.length - 1], metric);
       const trend = firstValue === 0 ? 100 : ((lastValue - firstValue) / firstValue) * 100;
       
       return {
         data: statistics.map(stat => ({
           date: stat.date,
-          value: (stat as Record<string, any>)[metric] as number || 0
+          value: getMetricValue(stat, metric)
         })),
         trend,
         firstValue,
@@ -115,7 +123,7 @@ export class StatisticsService {
     return {
       data: statistics.map(stat => ({
         date: stat.date,
-        value: (stat as Record<string, any>)[metric] as number || 0
+        value: getMetricValue(stat, metric)
       })),
       trend: 0,
       firstValue: 0,
