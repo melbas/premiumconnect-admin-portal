@@ -48,6 +48,57 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_providers_config: {
+        Row: {
+          api_endpoint: string | null
+          api_key_encrypted: string | null
+          created_at: string | null
+          fallback_provider_id: string | null
+          id: string
+          is_active: boolean | null
+          max_tokens: number | null
+          model_name: string | null
+          name: string
+          pricing_per_1k_tokens: number | null
+          priority: number | null
+          provider_type: string
+          temperature: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          api_endpoint?: string | null
+          api_key_encrypted?: string | null
+          created_at?: string | null
+          fallback_provider_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_tokens?: number | null
+          model_name?: string | null
+          name: string
+          pricing_per_1k_tokens?: number | null
+          priority?: number | null
+          provider_type: string
+          temperature?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          api_endpoint?: string | null
+          api_key_encrypted?: string | null
+          created_at?: string | null
+          fallback_provider_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_tokens?: number | null
+          model_name?: string | null
+          name?: string
+          pricing_per_1k_tokens?: number | null
+          priority?: number | null
+          provider_type?: string
+          temperature?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       auth_config: {
         Row: {
           auto_disconnect: boolean | null
@@ -86,6 +137,190 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      chat_analytics: {
+        Row: {
+          avg_response_time_ms: number | null
+          created_at: string | null
+          date: string | null
+          id: string
+          popular_questions: Json | null
+          provider_usage: Json | null
+          satisfaction_avg: number | null
+          total_conversations: number | null
+          total_cost: number | null
+          total_messages: number | null
+        }
+        Insert: {
+          avg_response_time_ms?: number | null
+          created_at?: string | null
+          date?: string | null
+          id?: string
+          popular_questions?: Json | null
+          provider_usage?: Json | null
+          satisfaction_avg?: number | null
+          total_conversations?: number | null
+          total_cost?: number | null
+          total_messages?: number | null
+        }
+        Update: {
+          avg_response_time_ms?: number | null
+          created_at?: string | null
+          date?: string | null
+          id?: string
+          popular_questions?: Json | null
+          provider_usage?: Json | null
+          satisfaction_avg?: number | null
+          total_conversations?: number | null
+          total_cost?: number | null
+          total_messages?: number | null
+        }
+        Relationships: []
+      }
+      chat_conversations: {
+        Row: {
+          context_data: Json | null
+          conversation_type: string | null
+          created_at: string | null
+          id: string
+          primary_provider_used: string | null
+          session_id: string | null
+          status: string | null
+          total_cost: number | null
+          total_messages: number | null
+          updated_at: string | null
+          user_id: string | null
+          user_satisfaction_score: number | null
+        }
+        Insert: {
+          context_data?: Json | null
+          conversation_type?: string | null
+          created_at?: string | null
+          id?: string
+          primary_provider_used?: string | null
+          session_id?: string | null
+          status?: string | null
+          total_cost?: number | null
+          total_messages?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+          user_satisfaction_score?: number | null
+        }
+        Update: {
+          context_data?: Json | null
+          conversation_type?: string | null
+          created_at?: string | null
+          id?: string
+          primary_provider_used?: string | null
+          session_id?: string | null
+          status?: string | null
+          total_cost?: number | null
+          total_messages?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+          user_satisfaction_score?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_conversations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "wifi_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_knowledge_base: {
+        Row: {
+          answer: string
+          category: string | null
+          context_triggers: Json | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          keywords: string[] | null
+          priority: number | null
+          question: string
+          updated_at: string | null
+          usage_count: number | null
+        }
+        Insert: {
+          answer: string
+          category?: string | null
+          context_triggers?: Json | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          keywords?: string[] | null
+          priority?: number | null
+          question: string
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Update: {
+          answer?: string
+          category?: string | null
+          context_triggers?: Json | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          keywords?: string[] | null
+          priority?: number | null
+          question?: string
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Relationships: []
+      }
+      chat_messages: {
+        Row: {
+          ai_provider: string | null
+          confidence_score: number | null
+          content: string
+          conversation_id: string
+          cost: number | null
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          response_time_ms: number | null
+          sender_type: string
+          tokens_used: number | null
+        }
+        Insert: {
+          ai_provider?: string | null
+          confidence_score?: number | null
+          content: string
+          conversation_id: string
+          cost?: number | null
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          response_time_ms?: number | null
+          sender_type: string
+          tokens_used?: number | null
+        }
+        Update: {
+          ai_provider?: string | null
+          confidence_score?: number | null
+          content?: string
+          conversation_id?: string
+          cost?: number | null
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          response_time_ms?: number | null
+          sender_type?: string
+          tokens_used?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "chat_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       events: {
         Row: {
