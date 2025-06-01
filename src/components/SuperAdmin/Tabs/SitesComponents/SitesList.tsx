@@ -3,6 +3,9 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ExternalLink } from 'lucide-react';
 import { UnifiSite } from '@/services/unifiService';
+import SiteNetworkConfiguration from './SiteNetworkConfiguration';
+import SiteNetworkStatus from './SiteNetworkStatus';
+import { getSiteNetworkConfig, saveSiteNetworkConfig, SiteNetworkConfig } from './siteNetworkUtils';
 
 interface SitesListProps {
   filteredSites: UnifiSite[];
@@ -29,6 +32,10 @@ const SitesList: React.FC<SitesListProps> = ({
   getRevenueForSite,
   getUptimeColorClass
 }) => {
+  const handleNetworkConfigSaved = (config: SiteNetworkConfig) => {
+    saveSiteNetworkConfig(config);
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -47,6 +54,7 @@ const SitesList: React.FC<SitesListProps> = ({
                 <th>Disponibilité</th>
                 <th>Problèmes</th>
                 <th>Statut</th>
+                <th>Réseau</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -58,6 +66,7 @@ const SitesList: React.FC<SitesListProps> = ({
                 const issues = getIssuesForSite(site.name);
                 const users = getUsersForSite(site.name);
                 const revenue = getRevenueForSite(site.name);
+                const networkConfig = getSiteNetworkConfig(site.id);
                 
                 return (
                   <tr key={site.id}>
@@ -94,17 +103,33 @@ const SitesList: React.FC<SitesListProps> = ({
                       </span>
                     </td>
                     <td>
-                      <a href="#" className="flex items-center text-primary hover:underline">
-                        <ExternalLink size={14} className="mr-1" />
-                        <span>Détails</span>
-                      </a>
+                      <SiteNetworkStatus
+                        method={networkConfig?.method}
+                        status={networkConfig?.status || 'disconnected'}
+                        isActive={networkConfig?.isActive || false}
+                        lastTested={networkConfig?.lastTested}
+                      />
+                    </td>
+                    <td>
+                      <div className="flex items-center gap-2">
+                        <SiteNetworkConfiguration
+                          siteId={site.id}
+                          siteName={site.name}
+                          initialConfig={networkConfig || undefined}
+                          onConfigSaved={handleNetworkConfigSaved}
+                        />
+                        <a href="#" className="flex items-center text-primary hover:underline">
+                          <ExternalLink size={14} className="mr-1" />
+                          <span>Détails</span>
+                        </a>
+                      </div>
                     </td>
                   </tr>
                 );
               })}
               {filteredSites.length === 0 && (
                 <tr>
-                  <td colSpan={9} className="text-center py-4 text-muted-foreground">
+                  <td colSpan={10} className="text-center py-4 text-muted-foreground">
                     {isLoading ? 'Chargement des sites...' : (
                       searchTerm ? 'Aucun site ne correspond à votre recherche' : 'Aucun site trouvé'
                     )}
