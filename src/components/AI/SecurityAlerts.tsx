@@ -121,7 +121,7 @@ const SecurityAlerts: React.FC<SecurityAlertsProps> = ({
                     {getSeverityIcon(threat.severity)}
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <h4 className="font-medium">{threat.type}</h4>
+                        <h4 className="font-medium">{threat.threatType}</h4>
                         <Badge className={getSeverityColor(threat.severity)}>
                           {threat.severity}
                         </Badge>
@@ -130,7 +130,7 @@ const SecurityAlerts: React.FC<SecurityAlertsProps> = ({
                         </Badge>
                       </div>
                       <AlertDescription className="mb-2">
-                        {threat.description}
+                        {threat.details}
                       </AlertDescription>
                       {threat.recommendations.length > 0 && (
                         <div className="mt-2">
@@ -146,7 +146,7 @@ const SecurityAlerts: React.FC<SecurityAlertsProps> = ({
                         </div>
                       )}
                       <p className="text-xs text-muted-foreground mt-2">
-                        Détecté le {threat.detectedAt.toLocaleString('fr-FR')}
+                        Détecté le {new Date(threat.detectedAt).toLocaleString('fr-FR')}
                       </p>
                     </div>
                   </div>
