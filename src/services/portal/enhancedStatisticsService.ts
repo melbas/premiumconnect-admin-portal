@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { PortalStatistics, MetricTrend, StatisticField } from "@/types/portal";
@@ -120,7 +121,8 @@ export class EnhancedStatisticsService {
       if (cachedData && cachedData.length > 0) {
         const updatedData = [...cachedData];
         const currentValue = this.getMetricValue(updatedData[0], field);
-        (updatedData[0] as any)[field] = currentValue + amount;
+        // @ts-ignore - Temporary bypass for dynamic property assignment
+        updatedData[0][field] = currentValue + amount;
         CacheService.set(cacheKey, updatedData, 5 * 60 * 1000);
       }
 
@@ -141,9 +143,8 @@ export class EnhancedStatisticsService {
         const currentValue = this.getMetricValue(todayData, field);
         const updateValue = currentValue + amount;
         
-        const updateData: Partial<PortalStatistics> = {
-          [field]: updateValue
-        } as Partial<PortalStatistics>;
+        const updateData: any = {};
+        updateData[field] = updateValue;
         
         const { error: updateError } = await supabase
           .from('portal_statistics')
@@ -156,10 +157,10 @@ export class EnhancedStatisticsService {
         }
       } else {
         // Create new record for today
-        const insertData: Partial<PortalStatistics> = {
+        const insertData: any = {
           date: today,
-          [field]: amount
-        } as Partial<PortalStatistics>;
+        };
+        insertData[field] = amount;
         
         const { error: insertError } = await supabase
           .from('portal_statistics')
@@ -267,15 +268,25 @@ export class EnhancedStatisticsService {
     );
   }
 
-  // Safe helper function with fallback error handling
+  // Type-safe helper function for getting metric values
   private static getMetricValue(stat: PortalStatistics, field: StatisticField): number {
     if (!stat || typeof stat !== 'object') return 0;
     
     try {
-      // Use safer approach with explicit mapping and type assertion
-      const safeField = String(field) as keyof PortalStatistics;
-      const value = stat[safeField];
-      return typeof value === 'number' ? value : 0;
+      // Type-safe mapping with explicit checks
+      const fieldMap: Record<StatisticField, (stat: PortalStatistics) => number> = {
+        'total_connections': (s) => s.total_connections || 0,
+        'video_views': (s) => s.video_views || 0,
+        'quiz_completions': (s) => s.quiz_completions || 0,
+        'games_played': (s) => s.games_played || 0,
+        'leads_collected': (s) => s.leads_collected || 0,
+        'avg_session_duration': (s) => s.avg_session_duration || 0,
+        'game_completion_rate': (s) => s.game_completion_rate || 0,
+        'conversion_rate': (s) => s.conversion_rate || 0,
+        'returning_users': (s) => s.returning_users || 0,
+      };
+      
+      return fieldMap[field](stat);
     } catch (error) {
       console.warn(`Error accessing field ${field}:`, error);
       return 0;

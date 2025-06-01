@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { PortalStatistics, MetricTrend, StatisticField } from "@/types/portal";
@@ -55,9 +56,8 @@ export class StatisticsService {
         const currentValue = StatisticsService.getMetricValue(todayData, field);
         const updateValue = currentValue + amount;
         
-        const updateData: Partial<PortalStatistics> = {
-          [field]: updateValue
-        } as Partial<PortalStatistics>;
+        const updateData: any = {};
+        updateData[field] = updateValue;
         
         const { error: updateError } = await supabase
           .from('portal_statistics')
@@ -70,10 +70,10 @@ export class StatisticsService {
         }
       } else {
         // Create new record for today
-        const insertData: Partial<PortalStatistics> = {
+        const insertData: any = {
           date: today,
-          [field]: amount
-        } as Partial<PortalStatistics>;
+        };
+        insertData[field] = amount;
         
         const { error: insertError } = await supabase
           .from('portal_statistics')
@@ -142,15 +142,25 @@ export class StatisticsService {
     }
   }
 
-  // Safe helper function with error handling
+  // Type-safe helper function for getting metric values
   private static getMetricValue(stat: PortalStatistics, field: StatisticField): number {
     if (!stat || typeof stat !== 'object') return 0;
     
     try {
-      // Use safer approach with type assertion to bypass TypeScript inference issues
-      const safeField = String(field) as keyof PortalStatistics;
-      const value = stat[safeField];
-      return typeof value === 'number' ? value : 0;
+      // Type-safe mapping with explicit checks
+      const fieldMap: Record<StatisticField, (stat: PortalStatistics) => number> = {
+        'total_connections': (s) => s.total_connections || 0,
+        'video_views': (s) => s.video_views || 0,
+        'quiz_completions': (s) => s.quiz_completions || 0,
+        'games_played': (s) => s.games_played || 0,
+        'leads_collected': (s) => s.leads_collected || 0,
+        'avg_session_duration': (s) => s.avg_session_duration || 0,
+        'game_completion_rate': (s) => s.game_completion_rate || 0,
+        'conversion_rate': (s) => s.conversion_rate || 0,
+        'returning_users': (s) => s.returning_users || 0,
+      };
+      
+      return fieldMap[field](stat);
     } catch (error) {
       console.warn(`Error accessing field ${field}:`, error);
       return 0;
