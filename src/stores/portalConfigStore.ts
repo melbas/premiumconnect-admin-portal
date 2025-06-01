@@ -49,9 +49,25 @@ export interface PortalConfiguration {
   wholesalerId?: string;
 }
 
+export interface SiteOption {
+  id: string;
+  name: string;
+  location?: string;
+}
+
+export interface WholesalerOption {
+  id: string;
+  name: string;
+  sites: SiteOption[];
+}
+
 interface PortalConfigState {
   currentConfig: PortalConfiguration;
   availableConfigs: PortalConfiguration[];
+  sites: SiteOption[];
+  wholesalers: WholesalerOption[];
+  selectedSite?: string;
+  selectedWholesaler?: string;
   previewDevice: 'mobile' | 'desktop' | 'tablet';
   isPreviewMode: boolean;
   unsavedChanges: boolean;
@@ -60,6 +76,8 @@ interface PortalConfigState {
   // Actions
   loadConfigurations: () => Promise<void>;
   loadConfiguration: (configId: string) => Promise<void>;
+  loadSitesAndWholesalers: () => Promise<void>;
+  createConfigurationForSite: (siteId: string, name: string) => Promise<void>;
   updateAuthMethod: (methodId: string, updates: Partial<AuthMethod>) => void;
   updateEngagementModule: (moduleId: string, updates: Partial<EngagementModule>) => void;
   updatePaymentModule: (moduleId: string, updates: Partial<PaymentModule>) => void;
@@ -69,6 +87,8 @@ interface PortalConfigState {
   saveConfiguration: () => Promise<void>;
   resetConfiguration: () => void;
   createNewConfiguration: (name: string, template: string) => Promise<void>;
+  setSelectedSite: (siteId: string) => void;
+  setSelectedWholesaler: (wholesalerId: string) => void;
 }
 
 const defaultConfiguration: PortalConfiguration = {
@@ -91,6 +111,7 @@ const defaultConfiguration: PortalConfiguration = {
     { id: 'surveys', name: 'User Surveys', enabled: false, order: 4 },
     { id: 'mobile_money', name: 'Mobile Money Assistant', enabled: true, order: 5 },
     { id: 'ai_chat', name: 'AI Chat Support', enabled: true, order: 6 },
+    { id: 'ai_onboarding', name: 'AI Onboarding Assistant', enabled: true, order: 0 },
   ],
   paymentModules: [
     { id: 'vouchers', name: 'Voucher System', enabled: true },
@@ -114,10 +135,46 @@ const defaultConfiguration: PortalConfiguration = {
 export const usePortalConfigStore = create<PortalConfigState>((set, get) => ({
   currentConfig: defaultConfiguration,
   availableConfigs: [],
+  sites: [],
+  wholesalers: [],
+  selectedSite: undefined,
+  selectedWholesaler: undefined,
   previewDevice: 'mobile',
   isPreviewMode: true,
   unsavedChanges: false,
   isLoading: false,
+
+  loadSitesAndWholesalers: async () => {
+    try {
+      // Mock data - replace with actual Supabase queries when tables are ready
+      const mockWholesalers: WholesalerOption[] = [
+        {
+          id: 'w1',
+          name: 'Grossiste Dakar',
+          sites: [
+            { id: 's1', name: 'Site Plateau', location: 'Plateau, Dakar' },
+            { id: 's2', name: 'Site Almadies', location: 'Almadies, Dakar' }
+          ]
+        },
+        {
+          id: 'w2',
+          name: 'Grossiste Thiès',
+          sites: [
+            { id: 's3', name: 'Site Centre Thiès', location: 'Centre-ville, Thiès' }
+          ]
+        }
+      ];
+
+      const allSites = mockWholesalers.flatMap(w => w.sites);
+      
+      set({ 
+        wholesalers: mockWholesalers,
+        sites: allSites 
+      });
+    } catch (error) {
+      console.error('Failed to load sites and wholesalers:', error);
+    }
+  },
 
   loadConfigurations: async () => {
     set({ isLoading: true });
@@ -189,6 +246,45 @@ export const usePortalConfigStore = create<PortalConfigState>((set, get) => ({
     }
   },
 
+  createConfigurationForSite: async (siteId: string, name: string) => {
+    try {
+      const newConfig = {
+        ...defaultConfiguration,
+        id: crypto.randomUUID(),
+        name,
+        siteId,
+        lastModified: new Date(),
+        isActive: true,
+      };
+
+      const configData = transformStoreConfigToDb(newConfig);
+      
+      const { error } = await supabase
+        .from('portal_config')
+        .insert([configData]);
+
+      if (error) {
+        console.error('Error creating configuration:', error);
+        return;
+      }
+
+      set({ currentConfig: newConfig, unsavedChanges: false, selectedSite: siteId });
+      console.log('✅ Configuration created for site successfully');
+    } catch (error) {
+      console.error('Failed to create configuration:', error);
+    }
+  },
+
+  setSelectedSite: (siteId: string) => {
+    set({ selectedSite: siteId });
+    // Load configuration for this site
+    get().loadConfigurations();
+  },
+
+  setSelectedWholesaler: (wholesalerId: string) => {
+    set({ selectedWholesaler: wholesalerId });
+  },
+
   updateAuthMethod: (methodId, updates) => {
     set((state) => ({
       currentConfig: {
@@ -249,6 +345,7 @@ export const usePortalConfigStore = create<PortalConfigState>((set, get) => ({
 
   saveConfiguration: async () => {
     const state = get();
+    set({ isLoading: true });
     try {
       const configData = transformStoreConfigToDb(state.currentConfig);
       
@@ -262,9 +359,10 @@ export const usePortalConfigStore = create<PortalConfigState>((set, get) => ({
       }
 
       console.log('💾 Configuration saved successfully');
-      set({ unsavedChanges: false });
+      set({ unsavedChanges: false, isLoading: false });
     } catch (error) {
       console.error('Failed to save configuration:', error);
+      set({ isLoading: false });
     }
   },
 
@@ -306,7 +404,7 @@ function transformDbConfigToStore(dbConfig: any): PortalConfiguration {
   return {
     id: dbConfig.id,
     name: dbConfig.portal_name || 'Configuration',
-    template: 'business', // Default template
+    template: 'business',
     authMethods: [
       { id: 'facebook', name: 'Facebook Login', enabled: true },
       { id: 'google', name: 'Google Login', enabled: true },
@@ -317,12 +415,17 @@ function transformDbConfigToStore(dbConfig: any): PortalConfiguration {
       { id: 'radius', name: 'RADIUS', enabled: false },
     ],
     engagementModules: dbConfig.portal_enabled_modules?.map((module: any) => ({
-      id: module.portal_modules.module_name,
-      name: module.portal_modules.display_name,
+      id: module.portal_modules?.module_name || 'unknown',
+      name: module.portal_modules?.display_name || 'Module',
       enabled: module.is_enabled,
       order: 1,
       settings: module.module_config,
-    })) || [],
+    })) || [
+      { id: 'welcome', name: 'Welcome Screen', enabled: true, order: 1 },
+      { id: 'mobile_money', name: 'Mobile Money Assistant', enabled: true, order: 5 },
+      { id: 'ai_chat', name: 'AI Chat Support', enabled: true, order: 6 },
+      { id: 'ai_onboarding', name: 'AI Onboarding Assistant', enabled: true, order: 0 },
+    ],
     paymentModules: [
       { id: 'vouchers', name: 'Voucher System', enabled: true },
       { id: 'payment_gateway', name: 'Payment Gateway', enabled: false },
@@ -337,10 +440,11 @@ function transformDbConfigToStore(dbConfig: any): PortalConfiguration {
       textColor: '#1F2937',
       fontFamily: 'Inter',
       customCSS: dbConfig.custom_css,
+      logo: dbConfig.logo_url,
     },
     language: (dbConfig.default_language as 'fr' | 'wo' | 'en') || 'fr',
     isActive: dbConfig.portal_status === 'active',
-    lastModified: new Date(dbConfig.updated_at),
+    lastModified: new Date(dbConfig.updated_at || dbConfig.created_at),
     siteId: dbConfig.site_id,
     wholesalerId: dbConfig.wholesaler_id,
   };
@@ -352,6 +456,7 @@ function transformStoreConfigToDb(config: PortalConfiguration) {
     portal_name: config.name,
     theme_color: config.branding.primaryColor,
     custom_css: config.branding.customCSS,
+    logo_url: config.branding.logo,
     default_language: config.language,
     portal_status: config.isActive ? 'active' : 'inactive',
     site_id: config.siteId,
