@@ -53,7 +53,7 @@ export class StatisticsService {
       
       if (todayData) {
         // Update existing record
-        const currentValue = ((todayData as any)[field] as number) || 0;
+        const currentValue = this.getMetricValue(todayData, field);
         const updateValue = currentValue + amount;
         
         const updateData: Partial<PortalStatistics> = {
@@ -98,22 +98,16 @@ export class StatisticsService {
     const startDate = format(new Date(Date.now() - days * 24 * 60 * 60 * 1000), 'yyyy-MM-dd');
     const statistics = await this.getPortalStatistics(startDate);
     
-    // Helper function to safely get metric value
-    const getMetricValue = (stat: PortalStatistics, metricKey: string): number => {
-      const value = (stat as any)[metricKey];
-      return typeof value === 'number' ? value : 0;
-    };
-    
     // Calculate trend
     if (statistics.length > 1) {
-      const firstValue = getMetricValue(statistics[0], metric);
-      const lastValue = getMetricValue(statistics[statistics.length - 1], metric);
+      const firstValue = this.getMetricValue(statistics[0], metric);
+      const lastValue = this.getMetricValue(statistics[statistics.length - 1], metric);
       const trend = firstValue === 0 ? 100 : ((lastValue - firstValue) / firstValue) * 100;
       
       return {
         data: statistics.map(stat => ({
           date: stat.date,
-          value: getMetricValue(stat, metric)
+          value: this.getMetricValue(stat, metric)
         })),
         trend,
         firstValue,
@@ -124,7 +118,7 @@ export class StatisticsService {
     return {
       data: statistics.map(stat => ({
         date: stat.date,
-        value: getMetricValue(stat, metric)
+        value: this.getMetricValue(stat, metric)
       })),
       trend: 0,
       firstValue: 0,
@@ -147,5 +141,11 @@ export class StatisticsService {
       console.error('Failed to get aggregated user stats:', error);
       return null;
     }
+  }
+
+  // Helper function to safely get metric value
+  private static getMetricValue(stat: PortalStatistics, field: StatisticField): number {
+    const value = (stat as any)[field];
+    return typeof value === 'number' ? value : 0;
   }
 }
