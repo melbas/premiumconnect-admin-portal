@@ -7,6 +7,7 @@ import UserActivitySection from './Sections/UserActivitySection';
 import EnhancedChatSection from './Sections/EnhancedChatSection';
 import AIOnboardingAssistant from './CaptivePortal/AIOnboardingAssistant';
 import AIInsightsDashboard from './CaptivePortal/AIInsightsDashboard';
+import MobileMoneyAssistant from '../AI/MobileMoneyAssistant';
 import { useUserStatistics } from '@/hooks/use-user-statistics';
 
 const CaptivePortalDashboard = () => {
@@ -20,11 +21,12 @@ const CaptivePortalDashboard = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
           <TabsTrigger value="ai-insights">Insights IA</TabsTrigger>
           <TabsTrigger value="chat">Assistant IA</TabsTrigger>
           <TabsTrigger value="onboarding">Accueil IA</TabsTrigger>
+          <TabsTrigger value="payments">Mobile Money IA</TabsTrigger>
           <TabsTrigger value="activity">Activité</TabsTrigger>
         </TabsList>
 
@@ -82,6 +84,46 @@ const CaptivePortalDashboard = () => {
                 deviceType: 'mobile',
                 connectionQuality: 'slow'
               }}
+            />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="payments" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <MobileMoneyAssistant 
+              amount={500}
+              context="wifi_payment"
+              language="fr"
+              onPaymentSelected={(provider, amount) => {
+                console.log('💰 Payment selected:', provider, amount);
+              }}
+            />
+            <MobileMoneyAssistant 
+              amount={1000}
+              context="wifi_payment"
+              language="wo"
+              onPaymentSelected={(provider, amount) => {
+                console.log('💰 Payment selected:', provider, amount);
+              }}
+            />
+          </div>
+          
+          {/* Section recommandations familiales */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <MobileMoneyAssistant 
+              amount={300}
+              context="family_plan"
+              language="fr"
+            />
+            <MobileMoneyAssistant 
+              amount={750}
+              context="business_plan"
+              language="fr"
+            />
+            <MobileMoneyAssistant 
+              amount={150}
+              context="student_plan"
+              language="wo"
             />
           </div>
         </TabsContent>

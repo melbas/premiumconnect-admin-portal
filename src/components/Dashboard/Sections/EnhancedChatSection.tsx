@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -123,9 +122,9 @@ const EnhancedChatSection: React.FC<EnhancedChatSectionProps> = ({
           sender: 'ai',
           timestamp: new Date().toISOString(),
           language: detectedLanguage,
-          sentiment: response.sentiment,
-          recommendations: response.recommendations,
-          culturalAdaptation: response.culturalAdaptation
+          sentiment: response.sentiment || null,
+          recommendations: response.recommendations || [],
+          culturalAdaptation: response.culturalAdaptation || false
         };
 
         setMessages(prev => [...prev, aiMessage]);
