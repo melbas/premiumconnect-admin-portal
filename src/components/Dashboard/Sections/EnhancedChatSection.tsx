@@ -1,4 +1,3 @@
-
 /**
  * Enhanced Chat Section Component
  * Composant de Section de Chat Amélioré
@@ -58,7 +57,7 @@ interface EnhancedChatSectionProps {
  * EN: Enhanced Chat Section component with AI capabilities
  * FR: Composant de section de chat amélioré avec capacités IA
  */
-export function EnhancedChatSection({ 
+function EnhancedChatSection({ 
   userId, 
   initialLanguage = 'fr',
   enableCulturalContext = true 
@@ -413,3 +412,11 @@ export function EnhancedChatSection({
     </Card>
   );
 }
+
+// EN: Default export for backward compatibility
+// FR: Export par défaut pour la compatibilité
+export default EnhancedChatSection;
+
+// EN: Named export for explicit imports
+// FR: Export nommé pour les imports explicites
+export { EnhancedChatSection };

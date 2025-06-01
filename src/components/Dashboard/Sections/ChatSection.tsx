@@ -17,11 +17,9 @@ interface ChatSectionProps {
 const ChatSection = ({ initialMessages }: ChatSectionProps) => {
   return (
     <EnhancedChatSection 
-      title="Chat Support IA"
-      placeholder="Tapez votre message..."
-      aiContext="support"
-      enableMultilingual={true}
-      enableRecommendations={true}
+      userId="legacy-user"
+      initialLanguage="fr"
+      enableCulturalContext={true}
     />
   );
 };

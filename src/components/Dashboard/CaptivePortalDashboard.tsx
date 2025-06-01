@@ -7,7 +7,7 @@ import UserActivitySection from './Sections/UserActivitySection';
 import EnhancedChatSection from './Sections/EnhancedChatSection';
 import AIOnboardingAssistant from './CaptivePortal/AIOnboardingAssistant';
 import AIInsightsDashboard from './CaptivePortal/AIInsightsDashboard';
-import MobileMoneyAssistant from '../AI/MobileMoneyAssistant';
+import { MobileMoneyAssistant } from '../AI/MobileMoneyAssistant';
 import { useUserStatistics } from '@/hooks/use-user-statistics';
 
 const CaptivePortalDashboard = () => {
@@ -36,10 +36,9 @@ const CaptivePortalDashboard = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <UserActivitySection chartData={chartData} />
             <EnhancedChatSection 
-              title="Support IA Instantané"
-              aiContext="captive-portal"
-              enableMultilingual={true}
-              enableRecommendations={true}
+              userId="overview-user"
+              initialLanguage="fr"
+              enableCulturalContext={true}
             />
           </div>
         </TabsContent>
@@ -51,18 +50,14 @@ const CaptivePortalDashboard = () => {
         <TabsContent value="chat" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <EnhancedChatSection 
-              title="Assistant IA Captive Portal"
-              placeholder="Demandez de l'aide en français ou wolof..."
-              aiContext="support"
-              enableMultilingual={true}
-              enableRecommendations={true}
+              userId="chat-support-user"
+              initialLanguage="fr"
+              enableCulturalContext={true}
             />
             <EnhancedChatSection 
-              title="Guide de Connexion IA"
-              placeholder="Comment puis-je vous aider à vous connecter ?"
-              aiContext="onboarding"
-              enableMultilingual={true}
-              enableRecommendations={false}
+              userId="chat-onboarding-user"
+              initialLanguage="wo"
+              enableCulturalContext={true}
             />
           </div>
         </TabsContent>
