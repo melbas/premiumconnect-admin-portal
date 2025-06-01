@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { StatisticsService } from '@/services/portal/statisticsService';
+import { StatisticsProvider } from '@/services/portal/statisticsProvider';
 import { format, subDays } from 'date-fns';
 
 export const useUserStatistics = (days = 30) => {
@@ -28,7 +28,7 @@ export const useUserStatistics = (days = 30) => {
   
   const { data: statistics, isLoading, error } = useQuery({
     queryKey: ['portalStatistics', startDate],
-    queryFn: () => StatisticsService.getPortalStatistics(startDate),
+    queryFn: () => StatisticsProvider.getPortalStatistics(startDate),
   });
 
   useEffect(() => {
