@@ -105,7 +105,7 @@ export async function getPortalStatistics(startDate?: string, endDate?: string) 
 }
 
 // Increment a specific statistic for today
-export async function incrementStatistic(field: keyof Omit<PortalStatistics, 'id' | 'date'>, amount = 1) {
+export async function incrementStatistic(field: string, amount = 1) {
   try {
     const today = format(new Date(), 'yyyy-MM-dd');
     
@@ -123,7 +123,7 @@ export async function incrementStatistic(field: keyof Omit<PortalStatistics, 'id
     
     if (todayData) {
       // Update existing record
-      const currentValue = todayData[field] as number || 0;
+      const currentValue = (todayData as any)[field] as number || 0;
       const updateValue = currentValue + amount;
       
       const { error: updateError } = await supabase
@@ -172,20 +172,20 @@ export async function getAggregatedUserStats(days = 30) {
 }
 
 // Get trends for a specific metric
-export async function getMetricTrend(metric: keyof PortalStatistics, days = 30) {
+export async function getMetricTrend(metric: string, days = 30) {
   const startDate = format(new Date(Date.now() - days * 24 * 60 * 60 * 1000), 'yyyy-MM-dd');
   const statistics = await getPortalStatistics(startDate);
   
   // Calculate trend
   if (statistics.length > 1) {
-    const firstValue = statistics[0][metric] as number || 0;
-    const lastValue = statistics[statistics.length - 1][metric] as number || 0;
+    const firstValue = (statistics[0] as any)[metric] as number || 0;
+    const lastValue = (statistics[statistics.length - 1] as any)[metric] as number || 0;
     const trend = firstValue === 0 ? 100 : ((lastValue - firstValue) / firstValue) * 100;
     
     return {
       data: statistics.map(stat => ({
         date: stat.date,
-        value: stat[metric] as number || 0
+        value: (stat as any)[metric] as number || 0
       })),
       trend,
       firstValue,
@@ -196,7 +196,7 @@ export async function getMetricTrend(metric: keyof PortalStatistics, days = 30) 
   return {
     data: statistics.map(stat => ({
       date: stat.date,
-      value: stat[metric] as number || 0
+      value: (stat as any)[metric] as number || 0
     })),
     trend: 0,
     firstValue: 0,
