@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -90,19 +89,7 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ initialTab = 
   
   return (
     <AdminLayout activeTab={activeTab} setActiveTab={handleTabChange}>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              Back-Office Wifi Sénégal
-            </h1>
-            <p className="text-muted-foreground">
-              Connecté en tant que {user?.name} ({user?.role})
-            </p>
-          </div>
-        </div>
-        {renderTabContent()}
-      </div>
+      {renderTabContent()}
     </AdminLayout>
   );
 };

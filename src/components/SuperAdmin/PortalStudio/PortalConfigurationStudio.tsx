@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -24,6 +23,7 @@ import { usePortalConfigStore } from '@/stores/portalConfigStore';
 import PortalPreview from './PortalPreview';
 import ConfigurationPanel from './ConfigurationPanel';
 import { useToast } from '@/hooks/use-toast';
+import { ModuleConfigurationPanel } from './ModuleConfigurationPanel';
 
 const PortalConfigurationStudio: React.FC = () => {
   const { 
@@ -269,8 +269,8 @@ const PortalConfigurationStudio: React.FC = () => {
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="modules" className="flex-1 m-4 mt-0">
-                <ConfigurationPanel />
+              <TabsContent value="modules" className="flex-1 m-4 mt-0 overflow-y-auto">
+                <ModuleConfigurationPanel />
               </TabsContent>
 
               <TabsContent value="style" className="flex-1 m-4 mt-0">
