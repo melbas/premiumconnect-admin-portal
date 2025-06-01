@@ -10,6 +10,7 @@ import SuperAdminWholesalers from './Tabs/SuperAdminWholesalers';
 import SuperAdminSettings from './Tabs/SuperAdminSettings';
 import SuperAdminSites from './Tabs/SuperAdminSites';
 import SuperAdminAnalytics from './Tabs/SuperAdminAnalytics';
+import SuperAdminAI from './Tabs/SuperAdminAI';
 
 interface SuperAdminDashboardProps {
   initialTab?: AdminTab;
@@ -38,6 +39,8 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ initialTab = 
         return <SuperAdminTechnical initialView="captive-portal" />;
       case 'analytics':
         return <SuperAdminAnalytics />;
+      case 'ai':
+        return <SuperAdminAI />;
       case 'settings':
         return <SuperAdminSettings />;
       default:
