@@ -53,7 +53,7 @@ export class StatisticsService {
       
       if (todayData) {
         // Update existing record
-        const currentValue = (todayData[field as keyof typeof todayData] as number) || 0;
+        const currentValue = (todayData[field] as number) || 0;
         const updateValue = currentValue + amount;
         
         const updateData: Partial<PortalStatistics> = {
@@ -100,7 +100,8 @@ export class StatisticsService {
     
     // Helper function to safely get metric value
     const getMetricValue = (stat: PortalStatistics, metricKey: StatisticField): number => {
-      return (stat[metricKey as keyof PortalStatistics] as number) || 0;
+      const value = stat[metricKey];
+      return typeof value === 'number' ? value : 0;
     };
     
     // Calculate trend
