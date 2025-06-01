@@ -53,7 +53,7 @@ export class StatisticsService {
       
       if (todayData) {
         // Update existing record
-        const currentValue = this.getMetricValue(todayData, field);
+        const currentValue = StatisticsService.getMetricValue(todayData, field);
         const updateValue = currentValue + amount;
         
         const updateData: Partial<PortalStatistics> = {
@@ -96,18 +96,18 @@ export class StatisticsService {
   // Get trends for a specific metric
   static async getMetricTrend(metric: StatisticField, days = 30): Promise<MetricTrend> {
     const startDate = format(new Date(Date.now() - days * 24 * 60 * 60 * 1000), 'yyyy-MM-dd');
-    const statistics = await this.getPortalStatistics(startDate);
+    const statistics = await StatisticsService.getPortalStatistics(startDate);
     
     // Calculate trend
     if (statistics.length > 1) {
-      const firstValue = this.getMetricValue(statistics[0], metric);
-      const lastValue = this.getMetricValue(statistics[statistics.length - 1], metric);
+      const firstValue = StatisticsService.getMetricValue(statistics[0], metric);
+      const lastValue = StatisticsService.getMetricValue(statistics[statistics.length - 1], metric);
       const trend = firstValue === 0 ? 100 : ((lastValue - firstValue) / firstValue) * 100;
       
       return {
         data: statistics.map(stat => ({
           date: stat.date,
-          value: this.getMetricValue(stat, metric)
+          value: StatisticsService.getMetricValue(stat, metric)
         })),
         trend,
         firstValue,
@@ -118,7 +118,7 @@ export class StatisticsService {
     return {
       data: statistics.map(stat => ({
         date: stat.date,
-        value: this.getMetricValue(stat, metric)
+        value: StatisticsService.getMetricValue(stat, metric)
       })),
       trend: 0,
       firstValue: 0,
