@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,13 +18,15 @@ import {
   Loader2,
   MapPin,
   Building,
-  Network
+  Network,
+  Wifi
 } from 'lucide-react';
 import { usePortalConfigStore } from '@/stores/portalConfigStore';
 import PortalPreview from './PortalPreview';
 import { useToast } from '@/hooks/use-toast';
 import { ModuleConfigurationPanel } from './ModuleConfigurationPanel';
 import NetworkConnectionPanel from './NetworkConnectionPanel';
+import CustomerJourneyPanel from './CustomerJourneyPanel';
 
 const PortalConfigurationStudio: React.FC = () => {
   const { 
@@ -255,10 +256,14 @@ const PortalConfigurationStudio: React.FC = () => {
         <div className={`${isPreviewMode ? 'w-96' : 'flex-1'} border-l bg-background`}>
           <div className="h-full">
             <Tabs defaultValue="modules" className="h-full flex flex-col">
-              <TabsList className="grid w-full grid-cols-4 m-4">
+              <TabsList className="grid w-full grid-cols-5 m-4">
                 <TabsTrigger value="modules" className="flex items-center gap-2">
                   <Layout className="h-4 w-4" />
                   Modules
+                </TabsTrigger>
+                <TabsTrigger value="journey" className="flex items-center gap-2">
+                  <Wifi className="h-4 w-4" />
+                  Parcours
                 </TabsTrigger>
                 <TabsTrigger value="network" className="flex items-center gap-2">
                   <Network className="h-4 w-4" />
@@ -276,6 +281,10 @@ const PortalConfigurationStudio: React.FC = () => {
 
               <TabsContent value="modules" className="flex-1 m-4 mt-0 overflow-y-auto">
                 <ModuleConfigurationPanel />
+              </TabsContent>
+
+              <TabsContent value="journey" className="flex-1 m-4 mt-0 overflow-y-auto">
+                <CustomerJourneyPanel />
               </TabsContent>
 
               <TabsContent value="network" className="flex-1 m-4 mt-0 overflow-y-auto">
