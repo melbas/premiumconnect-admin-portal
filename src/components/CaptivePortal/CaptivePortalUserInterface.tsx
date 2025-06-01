@@ -18,7 +18,7 @@ import {
 import { usePortalConfigStore } from '@/stores/portalConfigStore';
 import { MobileMoneyAssistant } from '@/components/AI/MobileMoneyAssistant';
 import { EnhancedChatSection } from '@/components/Dashboard/Sections/EnhancedChatSection';
-import { AIOnboardingAssistant } from '@/components/Dashboard/CaptivePortal/AIOnboardingAssistant';
+import AIOnboardingAssistant from '@/components/Dashboard/CaptivePortal/AIOnboardingAssistant';
 import { useToast } from '@/hooks/use-toast';
 
 interface CaptivePortalUserInterfaceProps {

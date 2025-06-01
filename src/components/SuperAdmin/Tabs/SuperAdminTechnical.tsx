@@ -24,7 +24,7 @@ interface SuperAdminTechnicalProps {
 const SuperAdminTechnical: React.FC<SuperAdminTechnicalProps> = ({ 
   initialView = 'network' 
 }) => {
-  const [activeView, setActiveView] = useState(initialView);
+  const [activeView, setActiveView] = useState<'network' | 'server' | 'database' | 'captive-portal'>(initialView);
 
   if (activeView === 'captive-portal') {
     return <PortalConfigurationStudio />;
@@ -51,7 +51,7 @@ const SuperAdminTechnical: React.FC<SuperAdminTechnicalProps> = ({
         </div>
       </div>
 
-      <Tabs value={activeView} onValueChange={(value) => setActiveView(value as any)}>
+      <Tabs value={activeView} onValueChange={(value) => setActiveView(value as 'network' | 'server' | 'database' | 'captive-portal')}>
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="network" className="flex items-center gap-2">
             <Wifi className="h-4 w-4" />
