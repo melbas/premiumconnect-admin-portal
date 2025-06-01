@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -84,7 +85,7 @@ const SuperAdminAudit: React.FC = () => {
         criticality: log.criticality as 'low' | 'medium' | 'high' | 'critical',
         created_at: log.created_at,
         user_agent: log.user_agent,
-        ip_address: log.ip_address
+        ip_address: log.ip_address ? String(log.ip_address) : undefined
       }));
 
       setLogs(typedLogs);
