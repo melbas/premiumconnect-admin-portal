@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -41,8 +42,8 @@ const SuperAdminAudit: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
     search: '',
-    actionType: '',
-    criticality: '',
+    actionType: 'all',
+    criticality: 'all',
     startDate: '',
     endDate: '',
     adminUserId: ''
@@ -64,8 +65,8 @@ const SuperAdminAudit: React.FC = () => {
     setLoading(true);
     try {
       const auditLogs = await adminAuditService.getLogs({
-        actionType: filters.actionType || undefined,
-        criticality: filters.criticality || undefined,
+        actionType: filters.actionType === 'all' ? undefined : filters.actionType,
+        criticality: filters.criticality === 'all' ? undefined : filters.criticality,
         startDate: filters.startDate || undefined,
         endDate: filters.endDate || undefined,
         adminUserId: filters.adminUserId || undefined,
@@ -128,7 +129,12 @@ const SuperAdminAudit: React.FC = () => {
 
   const handleExport = async (format: 'csv' | 'json' | 'pdf') => {
     try {
-      const blob = await adminAuditService.exportLogs(format, filters);
+      const exportFilters = {
+        ...filters,
+        actionType: filters.actionType === 'all' ? undefined : filters.actionType,
+        criticality: filters.criticality === 'all' ? undefined : filters.criticality
+      };
+      const blob = await adminAuditService.exportLogs(format, exportFilters);
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -253,7 +259,7 @@ const SuperAdminAudit: React.FC = () => {
                     <SelectValue placeholder="Type d'action" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Tous les types</SelectItem>
+                    <SelectItem value="all">Tous les types</SelectItem>
                     <SelectItem value="auth_login">Connexions</SelectItem>
                     <SelectItem value="user_create">Création utilisateur</SelectItem>
                     <SelectItem value="user_update">Modification utilisateur</SelectItem>
@@ -268,7 +274,7 @@ const SuperAdminAudit: React.FC = () => {
                     <SelectValue placeholder="Criticité" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Toutes</SelectItem>
+                    <SelectItem value="all">Toutes</SelectItem>
                     <SelectItem value="critical">Critique</SelectItem>
                     <SelectItem value="high">Élevée</SelectItem>
                     <SelectItem value="medium">Moyenne</SelectItem>
@@ -430,3 +436,4 @@ const SuperAdminAudit: React.FC = () => {
 };
 
 export default SuperAdminAudit;
+
