@@ -48,6 +48,102 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_audit_logs: {
+        Row: {
+          action_description: string
+          action_type: string
+          admin_user_id: string
+          created_at: string | null
+          criticality: string | null
+          id: string
+          ip_address: unknown | null
+          new_data: Json | null
+          previous_data: Json | null
+          request_id: string | null
+          session_id: string | null
+          target_entity: string | null
+          target_id: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          action_description: string
+          action_type: string
+          admin_user_id: string
+          created_at?: string | null
+          criticality?: string | null
+          id?: string
+          ip_address?: unknown | null
+          new_data?: Json | null
+          previous_data?: Json | null
+          request_id?: string | null
+          session_id?: string | null
+          target_entity?: string | null
+          target_id?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          action_description?: string
+          action_type?: string
+          admin_user_id?: string
+          created_at?: string | null
+          criticality?: string | null
+          id?: string
+          ip_address?: unknown | null
+          new_data?: Json | null
+          previous_data?: Json | null
+          request_id?: string | null
+          session_id?: string | null
+          target_entity?: string | null
+          target_id?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+      admin_sessions: {
+        Row: {
+          admin_user_id: string
+          ended_at: string | null
+          id: string
+          ip_address: unknown | null
+          is_active: boolean | null
+          last_activity: string | null
+          location_data: Json | null
+          session_duration_minutes: number | null
+          session_token: string
+          started_at: string | null
+          total_actions: number | null
+          user_agent: string | null
+        }
+        Insert: {
+          admin_user_id: string
+          ended_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          is_active?: boolean | null
+          last_activity?: string | null
+          location_data?: Json | null
+          session_duration_minutes?: number | null
+          session_token: string
+          started_at?: string | null
+          total_actions?: number | null
+          user_agent?: string | null
+        }
+        Update: {
+          admin_user_id?: string
+          ended_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          is_active?: boolean | null
+          last_activity?: string | null
+          location_data?: Json | null
+          session_duration_minutes?: number | null
+          session_token?: string
+          started_at?: string | null
+          total_actions?: number | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       ai_providers_config: {
         Row: {
           api_endpoint: string | null
@@ -95,6 +191,45 @@ export type Database = {
           priority?: number | null
           provider_type?: string
           temperature?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      audit_config: {
+        Row: {
+          created_at: string | null
+          enable_email_notifications: boolean | null
+          enable_export_logs: boolean | null
+          enable_real_time_alerts: boolean | null
+          id: string
+          log_level: string | null
+          max_failed_attempts: number | null
+          retention_days: number | null
+          session_timeout_minutes: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          enable_email_notifications?: boolean | null
+          enable_export_logs?: boolean | null
+          enable_real_time_alerts?: boolean | null
+          id?: string
+          log_level?: string | null
+          max_failed_attempts?: number | null
+          retention_days?: number | null
+          session_timeout_minutes?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          enable_email_notifications?: boolean | null
+          enable_export_logs?: boolean | null
+          enable_real_time_alerts?: boolean | null
+          id?: string
+          log_level?: string | null
+          max_failed_attempts?: number | null
+          retention_days?: number | null
+          session_timeout_minutes?: number | null
           updated_at?: string | null
         }
         Relationships: []
@@ -1006,6 +1141,51 @@ export type Database = {
         }
         Relationships: []
       }
+      security_alerts: {
+        Row: {
+          admin_user_id: string | null
+          alert_type: string
+          created_at: string | null
+          description: string
+          id: string
+          ip_address: unknown | null
+          is_resolved: boolean | null
+          metadata: Json | null
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+          title: string
+        }
+        Insert: {
+          admin_user_id?: string | null
+          alert_type: string
+          created_at?: string | null
+          description: string
+          id?: string
+          ip_address?: unknown | null
+          is_resolved?: boolean | null
+          metadata?: Json | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity: string
+          title: string
+        }
+        Update: {
+          admin_user_id?: string | null
+          alert_type?: string
+          created_at?: string | null
+          description?: string
+          id?: string
+          ip_address?: unknown | null
+          is_resolved?: boolean | null
+          metadata?: Json | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          title?: string
+        }
+        Relationships: []
+      }
       transactions: {
         Row: {
           amount: number
@@ -1286,7 +1466,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      cleanup_old_audit_logs: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

@@ -11,6 +11,7 @@ import SuperAdminSettings from './Tabs/SuperAdminSettings';
 import SuperAdminSites from './Tabs/SuperAdminSites';
 import SuperAdminAnalytics from './Tabs/SuperAdminAnalytics';
 import SuperAdminAI from './Tabs/SuperAdminAI';
+import SuperAdminAudit from './Tabs/SuperAdminAudit';
 
 interface SuperAdminDashboardProps {
   initialTab?: AdminTab;
@@ -41,6 +42,8 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ initialTab = 
         return <SuperAdminAnalytics />;
       case 'ai':
         return <SuperAdminAI />;
+      case 'audit':
+        return <SuperAdminAudit />;
       case 'settings':
         return <SuperAdminSettings />;
       default:
