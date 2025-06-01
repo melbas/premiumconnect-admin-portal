@@ -142,21 +142,28 @@ export class StatisticsService {
   private static getMetricValue(stat: PortalStatistics, field: StatisticField): number {
     if (!stat || typeof stat !== 'object') return 0;
     
-    const fieldMap: Record<StatisticField, keyof PortalStatistics> = {
-      'total_connections': 'total_connections',
-      'video_views': 'video_views', 
-      'quiz_completions': 'quiz_completions',
-      'games_played': 'games_played',
-      'leads_collected': 'leads_collected',
-      'avg_session_duration': 'avg_session_duration',
-      'game_completion_rate': 'game_completion_rate',
-      'conversion_rate': 'conversion_rate',
-      'returning_users': 'returning_users'
-    };
-    
-    const mappedField = fieldMap[field];
-    const value = stat[mappedField];
-    return typeof value === 'number' ? value : 0;
+    switch (field) {
+      case 'total_connections':
+        return typeof stat.total_connections === 'number' ? stat.total_connections : 0;
+      case 'video_views':
+        return typeof stat.video_views === 'number' ? stat.video_views : 0;
+      case 'quiz_completions':
+        return typeof stat.quiz_completions === 'number' ? stat.quiz_completions : 0;
+      case 'games_played':
+        return typeof stat.games_played === 'number' ? stat.games_played : 0;
+      case 'leads_collected':
+        return typeof stat.leads_collected === 'number' ? stat.leads_collected : 0;
+      case 'avg_session_duration':
+        return typeof stat.avg_session_duration === 'number' ? stat.avg_session_duration : 0;
+      case 'game_completion_rate':
+        return typeof stat.game_completion_rate === 'number' ? stat.game_completion_rate : 0;
+      case 'conversion_rate':
+        return typeof stat.conversion_rate === 'number' ? stat.conversion_rate : 0;
+      case 'returning_users':
+        return typeof stat.returning_users === 'number' ? stat.returning_users : 0;
+      default:
+        return 0;
+    }
   }
 
   // Type-safe helper function for creating update data
