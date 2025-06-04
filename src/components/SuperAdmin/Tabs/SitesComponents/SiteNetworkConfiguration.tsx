@@ -19,7 +19,8 @@ import {
   XCircle,
   Settings,
   Link,
-  Router
+  Router,
+  Building
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -75,6 +76,7 @@ const SiteNetworkConfiguration: React.FC<SiteNetworkConfigurationProps> = ({
 
   const connectionMethods = [
     { value: 'direct', label: 'Connexion Directe', icon: Globe, description: 'IP publique ou domaine direct' },
+    { value: 'openwisp', label: 'OpenWisp', icon: Building, description: 'Plateforme de gestion réseau centralisée' },
     { value: 'cloudflare_tunnel', label: 'Cloudflare Tunnel', icon: Shield, description: 'Tunnel sécurisé via Cloudflare' },
     { value: 'wireguard', label: 'WireGuard VPN', icon: Zap, description: 'VPN moderne et rapide' },
     { value: 'tailscale', label: 'Tailscale', icon: Link, description: 'Réseau mesh zero-config' },
@@ -139,6 +141,87 @@ const SiteNetworkConfiguration: React.FC<SiteNetworkConfigurationProps> = ({
 
   const renderCredentialFields = () => {
     switch (config.method) {
+      case 'openwisp':
+        return (
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="baseUrl">URL de l'instance OpenWisp</Label>
+              <Input
+                id="baseUrl"
+                value={config.credentials.baseUrl || ''}
+                onChange={(e) => updateCredentials('baseUrl', e.target.value)}
+                placeholder="https://openwisp.example.com"
+              />
+            </div>
+            <div>
+              <Label htmlFor="apiToken">Token API</Label>
+              <Input
+                id="apiToken"
+                type="password"
+                value={config.credentials.apiToken || ''}
+                onChange={(e) => updateCredentials('apiToken', e.target.value)}
+                placeholder="Token d'authentification OpenWisp"
+              />
+            </div>
+            <div>
+              <Label htmlFor="organization">Organisation (optionnel)</Label>
+              <Input
+                id="organization"
+                value={config.credentials.organization || ''}
+                onChange={(e) => updateCredentials('organization', e.target.value)}
+                placeholder="Nom de l'organisation"
+              />
+            </div>
+            
+            {/* RADIUS Settings */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm">Configuration RADIUS (optionnel)</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div>
+                  <Label htmlFor="radiusServer">Serveur RADIUS</Label>
+                  <Input
+                    id="radiusServer"
+                    value={config.credentials.radiusSettings?.radiusServer || ''}
+                    onChange={(e) => updateCredentials('radiusSettings', {
+                      ...config.credentials.radiusSettings,
+                      radiusServer: e.target.value
+                    })}
+                    placeholder="127.0.0.1"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="radiusSecret">Secret RADIUS</Label>
+                  <Input
+                    id="radiusSecret"
+                    type="password"
+                    value={config.credentials.radiusSettings?.radiusSecret || ''}
+                    onChange={(e) => updateCredentials('radiusSettings', {
+                      ...config.credentials.radiusSettings,
+                      radiusSecret: e.target.value
+                    })}
+                    placeholder="Secret partagé"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="radiusPort">Port RADIUS</Label>
+                  <Input
+                    id="radiusPort"
+                    type="number"
+                    value={config.credentials.radiusSettings?.radiusPort || 1812}
+                    onChange={(e) => updateCredentials('radiusSettings', {
+                      ...config.credentials.radiusSettings,
+                      radiusPort: parseInt(e.target.value)
+                    })}
+                    placeholder="1812"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        );
+
       case 'cloudflare_tunnel':
         return (
           <div className="space-y-4">

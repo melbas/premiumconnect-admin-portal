@@ -10,11 +10,12 @@ import {
   CheckCircle, 
   XCircle, 
   AlertTriangle,
-  Router
+  Router,
+  Building
 } from 'lucide-react';
 
 interface SiteNetworkStatusProps {
-  method?: 'direct' | 'cloudflare_tunnel' | 'wireguard' | 'tailscale' | 'openvpn';
+  method?: 'direct' | 'cloudflare_tunnel' | 'wireguard' | 'tailscale' | 'openvpn' | 'openwisp';
   status: 'connected' | 'disconnected' | 'testing' | 'error';
   isActive: boolean;
   lastTested?: Date;
@@ -28,6 +29,8 @@ const SiteNetworkStatus: React.FC<SiteNetworkStatusProps> = ({
 }) => {
   const getMethodIcon = () => {
     switch (method) {
+      case 'openwisp':
+        return <Building className="h-3 w-3" />;
       case 'cloudflare_tunnel':
         return <Shield className="h-3 w-3" />;
       case 'wireguard':

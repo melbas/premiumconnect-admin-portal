@@ -1,11 +1,11 @@
 export interface NetworkEquipment {
   id: string;
   name: string;
-  type: 'mikrotik' | 'cisco_meraki' | 'tplink_omada' | 'ubiquiti' | 'generic' | 'cloudflare_tunnel' | 'wireguard' | 'tailscale' | 'openvpn' | 'direct';
+  type: 'mikrotik' | 'cisco_meraki' | 'tplink_omada' | 'ubiquiti' | 'generic' | 'cloudflare_tunnel' | 'wireguard' | 'tailscale' | 'openvpn' | 'direct' | 'openwisp';
   model: string;
   ipAddress: string;
   apiEndpoint?: string;
-  connectionMethod?: 'direct' | 'cloudflare_tunnel' | 'wireguard' | 'tailscale' | 'openvpn';
+  connectionMethod?: 'direct' | 'cloudflare_tunnel' | 'wireguard' | 'tailscale' | 'openvpn' | 'openwisp';
   subdomain?: string;
   credentials?: {
     username?: string;
@@ -18,6 +18,15 @@ export interface NetworkEquipment {
     endpoint?: string;
     tailscaleKey?: string;
     openvpnConfig?: string;
+    // OpenWisp specific credentials
+    baseUrl?: string;
+    apiToken?: string;
+    organization?: string;
+    radiusSettings?: {
+      radiusServer: string;
+      radiusSecret: string;
+      radiusPort: number;
+    };
   };
   capabilities: string[];
   configuration?: any;
@@ -75,6 +84,11 @@ export class NetworkAdapterFactory {
         adapter = new UbiquitiAdapter(equipment);
         break;
 
+      case 'openwisp':
+        const { OpenWispAdapter } = await import('./adapters/OpenWispAdapter');
+        adapter = new OpenWispAdapter(equipment);
+        break;
+
       case 'cloudflare_tunnel':
         const { CloudflareTunnelAdapter } = await import('./adapters/CloudflareTunnelAdapter');
         adapter = new CloudflareTunnelAdapter(equipment);
@@ -121,6 +135,7 @@ export class NetworkAdapterFactory {
         this.detectCiscoMeraki(ipAddress),
         this.detectTPLinkOmada(ipAddress),
         this.detectUbiquiti(ipAddress),
+        this.detectOpenWisp(ipAddress),
         this.detectCloudflare(ipAddress),
         this.detectWireGuard(ipAddress),
         this.detectTailscale(ipAddress),
@@ -132,7 +147,7 @@ export class NetworkAdapterFactory {
       for (let i = 0; i < results.length; i++) {
         if (results[i].status === 'fulfilled' && (results[i] as PromiseFulfilledResult<boolean>).value) {
           const types: NetworkEquipment['type'][] = [
-            'mikrotik', 'cisco_meraki', 'tplink_omada', 'ubiquiti',
+            'mikrotik', 'cisco_meraki', 'tplink_omada', 'ubiquiti', 'openwisp',
             'cloudflare_tunnel', 'wireguard', 'tailscale', 'openvpn'
           ];
           return types[i];
@@ -143,6 +158,20 @@ export class NetworkAdapterFactory {
     } catch (error) {
       console.error('Equipment detection failed:', error);
       return null;
+    }
+  }
+
+  private static async detectOpenWisp(ip: string): Promise<boolean> {
+    try {
+      console.log(`Detecting OpenWisp at ${ip}...`);
+      // Check for OpenWisp API endpoint
+      const response = await fetch(`http://${ip}/api/v1/`, {
+        method: 'GET',
+        timeout: 3000
+      });
+      return response.ok && response.headers.get('server')?.includes('openwisp');
+    } catch {
+      return false;
     }
   }
 
