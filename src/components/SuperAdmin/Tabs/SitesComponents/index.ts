@@ -7,3 +7,4 @@ export { default as SiteNetworkStatus } from './SiteNetworkStatus';
 export { default as NetworkMetricsCard } from './NetworkMetricsCard';
 export * from './siteUtils';
 export * from './siteNetworkUtils';
+export * from './NetworkConfiguration';
