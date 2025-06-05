@@ -1,11 +1,14 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Brain } from 'lucide-react';
 import { UnifiSite } from '@/services/unifiService';
 import SiteNetworkConfiguration from './SiteNetworkConfiguration';
 import SiteNetworkStatus from './SiteNetworkStatus';
+import SiteAIIndicators from './SiteAIIndicators';
+import QuickOptimizationButton from './QuickOptimizationButton';
 import { getSiteNetworkConfig, saveSiteNetworkConfig, SiteNetworkConfig } from './siteNetworkUtils';
+import { useSiteAIData } from '@/hooks/use-site-ai-data';
 
 interface SitesListProps {
   filteredSites: UnifiSite[];
@@ -32,14 +35,24 @@ const SitesList: React.FC<SitesListProps> = ({
   getRevenueForSite,
   getUptimeColorClass
 }) => {
+  const siteIds = filteredSites.map(site => site.id);
+  const { aiData, isLoading: isLoadingAI, refreshSiteData } = useSiteAIData(siteIds);
+
   const handleNetworkConfigSaved = (config: SiteNetworkConfig) => {
     saveSiteNetworkConfig(config);
+  };
+
+  const handleOptimizationComplete = (siteId: string) => {
+    refreshSiteData(siteId);
   };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Liste des Sites</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <Brain className="h-5 w-5" />
+          Liste des Sites - Vue Intelligente
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
@@ -54,6 +67,7 @@ const SitesList: React.FC<SitesListProps> = ({
                 <th>Disponibilité</th>
                 <th>Problèmes</th>
                 <th>Statut</th>
+                <th>Performance IA</th>
                 <th>Réseau</th>
                 <th>Actions</th>
               </tr>
@@ -67,6 +81,7 @@ const SitesList: React.FC<SitesListProps> = ({
                 const users = getUsersForSite(site.name);
                 const revenue = getRevenueForSite(site.name);
                 const networkConfig = getSiteNetworkConfig(site.id);
+                const siteAI = aiData[site.id];
                 
                 return (
                   <tr key={site.id}>
@@ -103,6 +118,19 @@ const SitesList: React.FC<SitesListProps> = ({
                       </span>
                     </td>
                     <td>
+                      {siteAI && !isLoadingAI ? (
+                        <SiteAIIndicators
+                          siteId={site.id}
+                          siteName={site.name}
+                          optimizationScore={siteAI.optimizationScore}
+                          activeAlertsCount={siteAI.activeAlertsCount}
+                          lastOptimization={siteAI.lastOptimization}
+                        />
+                      ) : (
+                        <div className="text-xs text-muted-foreground">Chargement IA...</div>
+                      )}
+                    </td>
+                    <td>
                       <SiteNetworkStatus
                         method={networkConfig?.method}
                         status={networkConfig?.status || 'disconnected'}
@@ -112,6 +140,11 @@ const SitesList: React.FC<SitesListProps> = ({
                     </td>
                     <td>
                       <div className="flex items-center gap-2">
+                        <QuickOptimizationButton
+                          siteId={site.id}
+                          siteName={site.name}
+                          onOptimizationComplete={() => handleOptimizationComplete(site.id)}
+                        />
                         <SiteNetworkConfiguration
                           siteId={site.id}
                           siteName={site.name}
@@ -129,7 +162,7 @@ const SitesList: React.FC<SitesListProps> = ({
               })}
               {filteredSites.length === 0 && (
                 <tr>
-                  <td colSpan={10} className="text-center py-4 text-muted-foreground">
+                  <td colSpan={11} className="text-center py-4 text-muted-foreground">
                     {isLoading ? 'Chargement des sites...' : (
                       searchTerm ? 'Aucun site ne correspond à votre recherche' : 'Aucun site trouvé'
                     )}
