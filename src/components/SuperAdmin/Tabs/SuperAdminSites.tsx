@@ -2,13 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { RefreshCw, Search } from 'lucide-react';
+import { RefreshCw, Search, Brain } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { unifiApiService, UnifiSite, UnifiDevice } from '@/services/unifiService';
 import { Input } from '@/components/ui/input';
 import SiteMetricsCards from './SitesComponents/SiteMetricsCards';
 import SitesList from './SitesComponents/SitesList';
 import SitesMap from './SitesComponents/SitesMap';
+import { useSiteAIData } from '@/hooks/use-site-ai-data';
 import {
   getDeviceCountForSite,
   getUptimeForSite,
@@ -27,6 +28,16 @@ const SuperAdminSites: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [activeTab, setActiveTab] = useState<string>('list');
   const { toast } = useToast();
+
+  // Filter sites based on search
+  const filteredSites = sites.filter(site => 
+    site.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    (site.desc && site.desc.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
+  // Get AI data for managing AI refresh
+  const siteIds = filteredSites.map(site => site.id);
+  const { refreshAllData } = useSiteAIData(siteIds);
 
   // Fetch sites data
   const fetchData = async () => {
@@ -55,6 +66,15 @@ const SuperAdminSites: React.FC = () => {
     }
   };
 
+  // Refresh AI data
+  const handleRefreshAI = () => {
+    refreshAllData();
+    toast({
+      title: "Données IA actualisées",
+      description: "Les métriques d'intelligence artificielle ont été mises à jour",
+    });
+  };
+
   // Initial data fetch
   useEffect(() => {
     fetchData();
@@ -63,26 +83,31 @@ const SuperAdminSites: React.FC = () => {
   // Create wrapper functions to pass device data to utility functions
   const getDevicesCountWrapper = (siteName: string) => getDeviceCountForSite(siteName, devices);
 
-  // Filter sites based on search
-  const filteredSites = sites.filter(site => 
-    site.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    (site.desc && site.desc.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
-
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="dashboard-title">Gestion des Sites</h1>
-        <Button 
-          onClick={fetchData} 
-          variant="outline" 
-          size="sm" 
-          className="flex items-center gap-2"
-          disabled={refreshing}
-        >
-          <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
-          {refreshing ? 'Actualisation...' : 'Actualiser'}
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            onClick={handleRefreshAI} 
+            variant="outline" 
+            size="sm" 
+            className="flex items-center gap-2"
+          >
+            <Brain className="h-4 w-4" />
+            Actualiser IA
+          </Button>
+          <Button 
+            onClick={fetchData} 
+            variant="outline" 
+            size="sm" 
+            className="flex items-center gap-2"
+            disabled={refreshing}
+          >
+            <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+            {refreshing ? 'Actualisation...' : 'Actualiser'}
+          </Button>
+        </div>
       </div>
       
       {/* Site Statistics Summary */}
