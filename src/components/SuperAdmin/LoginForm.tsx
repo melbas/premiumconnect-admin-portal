@@ -5,7 +5,9 @@ import { useToast } from '@/hooks/use-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { LoginHeader, QuickLoginCard, CredentialsForm } from './LoginForm/';
+import LoginHeader from './LoginForm/LoginHeader';
+import QuickLoginCard from './LoginForm/QuickLoginCard';
+import CredentialsForm from './LoginForm/CredentialsForm';
 import { LoginFormData } from './LoginForm/types';
 
 const LoginForm = () => {
