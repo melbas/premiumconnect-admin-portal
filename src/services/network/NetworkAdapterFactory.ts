@@ -164,10 +164,9 @@ export class NetworkAdapterFactory {
   private static async detectOpenWisp(ip: string): Promise<boolean> {
     try {
       console.log(`Detecting OpenWisp at ${ip}...`);
-      // Check for OpenWisp API endpoint
+      // Check for OpenWisp API endpoint - removed timeout property
       const response = await fetch(`http://${ip}/api/v1/`, {
-        method: 'GET',
-        timeout: 3000
+        method: 'GET'
       });
       return response.ok && response.headers.get('server')?.includes('openwisp');
     } catch {

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -27,7 +26,7 @@ import { useToast } from '@/hooks/use-toast';
 interface SiteNetworkConfig {
   siteId: string;
   siteName: string;
-  method: 'direct' | 'cloudflare_tunnel' | 'wireguard' | 'tailscale' | 'openvpn';
+  method: 'direct' | 'cloudflare_tunnel' | 'wireguard' | 'tailscale' | 'openvpn' | 'openwisp';
   credentials: {
     tunnelId?: string;
     cloudflareToken?: string;
@@ -36,6 +35,15 @@ interface SiteNetworkConfig {
     endpoint?: string;
     tailscaleKey?: string;
     openvpnConfig?: string;
+    // OpenWisp specific credentials
+    baseUrl?: string;
+    apiToken?: string;
+    organization?: string;
+    radiusSettings?: {
+      radiusServer?: string;
+      radiusSecret?: string;
+      radiusPort?: number;
+    };
   };
   subdomain?: string;
   dnsConfig?: {
@@ -83,7 +91,7 @@ const SiteNetworkConfiguration: React.FC<SiteNetworkConfigurationProps> = ({
     { value: 'openvpn', label: 'OpenVPN', icon: Key, description: 'VPN SSL traditionnel' }
   ];
 
-  const updateCredentials = (key: string, value: string) => {
+  const updateCredentials = (key: string, value: string | any) => {
     setConfig(prev => ({
       ...prev,
       credentials: { ...prev.credentials, [key]: value }
