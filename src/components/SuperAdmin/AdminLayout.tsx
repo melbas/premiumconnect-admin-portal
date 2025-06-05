@@ -21,6 +21,7 @@ export type AdminTab =
   | 'vouchers' 
   | 'analytics' 
   | 'ai'
+  | 'ai-opt'
   | 'audit'
   | 'settings';
 

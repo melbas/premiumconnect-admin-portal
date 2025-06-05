@@ -13,6 +13,7 @@ import SuperAdminSites from './Tabs/SuperAdminSites';
 import SuperAdminAnalytics from './Tabs/SuperAdminAnalytics';
 import SuperAdminAI from './Tabs/SuperAdminAI';
 import SuperAdminAudit from './Tabs/SuperAdminAudit';
+import SuperAdminAIOpt from './Tabs/SuperAdminAIOpt';
 
 interface SuperAdminDashboardProps {
   initialTab?: AdminTab;
@@ -36,7 +37,7 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ initialTab = 
 
   // Determine initial active tab from URL or props
   const getInitialTab = (): AdminTab => {
-    if (tab && ['overview', 'technical', 'marketing', 'vouchers', 'users', 'sites', 'wholesalers', 'captive-portal', 'analytics', 'ai', 'audit', 'settings'].includes(tab)) {
+    if (tab && ['overview', 'technical', 'marketing', 'vouchers', 'users', 'sites', 'wholesalers', 'captive-portal', 'analytics', 'ai', 'ai-opt', 'audit', 'settings'].includes(tab)) {
       return tab as AdminTab;
     }
     return initialTab;
@@ -73,6 +74,8 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ initialTab = 
         return <SuperAdminAnalytics />;
       case 'ai':
         return <SuperAdminAI />;
+      case 'ai-opt':
+        return <SuperAdminAIOpt />;
       case 'audit':
         return <SuperAdminAudit />;
       case 'settings':

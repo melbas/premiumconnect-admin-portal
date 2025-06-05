@@ -1,139 +1,94 @@
 
 import React from 'react';
 import { 
-  Home, 
+  Sidebar, 
+  SidebarContent, 
+  SidebarGroup, 
+  SidebarGroupContent, 
+  SidebarMenu, 
+  SidebarMenuButton, 
+  SidebarMenuItem,
+  SidebarHeader,
+  SidebarFooter
+} from '@/components/ui/sidebar';
+import { 
+  LayoutDashboard, 
   Users, 
-  MapPin, 
-  Building2, 
+  Building, 
+  ShoppingBag, 
   Wifi, 
   Settings, 
-  TrendingUp, 
-  Ticket, 
   BarChart3, 
-  Bot, 
-  FileText, 
-  Settings2 
+  Brain,
+  Zap,
+  Shield,
+  FileText
 } from 'lucide-react';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarGroupContent,
-  useSidebar,
-} from '@/components/ui/sidebar';
 import { AdminTab } from './AdminLayout';
-import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 
 interface AdminSidebarProps {
   activeTab: AdminTab;
   setActiveTab: (tab: AdminTab) => void;
 }
 
-const menuGroups = [
-  {
-    label: "Tableau de Bord",
-    items: [
-      { id: 'overview' as AdminTab, label: 'Vue d\'ensemble', icon: Home },
-      { id: 'analytics' as AdminTab, label: 'Analytics', icon: BarChart3 },
-    ]
-  },
-  {
-    label: "Gestion",
-    items: [
-      { id: 'users' as AdminTab, label: 'Utilisateurs', icon: Users },
-      { id: 'sites' as AdminTab, label: 'Sites', icon: MapPin },
-      { id: 'wholesalers' as AdminTab, label: 'Grossistes', icon: Building2 },
-      { id: 'vouchers' as AdminTab, label: 'Vouchers', icon: Ticket },
-    ]
-  },
-  {
-    label: "Portails & Tech",
-    items: [
-      { id: 'captive-portal' as AdminTab, label: 'Studio Portail', icon: Wifi },
-      { id: 'technical' as AdminTab, label: 'Technique', icon: Settings },
-    ]
-  },
-  {
-    label: "Marketing & IA",
-    items: [
-      { id: 'marketing' as AdminTab, label: 'Marketing', icon: TrendingUp },
-      { id: 'ai' as AdminTab, label: 'Intelligence IA', icon: Bot },
-    ]
-  },
-  {
-    label: "Administration",
-    items: [
-      { id: 'audit' as AdminTab, label: 'Audit & Logs', icon: FileText },
-      { id: 'settings' as AdminTab, label: 'Paramètres', icon: Settings2 },
-    ]
-  }
-];
-
-export function AdminSidebar({ activeTab, setActiveTab }: AdminSidebarProps) {
-  const { state } = useSidebar();
+export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, setActiveTab }) => {
+  const navigationItems = [
+    { id: 'overview', label: 'Vue d\'ensemble', icon: LayoutDashboard },
+    { id: 'users', label: 'Utilisateurs', icon: Users },
+    { id: 'sites', label: 'Sites', icon: Building },
+    { id: 'wholesalers', label: 'Grossistes', icon: ShoppingBag },
+    { id: 'captive-portal', label: 'Portail Captif', icon: Wifi },
+    { id: 'technical', label: 'Technique', icon: Settings },
+    { id: 'marketing', label: 'Marketing', icon: BarChart3 },
+    { id: 'vouchers', label: 'Codes', icon: FileText },
+    { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+    { id: 'ai', label: 'IA Assistant', icon: Brain },
+    { id: 'ai-opt', label: 'Optimisation IA', icon: Zap, badge: 'Nouveau' },
+    { id: 'audit', label: 'Audit & Sécurité', icon: Shield },
+  ];
 
   return (
-    <Sidebar className="border-r">
-      <SidebarHeader className="p-4">
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-            <Wifi className="w-5 h-5 text-primary-foreground" />
-          </div>
-          {state === "expanded" && (
-            <div>
-              <h2 className="font-semibold text-sm">WiFi Sénégal</h2>
-              <p className="text-xs text-muted-foreground">Back-Office</p>
-            </div>
-          )}
-        </div>
+    <Sidebar>
+      <SidebarHeader className="p-6">
+        <h2 className="text-xl font-bold">SuperAdmin</h2>
+        <p className="text-sm text-muted-foreground">Portail d'administration</p>
       </SidebarHeader>
-
+      
       <SidebarContent>
-        {menuGroups.map((group) => (
-          <SidebarGroup key={group.label}>
-            <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {group.items.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = activeTab === item.id;
-                  
-                  return (
-                    <SidebarMenuItem key={item.id}>
-                      <SidebarMenuButton
-                        onClick={() => setActiveTab(item.id)}
-                        className={cn(
-                          "w-full justify-start",
-                          isActive && "bg-accent text-accent-foreground"
-                        )}
-                        tooltip={state === "collapsed" ? item.label : undefined}
-                      >
-                        <Icon className="w-4 h-4" />
-                        <span>{item.label}</span>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  );
-                })}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        ))}
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {navigationItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <SidebarMenuItem key={item.id}>
+                    <SidebarMenuButton
+                      isActive={activeTab === item.id}
+                      onClick={() => setActiveTab(item.id as AdminTab)}
+                      className="w-full justify-start"
+                    >
+                      <Icon className="mr-2 h-4 w-4" />
+                      {item.label}
+                      {item.badge && (
+                        <Badge variant="secondary" className="ml-auto text-xs">
+                          {item.badge}
+                        </Badge>
+                      )}
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
-
+      
       <SidebarFooter className="p-4">
-        <div className="text-xs text-muted-foreground text-center">
-          © 2024 WiFi Sénégal
+        <div className="text-xs text-muted-foreground">
+          Version 2.0 - IA Contextuelle
         </div>
       </SidebarFooter>
     </Sidebar>
   );
-}
+};
