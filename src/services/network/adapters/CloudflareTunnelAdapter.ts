@@ -1,5 +1,5 @@
 
-import { NetworkAdapter, NetworkEquipment } from '../NetworkAdapterFactory';
+import { NetworkAdapter, NetworkEquipment } from '../types';
 
 export class CloudflareTunnelAdapter implements NetworkAdapter {
   private equipment: NetworkEquipment;

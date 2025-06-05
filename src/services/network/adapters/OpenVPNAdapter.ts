@@ -1,5 +1,5 @@
 
-import { NetworkAdapter, NetworkEquipment } from '../NetworkAdapterFactory';
+import { NetworkAdapter, NetworkEquipment } from '../types';
 
 export class OpenVPNAdapter implements NetworkAdapter {
   private equipment: NetworkEquipment;
