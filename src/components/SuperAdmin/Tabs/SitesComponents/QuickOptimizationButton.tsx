@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Zap, Loader2 } from 'lucide-react';
+import { AnimatedButton } from '@/components/ui/animated-button';
+import { Zap } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface QuickOptimizationButtonProps {
@@ -54,22 +54,20 @@ const QuickOptimizationButton: React.FC<QuickOptimizationButtonProps> = ({
   };
 
   return (
-    <Button
+    <AnimatedButton
       variant="outline"
       size="sm"
       onClick={handleOptimize}
-      disabled={isOptimizing}
-      className="h-8 px-2"
+      loading={isOptimizing}
+      className="h-8 px-2 group"
     >
-      {isOptimizing ? (
-        <Loader2 className="h-3 w-3 animate-spin" />
-      ) : (
-        <Zap className="h-3 w-3" />
-      )}
+      <Zap className={`h-3 w-3 transition-all duration-200 ${
+        isOptimizing ? 'animate-pulse' : 'group-hover:text-yellow-500'
+      }`} />
       <span className="ml-1 text-xs">
         {isOptimizing ? 'Optimisation...' : 'Optimiser'}
       </span>
-    </Button>
+    </AnimatedButton>
   );
 };
 
