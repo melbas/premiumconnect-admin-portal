@@ -1,7 +1,6 @@
-
 import React from 'react';
 import AdminSidebar from './AdminSidebar';
-import AdminHeader from './AdminHeader';
+import { AdminHeader } from './AdminHeader';
 
 export type AdminTab = 
   | 'overview' 
