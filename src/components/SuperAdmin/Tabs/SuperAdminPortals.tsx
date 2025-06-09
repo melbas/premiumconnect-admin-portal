@@ -20,9 +20,11 @@ import {
   Zap,
   Heart,
   Gamepad2,
-  Wrench
+  Wrench,
+  Sparkles
 } from 'lucide-react';
 import PortalConfigurationStudio from '../PortalStudio/PortalConfigurationStudio';
+import SuperAdminAdvancedPortals from './SuperAdminAdvancedPortals';
 
 const SuperAdminPortals = () => {
   const [activePortalsTab, setActivePortalsTab] = useState('overview');
@@ -91,7 +93,7 @@ const SuperAdminPortals = () => {
       </div>
 
       <Tabs value={activePortalsTab} onValueChange={setActivePortalsTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-7">
+        <TabsList className="grid w-full grid-cols-8">
           <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
           <TabsTrigger value="sites">Par Sites</TabsTrigger>
           <TabsTrigger value="wholesalers">Par Grossistes</TabsTrigger>
@@ -99,6 +101,10 @@ const SuperAdminPortals = () => {
           <TabsTrigger value="modules">Modules</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="configuration">Configuration Live</TabsTrigger>
+          <TabsTrigger value="advanced" className="flex items-center gap-1">
+            <Sparkles className="h-3 w-3" />
+            Avancé
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -412,6 +418,12 @@ const SuperAdminPortals = () => {
         <TabsContent value="configuration" className="h-screen">
           <div className="bg-white rounded-lg border h-full">
             <PortalConfigurationStudio />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="advanced" className="h-screen">
+          <div className="bg-white rounded-lg border h-full">
+            <SuperAdminAdvancedPortals />
           </div>
         </TabsContent>
       </Tabs>
