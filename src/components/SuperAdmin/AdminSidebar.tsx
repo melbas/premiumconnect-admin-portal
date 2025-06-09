@@ -1,94 +1,80 @@
 
 import React from 'react';
-import { 
-  Sidebar, 
-  SidebarContent, 
-  SidebarGroup, 
-  SidebarGroupContent, 
-  SidebarMenu, 
-  SidebarMenuButton, 
-  SidebarMenuItem,
-  SidebarHeader,
-  SidebarFooter
-} from '@/components/ui/sidebar';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 import { 
   LayoutDashboard, 
+  Settings, 
+  Server, 
+  Megaphone, 
+  Ticket, 
   Users, 
   Building, 
-  ShoppingBag, 
-  Wifi, 
-  Settings, 
+  Users2, 
+  Globe, 
   BarChart3, 
-  Brain,
+  Brain, 
+  Shield, 
   Zap,
-  Shield,
-  FileText
+  Palette
 } from 'lucide-react';
-import { AdminTab } from './AdminLayout';
-import { Badge } from '@/components/ui/badge';
+import type { AdminTab } from './AdminLayout';
 
 interface AdminSidebarProps {
   activeTab: AdminTab;
   setActiveTab: (tab: AdminTab) => void;
 }
 
-export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, setActiveTab }) => {
-  const navigationItems = [
-    { id: 'overview', label: 'Vue d\'ensemble', icon: LayoutDashboard },
-    { id: 'users', label: 'Utilisateurs', icon: Users },
-    { id: 'sites', label: 'Sites', icon: Building },
-    { id: 'wholesalers', label: 'Grossistes', icon: ShoppingBag },
-    { id: 'captive-portal', label: 'Portail Captif', icon: Wifi },
-    { id: 'technical', label: 'Technique', icon: Settings },
-    { id: 'marketing', label: 'Marketing', icon: BarChart3 },
-    { id: 'vouchers', label: 'Codes', icon: FileText },
-    { id: 'analytics', label: 'Analytics', icon: BarChart3 },
-    { id: 'ai', label: 'IA Assistant', icon: Brain },
-    { id: 'ai-opt', label: 'Optimisation IA', icon: Zap, badge: 'Nouveau' },
-    { id: 'audit', label: 'Audit & Sécurité', icon: Shield },
+const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, setActiveTab }) => {
+  const sidebarItems = [
+    { id: 'overview' as AdminTab, label: 'Vue d\'ensemble', icon: LayoutDashboard },
+    { id: 'sites' as AdminTab, label: 'Sites', icon: Building },
+    { id: 'wholesalers' as AdminTab, label: 'Grossistes', icon: Users2 },
+    { id: 'users' as AdminTab, label: 'Utilisateurs', icon: Users },
+    { id: 'portals' as AdminTab, label: 'Portails Captifs', icon: Palette, badge: 'Nouveau' },
+    { id: 'technical' as AdminTab, label: 'Technique', icon: Server },
+    { id: 'marketing' as AdminTab, label: 'Marketing', icon: Megaphone },
+    { id: 'vouchers' as AdminTab, label: 'Vouchers', icon: Ticket },
+    { id: 'analytics' as AdminTab, label: 'Analytics', icon: BarChart3 },
+    { id: 'ai' as AdminTab, label: 'IA', icon: Brain },
+    { id: 'ai-opt' as AdminTab, label: 'IA Optimisation', icon: Zap },
+    { id: 'audit' as AdminTab, label: 'Audit', icon: Shield },
+    { id: 'settings' as AdminTab, label: 'Paramètres', icon: Settings },
   ];
 
   return (
-    <Sidebar>
-      <SidebarHeader className="p-6">
-        <h2 className="text-xl font-bold">SuperAdmin</h2>
-        <p className="text-sm text-muted-foreground">Portail d'administration</p>
-      </SidebarHeader>
+    <div className="w-64 bg-card border-r">
+      <div className="p-6">
+        <h2 className="text-xl font-bold text-primary">Super Admin</h2>
+        <p className="text-sm text-muted-foreground">Tableau de bord</p>
+      </div>
       
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {navigationItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <SidebarMenuItem key={item.id}>
-                    <SidebarMenuButton
-                      isActive={activeTab === item.id}
-                      onClick={() => setActiveTab(item.id as AdminTab)}
-                      className="w-full justify-start"
-                    >
-                      <Icon className="mr-2 h-4 w-4" />
-                      {item.label}
-                      {item.badge && (
-                        <Badge variant="secondary" className="ml-auto text-xs">
-                          {item.badge}
-                        </Badge>
-                      )}
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
+      <Separator />
       
-      <SidebarFooter className="p-4">
-        <div className="text-xs text-muted-foreground">
-          Version 2.0 - IA Contextuelle
-        </div>
-      </SidebarFooter>
-    </Sidebar>
+      <nav className="p-4 space-y-2">
+        {sidebarItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <Button
+              key={item.id}
+              variant={activeTab === item.id ? 'default' : 'ghost'}
+              className="w-full justify-start gap-2"
+              onClick={() => setActiveTab(item.id)}
+            >
+              <Icon className="h-4 w-4" />
+              {item.label}
+              {item.badge && (
+                <Badge variant="secondary" className="ml-auto text-xs">
+                  {item.badge}
+                </Badge>
+              )}
+            </Button>
+          );
+        })}
+      </nav>
+    </div>
   );
 };
+
+export default AdminSidebar;

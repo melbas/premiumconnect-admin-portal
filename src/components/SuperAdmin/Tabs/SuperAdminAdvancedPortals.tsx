@@ -9,11 +9,12 @@ import {
   Activity,
   Route,
   FileJson,
-  Zap
+  Zap,
+  Book
 } from 'lucide-react';
 
 // Import des nouveaux composants
-import { ThemeJsonManager, WorkflowBuilder, ApiMonitoringDashboard } from '../AdvancedPortalStudio';
+import { ThemeJsonManager, WorkflowBuilder, ApiMonitoringDashboard, OpenApiDocumentation } from '../AdvancedPortalStudio';
 import CustomerJourneyPanel from '../PortalStudio/CustomerJourneyPanel';
 
 const SuperAdminAdvancedPortals: React.FC = () => {
@@ -34,7 +35,7 @@ const SuperAdminAdvancedPortals: React.FC = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="themes" className="flex items-center gap-2">
             <Palette className="h-4 w-4" />
             Thèmes JSON
@@ -46,6 +47,10 @@ const SuperAdminAdvancedPortals: React.FC = () => {
           <TabsTrigger value="monitoring" className="flex items-center gap-2">
             <Activity className="h-4 w-4" />
             API Monitoring
+          </TabsTrigger>
+          <TabsTrigger value="openapi" className="flex items-center gap-2">
+            <Book className="h-4 w-4" />
+            OpenAPI
           </TabsTrigger>
           <TabsTrigger value="journeys" className="flex items-center gap-2">
             <Route className="h-4 w-4" />
@@ -64,7 +69,7 @@ const SuperAdminAdvancedPortals: React.FC = () => {
             <CardContent>
               <p className="text-sm text-muted-foreground mb-4">
                 Importez, exportez et gérez vos thèmes personnalisés au format JSON. 
-                Créez des thèmes culturels adapés au contexte sénégalais avec aperçu en temps réel.
+                Créez des thèmes culturels adaptés au contexte sénégalais avec aperçu en temps réel.
               </p>
               <div className="flex gap-2">
                 <Badge variant="outline">Import/Export JSON</Badge>
@@ -126,6 +131,31 @@ const SuperAdminAdvancedPortals: React.FC = () => {
           </Card>
           
           <ApiMonitoringDashboard />
+        </TabsContent>
+
+        <TabsContent value="openapi" className="space-y-6">
+          <Card className="border-2 border-dashed border-orange-500/20 bg-orange-500/5">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Book className="h-5 w-5 text-orange-500" />
+                Documentation OpenAPI Automatique
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                Générez automatiquement la documentation de vos APIs, testez les endpoints 
+                et générez du code client dans plusieurs langages.
+              </p>
+              <div className="flex gap-2">
+                <Badge variant="outline">Documentation Auto</Badge>
+                <Badge variant="outline">Swagger UI</Badge>
+                <Badge variant="outline">Génération Code</Badge>
+                <Badge variant="outline">Tests Intégrés</Badge>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <OpenApiDocumentation />
         </TabsContent>
 
         <TabsContent value="journeys" className="space-y-6">

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -14,6 +15,7 @@ import SuperAdminAnalytics from './Tabs/SuperAdminAnalytics';
 import SuperAdminAI from './Tabs/SuperAdminAI';
 import SuperAdminAudit from './Tabs/SuperAdminAudit';
 import SuperAdminAIOpt from './Tabs/SuperAdminAIOpt';
+import SuperAdminPortals from './Tabs/SuperAdminPortals';
 
 interface SuperAdminDashboardProps {
   initialTab?: AdminTab;
@@ -37,7 +39,7 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ initialTab = 
 
   // Determine initial active tab from URL or props
   const getInitialTab = (): AdminTab => {
-    if (tab && ['overview', 'technical', 'marketing', 'vouchers', 'users', 'sites', 'wholesalers', 'captive-portal', 'analytics', 'ai', 'ai-opt', 'audit', 'settings'].includes(tab)) {
+    if (tab && ['overview', 'technical', 'marketing', 'vouchers', 'users', 'sites', 'wholesalers', 'captive-portal', 'portals', 'analytics', 'ai', 'ai-opt', 'audit', 'settings'].includes(tab)) {
       return tab as AdminTab;
     }
     return initialTab;
@@ -70,6 +72,8 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ initialTab = 
         return <SuperAdminWholesalers />;
       case 'captive-portal':
         return <SuperAdminTechnical initialView="captive-portal" />;
+      case 'portals':
+        return <SuperAdminPortals />;
       case 'analytics':
         return <SuperAdminAnalytics />;
       case 'ai':
