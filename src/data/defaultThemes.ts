@@ -3,29 +3,29 @@ import { ThemeJson } from '@/types/theme';
 
 export const defaultThemes: ThemeJson[] = [
   {
-    name: "Teranga Sénégal",
+    name: "Teranga",
     version: "1.0.0",
-    description: "Thème inspiré de l'hospitalité sénégalaise avec des couleurs chaudes",
-    author: "WiFi Sénégal",
+    description: "Thème culturel sénégalais avec couleurs chaudes et accueillantes",
+    author: "Super Admin",
     culturalContext: "Sénégal - Hospitalité traditionnelle",
     colors: {
       primary: "#D97706",
-      secondary: "#92400E", 
-      accent: "#FCD34D",
-      background: "#FFFBEB",
+      secondary: "#EA580C",
+      accent: "#F59E0B",
+      background: "#FFF7ED",
       surface: "#FFFFFF",
-      text: "#1F2937",
-      textSecondary: "#6B7280",
-      border: "#E5E7EB",
+      text: "#9A3412",
+      textSecondary: "#C2410C",
+      border: "#FED7AA",
       success: "#059669",
       warning: "#D97706",
       error: "#DC2626"
     },
     typography: {
-      fontFamily: "Montserrat, sans-serif",
+      fontFamily: "Inter, system-ui, sans-serif",
       fontSize: {
         xs: "0.75rem",
-        sm: "0.875rem", 
+        sm: "0.875rem",
         base: "1rem",
         lg: "1.125rem",
         xl: "1.25rem",
@@ -35,14 +35,14 @@ export const defaultThemes: ThemeJson[] = [
       fontWeight: {
         normal: "400",
         medium: "500",
-        semibold: "600", 
+        semibold: "600",
         bold: "700"
       }
     },
     spacing: {
       xs: "0.25rem",
       sm: "0.5rem",
-      md: "1rem", 
+      md: "1rem",
       lg: "1.5rem",
       xl: "2rem",
       "2xl": "3rem"
@@ -50,8 +50,8 @@ export const defaultThemes: ThemeJson[] = [
     components: {
       button: {
         borderRadius: "0.5rem",
-        padding: "0.75rem 1.5rem",
-        fontWeight: "600"
+        padding: "0.5rem 1rem",
+        fontWeight: "500"
       },
       card: {
         borderRadius: "0.75rem",
@@ -60,53 +60,49 @@ export const defaultThemes: ThemeJson[] = [
       },
       input: {
         borderRadius: "0.5rem",
-        padding: "0.75rem",
+        padding: "0.5rem 0.75rem",
         borderWidth: "1px"
       }
     },
     customCSS: `
-      .portal-container {
-        background: linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-secondary) 100%);
-        min-height: 100vh;
+      .teranga-gradient {
+        background: linear-gradient(135deg, #D97706 0%, #EA580C 100%);
       }
-      
-      .portal-card {
-        backdrop-filter: blur(10px);
-        background: rgba(255, 255, 255, 0.95);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+      .teranga-text-shadow {
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
     `,
     metadata: {
-      createdAt: "2024-01-15T10:00:00Z",
-      updatedAt: "2024-01-15T10:00:00Z",
-      tags: ["sénégal", "traditionnel", "chaud", "hospitalité"]
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      tags: ["culturel", "sénégal", "orange", "chaleureux"]
     }
   },
   {
     name: "Dakar Modern",
-    version: "1.2.0", 
-    description: "Design moderne et urbain inspiré de Dakar",
-    author: "WiFi Sénégal",
+    version: "1.0.0", 
+    description: "Design moderne urbain inspiré de Dakar",
+    author: "Super Admin",
     culturalContext: "Sénégal - Modernité urbaine",
     colors: {
-      primary: "#1E40AF",
-      secondary: "#3B82F6",
-      accent: "#60A5FA", 
-      background: "#F8FAFC",
-      surface: "#FFFFFF",
-      text: "#0F172A",
-      textSecondary: "#475569",
-      border: "#E2E8F0",
+      primary: "#3B82F6",
+      secondary: "#1E40AF",
+      accent: "#06B6D4",
+      background: "#FFFFFF",
+      surface: "#F8FAFC",
+      text: "#1F2937",
+      textSecondary: "#6B7280",
+      border: "#E5E7EB",
       success: "#10B981",
-      warning: "#F59E0B", 
+      warning: "#F59E0B",
       error: "#EF4444"
     },
     typography: {
-      fontFamily: "Inter, sans-serif",
+      fontFamily: "Inter, system-ui, sans-serif",
       fontSize: {
         xs: "0.75rem",
         sm: "0.875rem",
-        base: "1rem", 
+        base: "1rem",
         lg: "1.125rem",
         xl: "1.25rem",
         "2xl": "1.5rem",
@@ -123,77 +119,72 @@ export const defaultThemes: ThemeJson[] = [
       xs: "0.25rem",
       sm: "0.5rem",
       md: "1rem",
-      lg: "1.5rem", 
+      lg: "1.5rem",
       xl: "2rem",
       "2xl": "3rem"
     },
     components: {
       button: {
         borderRadius: "0.375rem",
-        padding: "0.625rem 1.25rem",
+        padding: "0.5rem 1rem",
         fontWeight: "500"
       },
       card: {
         borderRadius: "0.5rem",
         shadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
-        padding: "1.25rem"
+        padding: "1.5rem"
       },
       input: {
-        borderRadius: "0.375rem", 
-        padding: "0.625rem",
+        borderRadius: "0.375rem",
+        padding: "0.5rem 0.75rem",
         borderWidth: "1px"
       }
     },
     customCSS: `
-      .portal-container {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      }
-      
-      .glass-effect {
-        backdrop-filter: blur(16px);
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+      .modern-glass {
+        backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.8);
       }
     `,
     metadata: {
-      createdAt: "2024-01-20T14:30:00Z", 
-      updatedAt: "2024-02-01T09:15:00Z",
-      tags: ["moderne", "urbain", "dakar", "professionnel"]
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      tags: ["moderne", "urbain", "bleu", "professionnel"]
     }
   },
   {
     name: "Casamance Nature",
     version: "1.0.0",
-    description: "Thème naturel inspiré de la région de Casamance",
-    author: "WiFi Sénégal",
-    culturalContext: "Casamance - Nature et verdure",
+    description: "Inspiré de la région naturelle de Casamance",
+    author: "Super Admin", 
+    culturalContext: "Sénégal - Nature et traditions du Sud",
     colors: {
-      primary: "#166534",
-      secondary: "#15803D",
-      accent: "#22C55E",
+      primary: "#059669",
+      secondary: "#047857",
+      accent: "#10B981",
       background: "#F0FDF4",
-      surface: "#FFFFFF", 
-      text: "#14532D",
-      textSecondary: "#16A34A",
+      surface: "#FFFFFF",
+      text: "#064E3B",
+      textSecondary: "#065F46",
       border: "#BBF7D0",
-      success: "#22C55E",
-      warning: "#EAB308",
+      success: "#059669",
+      warning: "#D97706",
       error: "#DC2626"
     },
     typography: {
-      fontFamily: "Poppins, sans-serif",
+      fontFamily: "Inter, system-ui, sans-serif",
       fontSize: {
         xs: "0.75rem",
         sm: "0.875rem",
         base: "1rem",
         lg: "1.125rem",
-        xl: "1.25rem", 
+        xl: "1.25rem",
         "2xl": "1.5rem",
         "3xl": "1.875rem"
       },
       fontWeight: {
         normal: "400",
-        medium: "500", 
+        medium: "500",
         semibold: "600",
         bold: "700"
       }
@@ -208,41 +199,30 @@ export const defaultThemes: ThemeJson[] = [
     },
     components: {
       button: {
-        borderRadius: "1rem",
-        padding: "0.75rem 1.5rem", 
-        fontWeight: "600"
+        borderRadius: "0.75rem",
+        padding: "0.5rem 1rem",
+        fontWeight: "500"
       },
       card: {
         borderRadius: "1rem",
-        shadow: "0 8px 25px -8px rgba(0, 0, 0, 0.1)",
-        padding: "2rem"
+        shadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+        padding: "1.5rem"
       },
       input: {
         borderRadius: "0.75rem",
-        padding: "0.875rem",
-        borderWidth: "2px"
+        padding: "0.5rem 0.75rem",
+        borderWidth: "1px"
       }
     },
     customCSS: `
-      .portal-container {
-        background: linear-gradient(135deg, #10b981 0%, #047857 100%);
-      }
-      
-      .nature-pattern::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2316a34a' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        opacity: 0.3;
+      .nature-pattern {
+        background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23059669' fill-opacity='0.05'%3E%3Cpath d='M20 20c0 11.046-8.954 20-20 20v-40c11.046 0 20 8.954 20 20z'/%3E%3C/g%3E%3C/svg%3E");
       }
     `,
     metadata: {
-      createdAt: "2024-01-25T16:45:00Z",
-      updatedAt: "2024-01-25T16:45:00Z", 
-      tags: ["nature", "casamance", "vert", "écologique"]
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      tags: ["nature", "vert", "casamance", "écologique"]
     }
   }
 ];

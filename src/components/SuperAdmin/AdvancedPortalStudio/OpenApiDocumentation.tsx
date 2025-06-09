@@ -2,130 +2,292 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { 
-  FileText, 
+  Book, 
   Download, 
   Upload, 
   Play, 
   Code, 
-  Eye,
+  FileText,
   Copy,
-  Globe,
-  Settings,
-  Book,
-  Zap
+  Check,
+  ExternalLink
 } from 'lucide-react';
 
-interface OpenApiEndpoint {
+interface ApiEndpoint {
   id: string;
   path: string;
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE';
   summary: string;
   description: string;
   parameters: Array<{
     name: string;
-    in: 'query' | 'path' | 'header' | 'body';
     type: string;
     required: boolean;
     description: string;
   }>;
-  responses: Array<{
-    status: number;
+  responses: Record<string, {
     description: string;
-    schema?: string;
+    schema: any;
   }>;
   tags: string[];
 }
 
 const OpenApiDocumentation: React.FC = () => {
-  const [endpoints, setEndpoints] = useState<OpenApiEndpoint[]>([]);
-  const [selectedEndpoint, setSelectedEndpoint] = useState<OpenApiEndpoint | null>(null);
-  const [apiInfo, setApiInfo] = useState({
-    title: 'WiFi Sénégal Portal API',
-    version: '1.0.0',
-    description: 'API pour la gestion des portails captifs WiFi au Sénégal',
-    baseUrl: 'https://api.wifi-senegal.com/v1',
-  });
-  const [activeTab, setActiveTab] = useState('endpoints');
-  const { toast } = useToast();
-
-  const generateOpenApiSpec = () => {
-    const spec = {
-      openapi: '3.0.3',
-      info: {
-        title: apiInfo.title,
-        version: apiInfo.version,
-        description: apiInfo.description,
-      },
-      servers: [
+  const [endpoints, setEndpoints] = useState<ApiEndpoint[]>([
+    {
+      id: '1',
+      path: '/api/auth/sms',
+      method: 'POST',
+      summary: 'Envoyer un code SMS',
+      description: 'Envoie un code de vérification SMS au numéro spécifié',
+      parameters: [
         {
-          url: apiInfo.baseUrl,
-          description: 'Serveur de production',
+          name: 'phone',
+          type: 'string',
+          required: true,
+          description: 'Numéro de téléphone au format international'
+        },
+        {
+          name: 'message',
+          type: 'string',
+          required: false,
+          description: 'Message personnalisé à envoyer'
         }
       ],
-      paths: endpoints.reduce((acc, endpoint) => {
-        const path = endpoint.path;
-        if (!acc[path]) acc[path] = {};
-        
-        acc[path][endpoint.method.toLowerCase()] = {
-          summary: endpoint.summary,
-          description: endpoint.description,
-          tags: endpoint.tags,
-          parameters: endpoint.parameters.map(param => ({
-            name: param.name,
-            in: param.in,
-            required: param.required,
-            description: param.description,
-            schema: { type: param.type }
-          })),
-          responses: endpoint.responses.reduce((respAcc, resp) => {
-            respAcc[resp.status] = {
-              description: resp.description,
-              content: resp.schema ? {
-                'application/json': {
-                  schema: JSON.parse(resp.schema || '{}')
-                }
-              } : undefined
-            };
-            return respAcc;
-          }, {} as any)
-        };
-        
-        return acc;
-      }, {} as any),
-      components: {
-        securitySchemes: {
-          ApiKeyAuth: {
-            type: 'apiKey',
-            in: 'header',
-            name: 'X-API-Key'
-          },
-          BearerAuth: {
-            type: 'http',
-            scheme: 'bearer',
-            bearerFormat: 'JWT'
+      responses: {
+        '200': {
+          description: 'SMS envoyé avec succès',
+          schema: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              messageId: { type: 'string' },
+              timestamp: { type: 'string' }
+            }
+          }
+        },
+        '400': {
+          description: 'Numéro de téléphone invalide',
+          schema: {
+            type: 'object',
+            properties: {
+              error: { type: 'string' },
+              code: { type: 'number' }
+            }
           }
         }
-      }
-    };
+      },
+      tags: ['Authentication', 'SMS']
+    },
+    {
+      id: '2',
+      path: '/api/payment/mobile-money',
+      method: 'POST',
+      summary: 'Paiement Mobile Money',
+      description: 'Initie un paiement via Orange Money ou Wave',
+      parameters: [
+        {
+          name: 'phone',
+          type: 'string',
+          required: true,
+          description: 'Numéro de téléphone du payeur'
+        },
+        {
+          name: 'amount',
+          type: 'number',
+          required: true,
+          description: 'Montant en FCFA'
+        },
+        {
+          name: 'provider',
+          type: 'string',
+          required: true,
+          description: 'Fournisseur: orange_money ou wave'
+        }
+      ],
+      responses: {
+        '200': {
+          description: 'Paiement initié',
+          schema: {
+            type: 'object',
+            properties: {
+              transactionId: { type: 'string' },
+              status: { type: 'string' },
+              redirectUrl: { type: 'string' }
+            }
+          }
+        }
+      },
+      tags: ['Payment', 'Mobile Money']
+    }
+  ]);
 
-    return spec;
+  const [selectedEndpoint, setSelectedEndpoint] = useState<ApiEndpoint | null>(endpoints[0]);
+  const [testRequest, setTestRequest] = useState('{}');
+  const [testResponse, setTestResponse] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [copiedCode, setCopiedCode] = useState<string | null>(null);
+  const { toast } = useToast();
+
+  const handleTestEndpoint = async () => {
+    if (!selectedEndpoint) return;
+    
+    setIsLoading(true);
+    
+    try {
+      // Simulation d'appel API
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      const mockResponse = {
+        success: true,
+        data: {
+          message: `Test de ${selectedEndpoint.path} réussi`,
+          timestamp: new Date().toISOString(),
+          endpoint: selectedEndpoint.path,
+          method: selectedEndpoint.method
+        }
+      };
+      
+      setTestResponse(JSON.stringify(mockResponse, null, 2));
+      
+      toast({
+        title: "Test réussi",
+        description: `L'endpoint ${selectedEndpoint.path} a répondu correctement`,
+      });
+    } catch (error) {
+      setTestResponse(JSON.stringify({ error: 'Test failed' }, null, 2));
+      toast({
+        title: "Erreur de test",
+        description: "Une erreur est survenue lors du test",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const generateCodeSample = (language: string): string => {
+    if (!selectedEndpoint) return '';
+
+    const { path, method, parameters } = selectedEndpoint;
+    
+    switch (language) {
+      case 'javascript':
+        return `// Appel API en JavaScript
+const response = await fetch('${path}', {
+  method: '${method}',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer YOUR_TOKEN'
+  },
+  body: JSON.stringify({
+${parameters.map(p => `    ${p.name}: ${p.type === 'string' ? '"value"' : 'value'}`).join(',\n')}
+  })
+});
+
+const data = await response.json();
+console.log(data);`;
+
+      case 'python':
+        return `# Appel API en Python
+import requests
+
+url = "${path}"
+headers = {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer YOUR_TOKEN"
+}
+data = {
+${parameters.map(p => `    "${p.name}": ${p.type === 'string' ? '"value"' : 'value'}`).join(',\n')}
+}
+
+response = requests.${method.toLowerCase()}(url, headers=headers, json=data)
+print(response.json())`;
+
+      case 'curl':
+        return `# Appel API avec cURL
+curl -X ${method} "${path}" \\
+  -H "Content-Type: application/json" \\
+  -H "Authorization: Bearer YOUR_TOKEN" \\
+  -d '{
+${parameters.map(p => `    "${p.name}": ${p.type === 'string' ? '"value"' : 'value'}`).join(',\n')}
+  }'`;
+
+      default:
+        return '';
+    }
+  };
+
+  const copyToClipboard = async (text: string, type: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedCode(type);
+      setTimeout(() => setCopiedCode(null), 2000);
+      toast({
+        title: "Copié",
+        description: "Le code a été copié dans le presse-papiers",
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur de copie",
+        description: "Impossible de copier le code",
+        variant: "destructive",
+      });
+    }
   };
 
   const exportOpenApiSpec = () => {
-    const spec = generateOpenApiSpec();
-    const blob = new Blob([JSON.stringify(spec, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
+    const spec = {
+      openapi: '3.0.0',
+      info: {
+        title: 'API Portail Captif',
+        version: '1.0.0',
+        description: 'Documentation API pour les portails captifs sénégalais'
+      },
+      servers: [
+        {
+          url: 'https://api.portail-captif.sn',
+          description: 'Serveur de production'
+        },
+        {
+          url: 'https://staging-api.portail-captif.sn',
+          description: 'Serveur de test'
+        }
+      ],
+      paths: endpoints.reduce((acc, endpoint) => {
+        acc[endpoint.path] = {
+          [endpoint.method.toLowerCase()]: {
+            summary: endpoint.summary,
+            description: endpoint.description,
+            tags: endpoint.tags,
+            parameters: endpoint.parameters.map(p => ({
+              name: p.name,
+              in: 'body',
+              required: p.required,
+              description: p.description,
+              schema: { type: p.type }
+            })),
+            responses: endpoint.responses
+          }
+        };
+        return acc;
+      }, {} as any)
+    };
+
+    const dataStr = JSON.stringify(spec, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${apiInfo.title.toLowerCase().replace(/\s+/g, '-')}-openapi.json`;
+    link.download = 'openapi-spec.json';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -133,64 +295,8 @@ const OpenApiDocumentation: React.FC = () => {
 
     toast({
       title: "Spécification exportée",
-      description: "Le fichier OpenAPI a été téléchargé avec succès",
+      description: "Le fichier OpenAPI a été téléchargé",
     });
-  };
-
-  const importOpenApiSpec = async (file: File) => {
-    try {
-      const text = await file.text();
-      const spec = JSON.parse(text);
-      
-      // Parse OpenAPI spec and populate endpoints
-      setApiInfo({
-        title: spec.info?.title || 'API importée',
-        version: spec.info?.version || '1.0.0',
-        description: spec.info?.description || '',
-        baseUrl: spec.servers?.[0]?.url || '',
-      });
-
-      toast({
-        title: "Spécification importée",
-        description: "L'API a été importée avec succès",
-      });
-    } catch (error) {
-      toast({
-        title: "Erreur d'importation",
-        description: "Impossible de lire le fichier OpenAPI",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const addNewEndpoint = () => {
-    const newEndpoint: OpenApiEndpoint = {
-      id: crypto.randomUUID(),
-      path: '/api/example',
-      method: 'GET',
-      summary: 'Nouvel endpoint',
-      description: 'Description de l\'endpoint',
-      parameters: [],
-      responses: [
-        {
-          status: 200,
-          description: 'Succès',
-          schema: '{"message": "string"}'
-        }
-      ],
-      tags: ['general']
-    };
-
-    setEndpoints([...endpoints, newEndpoint]);
-    setSelectedEndpoint(newEndpoint);
-  };
-
-  const methodColors = {
-    GET: 'bg-green-100 text-green-800 border-green-200',
-    POST: 'bg-blue-100 text-blue-800 border-blue-200',
-    PUT: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-    DELETE: 'bg-red-100 text-red-800 border-red-200',
-    PATCH: 'bg-purple-100 text-purple-800 border-purple-200',
   };
 
   return (
@@ -199,264 +305,216 @@ const OpenApiDocumentation: React.FC = () => {
         <div>
           <h3 className="text-lg font-semibold">Documentation OpenAPI</h3>
           <p className="text-sm text-muted-foreground">
-            Générez et gérez la documentation de vos APIs automatiquement
+            Documentation automatique et tests d'APIs
           </p>
         </div>
         
         <div className="flex gap-2">
-          <Button onClick={addNewEndpoint}>
-            <Zap className="h-4 w-4 mr-2" />
-            Nouvel Endpoint
-          </Button>
-          <Button onClick={exportOpenApiSpec} variant="outline">
+          <Button variant="outline" onClick={exportOpenApiSpec}>
             <Download className="h-4 w-4 mr-2" />
-            Exporter
+            Exporter OpenAPI
+          </Button>
+          
+          <Button variant="outline">
+            <Upload className="h-4 w-4 mr-2" />
+            Importer Spec
+          </Button>
+          
+          <Button>
+            <ExternalLink className="h-4 w-4 mr-2" />
+            Swagger UI
           </Button>
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="endpoints">Endpoints</TabsTrigger>
-          <TabsTrigger value="documentation">Documentation</TabsTrigger>
-          <TabsTrigger value="testing">Tests API</TabsTrigger>
-          <TabsTrigger value="codegen">Génération Code</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="endpoints" className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Liste des endpoints */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Endpoints API</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {endpoints.map((endpoint) => (
-                  <div
-                    key={endpoint.id}
-                    className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                      selectedEndpoint?.id === endpoint.id 
-                        ? 'border-primary bg-primary/5' 
-                        : 'hover:bg-muted/50'
-                    }`}
-                    onClick={() => setSelectedEndpoint(endpoint)}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Liste des endpoints */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Book className="h-5 w-5" />
+              Endpoints API
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {endpoints.map((endpoint) => (
+              <div
+                key={endpoint.id}
+                className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+                  selectedEndpoint?.id === endpoint.id ? 'border-primary bg-primary/5' : 'hover:bg-muted'
+                }`}
+                onClick={() => setSelectedEndpoint(endpoint)}
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge 
+                    variant={endpoint.method === 'GET' ? 'default' : 
+                            endpoint.method === 'POST' ? 'destructive' : 
+                            endpoint.method === 'PUT' ? 'secondary' : 'outline'}
+                    className="text-xs"
                   >
-                    <div className="flex items-center gap-2 mb-1">
-                      <Badge className={`text-xs ${methodColors[endpoint.method]}`}>
-                        {endpoint.method}
-                      </Badge>
-                      <span className="font-mono text-sm">{endpoint.path}</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">{endpoint.summary}</p>
-                  </div>
-                ))}
+                    {endpoint.method}
+                  </Badge>
+                  <span className="font-mono text-sm">{endpoint.path}</span>
+                </div>
+                <p className="text-sm text-muted-foreground">{endpoint.summary}</p>
+                <div className="flex gap-1 mt-2">
+                  {endpoint.tags.map((tag) => (
+                    <Badge key={tag} variant="outline" className="text-xs">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
 
-                {endpoints.length === 0 && (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <FileText className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                    <p className="text-sm">Aucun endpoint configuré</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Configuration de l'endpoint */}
+        {/* Documentation détaillée */}
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              {selectedEndpoint?.path || 'Sélectionnez un endpoint'}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
             {selectedEndpoint ? (
-              <Card className="lg:col-span-2">
-                <CardHeader>
-                  <CardTitle className="text-base">Configuration Endpoint</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label>Méthode HTTP</Label>
-                      <Select 
-                        value={selectedEndpoint.method} 
-                        onValueChange={(value) => 
-                          setSelectedEndpoint({...selectedEndpoint, method: value as any})
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="GET">GET</SelectItem>
-                          <SelectItem value="POST">POST</SelectItem>
-                          <SelectItem value="PUT">PUT</SelectItem>
-                          <SelectItem value="DELETE">DELETE</SelectItem>
-                          <SelectItem value="PATCH">PATCH</SelectItem>
-                        </SelectContent>
-                      </Select>
+              <Tabs defaultValue="documentation" className="w-full">
+                <TabsList className="grid w-full grid-cols-3">
+                  <TabsTrigger value="documentation">Documentation</TabsTrigger>
+                  <TabsTrigger value="test">Test</TabsTrigger>
+                  <TabsTrigger value="code">Code</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="documentation" className="space-y-4">
+                  <div>
+                    <h4 className="font-semibold mb-2">Description</h4>
+                    <p className="text-sm text-muted-foreground">
+                      {selectedEndpoint.description}
+                    </p>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold mb-2">Paramètres</h4>
+                    <div className="space-y-2">
+                      {selectedEndpoint.parameters.map((param) => (
+                        <div key={param.name} className="p-3 border rounded-lg">
+                          <div className="flex items-center gap-2 mb-1">
+                            <code className="text-sm font-mono">{param.name}</code>
+                            <Badge variant="outline" className="text-xs">
+                              {param.type}
+                            </Badge>
+                            {param.required && (
+                              <Badge variant="destructive" className="text-xs">
+                                Requis
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {param.description}
+                          </p>
+                        </div>
+                      ))}
                     </div>
-                    <div>
-                      <Label>Chemin</Label>
-                      <Input 
-                        value={selectedEndpoint.path}
-                        onChange={(e) => 
-                          setSelectedEndpoint({...selectedEndpoint, path: e.target.value})
-                        }
-                        placeholder="/api/endpoint"
-                      />
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold mb-2">Réponses</h4>
+                    <div className="space-y-2">
+                      {Object.entries(selectedEndpoint.responses).map(([code, response]) => (
+                        <div key={code} className="p-3 border rounded-lg">
+                          <div className="flex items-center gap-2 mb-1">
+                            <Badge 
+                              variant={code.startsWith('2') ? 'default' : 'destructive'}
+                              className="text-xs"
+                            >
+                              {code}
+                            </Badge>
+                            <span className="text-sm font-medium">{response.description}</span>
+                          </div>
+                          <pre className="text-xs bg-muted p-2 rounded mt-2 overflow-auto">
+                            {JSON.stringify(response.schema, null, 2)}
+                          </pre>
+                        </div>
+                      ))}
                     </div>
                   </div>
+                </TabsContent>
 
+                <TabsContent value="test" className="space-y-4">
                   <div>
-                    <Label>Résumé</Label>
-                    <Input 
-                      value={selectedEndpoint.summary}
-                      onChange={(e) => 
-                        setSelectedEndpoint({...selectedEndpoint, summary: e.target.value})
-                      }
-                      placeholder="Brève description de l'endpoint"
+                    <Label htmlFor="test-request">Corps de la requête (JSON)</Label>
+                    <Textarea
+                      id="test-request"
+                      value={testRequest}
+                      onChange={(e) => setTestRequest(e.target.value)}
+                      className="font-mono text-sm"
+                      rows={6}
                     />
                   </div>
 
-                  <div>
-                    <Label>Description</Label>
-                    <Textarea 
-                      value={selectedEndpoint.description}
-                      onChange={(e) => 
-                        setSelectedEndpoint({...selectedEndpoint, description: e.target.value})
-                      }
-                      placeholder="Description détaillée de l'endpoint"
-                      rows={3}
-                    />
-                  </div>
+                  <Button 
+                    onClick={handleTestEndpoint}
+                    disabled={isLoading}
+                    className="w-full"
+                  >
+                    <Play className="h-4 w-4 mr-2" />
+                    {isLoading ? 'Test en cours...' : 'Tester l\'endpoint'}
+                  </Button>
 
-                  <div>
-                    <Label>Tags</Label>
-                    <Input 
-                      value={selectedEndpoint.tags.join(', ')}
-                      onChange={(e) => 
-                        setSelectedEndpoint({
-                          ...selectedEndpoint, 
-                          tags: e.target.value.split(',').map(t => t.trim()).filter(Boolean)
-                        })
-                      }
-                      placeholder="tag1, tag2, tag3"
-                    />
-                  </div>
-                </CardContent>
-              </Card>
+                  {testResponse && (
+                    <div>
+                      <Label>Réponse</Label>
+                      <pre className="bg-muted p-4 rounded-lg text-sm overflow-auto">
+                        {testResponse}
+                      </pre>
+                    </div>
+                  )}
+                </TabsContent>
+
+                <TabsContent value="code" className="space-y-4">
+                  <Tabs defaultValue="javascript" className="w-full">
+                    <TabsList>
+                      <TabsTrigger value="javascript">JavaScript</TabsTrigger>
+                      <TabsTrigger value="python">Python</TabsTrigger>
+                      <TabsTrigger value="curl">cURL</TabsTrigger>
+                    </TabsList>
+                    
+                    {['javascript', 'python', 'curl'].map((lang) => (
+                      <TabsContent key={lang} value={lang}>
+                        <div className="relative">
+                          <pre className="bg-muted p-4 rounded-lg text-sm overflow-auto">
+                            {generateCodeSample(lang)}
+                          </pre>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="absolute top-2 right-2"
+                            onClick={() => copyToClipboard(generateCodeSample(lang), lang)}
+                          >
+                            {copiedCode === lang ? (
+                              <Check className="h-3 w-3" />
+                            ) : (
+                              <Copy className="h-3 w-3" />
+                            )}
+                          </Button>
+                        </div>
+                      </TabsContent>
+                    ))}
+                  </Tabs>
+                </TabsContent>
+              </Tabs>
             ) : (
-              <Card className="lg:col-span-2">
-                <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                  <FileText className="h-12 w-12 text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-medium mb-2">Aucun endpoint sélectionné</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Sélectionnez un endpoint existant ou créez-en un nouveau
-                  </p>
-                </CardContent>
-              </Card>
+              <div className="flex items-center justify-center h-64 text-muted-foreground">
+                <div className="text-center">
+                  <Book className="h-12 w-12 mx-auto mb-4" />
+                  <p>Sélectionnez un endpoint pour voir sa documentation</p>
+                </div>
+              </div>
             )}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="documentation" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Informations API</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Titre de l'API</Label>
-                  <Input 
-                    value={apiInfo.title}
-                    onChange={(e) => setApiInfo({...apiInfo, title: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <Label>Version</Label>
-                  <Input 
-                    value={apiInfo.version}
-                    onChange={(e) => setApiInfo({...apiInfo, version: e.target.value})}
-                  />
-                </div>
-              </div>
-              <div>
-                <Label>URL de Base</Label>
-                <Input 
-                  value={apiInfo.baseUrl}
-                  onChange={(e) => setApiInfo({...apiInfo, baseUrl: e.target.value})}
-                  placeholder="https://api.example.com/v1"
-                />
-              </div>
-              <div>
-                <Label>Description</Label>
-                <Textarea 
-                  value={apiInfo.description}
-                  onChange={(e) => setApiInfo({...apiInfo, description: e.target.value})}
-                  rows={3}
-                />
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="testing" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Play className="h-5 w-5" />
-                Interface de Test API
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-12">
-                <Globe className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                <h3 className="text-lg font-medium mb-2">Interface de Test Swagger</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Testez vos endpoints directement depuis l'interface
-                </p>
-                <Button>
-                  <Eye className="h-4 w-4 mr-2" />
-                  Ouvrir Swagger UI
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="codegen" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Code className="h-5 w-5" />
-                Génération de Code Client
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Button variant="outline" className="h-20 flex-col">
-                  <Code className="h-6 w-6 mb-2" />
-                  JavaScript/TypeScript
-                </Button>
-                <Button variant="outline" className="h-20 flex-col">
-                  <Code className="h-6 w-6 mb-2" />
-                  Python
-                </Button>
-                <Button variant="outline" className="h-20 flex-col">
-                  <Code className="h-6 w-6 mb-2" />
-                  Java
-                </Button>
-                <Button variant="outline" className="h-20 flex-col">
-                  <Code className="h-6 w-6 mb-2" />
-                  C#
-                </Button>
-                <Button variant="outline" className="h-20 flex-col">
-                  <Code className="h-6 w-6 mb-2" />
-                  PHP
-                </Button>
-                <Button variant="outline" className="h-20 flex-col">
-                  <Code className="h-6 w-6 mb-2" />
-                  Go
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
