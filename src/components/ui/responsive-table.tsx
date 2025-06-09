@@ -15,6 +15,7 @@ interface ResponsiveTableProps {
 interface ResponsiveTableRowProps {
   children: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
   mobileLayout?: React.ReactNode;
 }
 
@@ -63,13 +64,14 @@ export const ResponsiveTable: React.FC<ResponsiveTableProps> = ({
 export const ResponsiveTableRow: React.FC<ResponsiveTableRowProps> = ({ 
   children, 
   className, 
+  style,
   mobileLayout 
 }) => {
   const isMobile = useIsMobile();
 
   if (isMobile && mobileLayout) {
     return (
-      <TableRow className={cn("hover:bg-muted/50 transition-colors", className)}>
+      <TableRow className={cn("hover:bg-muted/50 transition-colors", className)} style={style}>
         <TableCell colSpan={100} className="p-4">
           {mobileLayout}
         </TableCell>
@@ -78,7 +80,7 @@ export const ResponsiveTableRow: React.FC<ResponsiveTableRowProps> = ({
   }
 
   return (
-    <TableRow className={cn("hover:bg-muted/50 transition-colors", className)}>
+    <TableRow className={cn("hover:bg-muted/50 transition-colors", className)} style={style}>
       {children}
     </TableRow>
   );
