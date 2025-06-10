@@ -450,16 +450,16 @@ const WorkflowBuilder: React.FC = () => {
             <CardContent>
               <div className="space-y-2 text-sm">
                 <div className="p-2 bg-muted rounded">
-                  <code>{{`user.phone`}}</code> - Numéro de téléphone
+                  <code>{'{{user.phone}}'}</code> - Numéro de téléphone
                 </div>
                 <div className="p-2 bg-muted rounded">
-                  <code>{{`user.email`}}</code> - Adresse email
+                  <code>{'{{user.email}}'}</code> - Adresse email
                 </div>
                 <div className="p-2 bg-muted rounded">
-                  <code>{{`session.id`}}</code> - ID de session
+                  <code>{'{{session.id}}'}</code> - ID de session
                 </div>
                 <div className="p-2 bg-muted rounded">
-                  <code>{{`response.data`}}</code> - Données de réponse API
+                  <code>{'{{response.data}}'}</code> - Données de réponse API
                 </div>
               </div>
             </CardContent>
