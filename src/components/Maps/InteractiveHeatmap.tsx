@@ -3,9 +3,11 @@ import React, { useEffect, useRef } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import 'leaflet.heat';
 import { useMapContext } from './MapProvider';
 import { getMapStyle, generateHeatmapData } from './mapUtils';
+
+// Import leaflet.heat dynamiquement pour éviter les problèmes d'importation
+let heatLayerLoaded = false;
 
 interface InteractiveHeatmapProps {
   sites?: any[];
@@ -27,8 +29,23 @@ const InteractiveHeatmap: React.FC<InteractiveHeatmapProps> = ({
   const mapRef = useRef<L.Map | null>(null);
   const heatLayerRef = useRef<L.Layer | null>(null);
 
+  // Charger leaflet.heat dynamiquement
   useEffect(() => {
-    if (!mapRef.current) return;
+    const loadHeatLayer = async () => {
+      if (!heatLayerLoaded) {
+        try {
+          await import('leaflet.heat');
+          heatLayerLoaded = true;
+        } catch (error) {
+          console.warn('Failed to load leaflet.heat:', error);
+        }
+      }
+    };
+    loadHeatLayer();
+  }, []);
+
+  useEffect(() => {
+    if (!mapRef.current || !heatLayerLoaded) return;
 
     // Supprimer l'ancien layer de heatmap s'il existe
     if (heatLayerRef.current) {
@@ -38,7 +55,7 @@ const InteractiveHeatmap: React.FC<InteractiveHeatmapProps> = ({
     // Générer les données de heatmap
     const heatmapData = generateHeatmapData(sites);
     
-    if (heatmapData.length > 0) {
+    if (heatmapData.length > 0 && L.heatLayer) {
       // Créer le nouveau layer de heatmap
       heatLayerRef.current = L.heatLayer(heatmapData as [number, number, number][], {
         radius: 25,
@@ -55,10 +72,10 @@ const InteractiveHeatmap: React.FC<InteractiveHeatmapProps> = ({
 
       heatLayerRef.current.addTo(mapRef.current);
     }
-  }, [sites]);
+  }, [sites, heatLayerLoaded]);
 
-  const handleMapReady = (map: L.Map) => {
-    mapRef.current = map;
+  const handleMapReady = (e: any) => {
+    mapRef.current = e.target;
   };
 
   return (
@@ -67,7 +84,7 @@ const InteractiveHeatmap: React.FC<InteractiveHeatmapProps> = ({
         center={defaultCenter}
         zoom={defaultZoom}
         style={{ height: '100%', width: '100%' }}
-        whenReady={(e) => handleMapReady(e.target)}
+        whenReady={handleMapReady}
       >
         <TileLayer
           url={getMapStyle(isDarkMode)}
