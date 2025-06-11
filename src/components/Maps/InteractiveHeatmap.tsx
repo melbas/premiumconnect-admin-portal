@@ -74,17 +74,15 @@ const InteractiveHeatmap: React.FC<InteractiveHeatmapProps> = ({
     }
   }, [sites, heatLayerLoaded]);
 
-  const handleMapReady = (e: any) => {
-    mapRef.current = e.target;
-  };
-
   return (
     <div className={`w-full ${className}`} style={{ height: `${height}px` }}>
       <MapContainer
         center={defaultCenter}
         zoom={defaultZoom}
         style={{ height: '100%', width: '100%' }}
-        whenReady={handleMapReady}
+        whenCreated={(map: L.Map) => {
+          mapRef.current = map;
+        }}
       >
         <TileLayer
           url={getMapStyle(isDarkMode)}
