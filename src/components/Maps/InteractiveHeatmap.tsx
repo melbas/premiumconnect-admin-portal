@@ -80,8 +80,10 @@ const InteractiveHeatmap: React.FC<InteractiveHeatmapProps> = ({
         center={defaultCenter}
         zoom={defaultZoom}
         style={{ height: '100%', width: '100%' }}
-        whenCreated={(map: L.Map) => {
-          mapRef.current = map;
+        ref={(mapInstance) => {
+          if (mapInstance) {
+            mapRef.current = mapInstance;
+          }
         }}
       >
         <TileLayer
