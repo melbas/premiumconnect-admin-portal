@@ -36,6 +36,7 @@ const InteractiveHeatmap: React.FC<InteractiveHeatmapProps> = ({
         try {
           await import('leaflet.heat');
           heatLayerLoaded = true;
+          console.log('✅ Leaflet.heat loaded successfully');
         } catch (error) {
           console.warn('Failed to load leaflet.heat:', error);
         }
@@ -45,7 +46,10 @@ const InteractiveHeatmap: React.FC<InteractiveHeatmapProps> = ({
   }, []);
 
   useEffect(() => {
-    if (!mapRef.current || !heatLayerLoaded) return;
+    if (!mapRef.current || !heatLayerLoaded) {
+      console.log('Map or heatLayer not ready:', { mapReady: !!mapRef.current, heatLayerLoaded });
+      return;
+    }
 
     // Supprimer l'ancien layer de heatmap s'il existe
     if (heatLayerRef.current) {
@@ -54,6 +58,7 @@ const InteractiveHeatmap: React.FC<InteractiveHeatmapProps> = ({
 
     // Générer les données de heatmap
     const heatmapData = generateHeatmapData(sites);
+    console.log('Generated heatmap data:', heatmapData);
     
     if (heatmapData.length > 0 && L.heatLayer) {
       // Créer le nouveau layer de heatmap
@@ -71,8 +76,14 @@ const InteractiveHeatmap: React.FC<InteractiveHeatmapProps> = ({
       });
 
       heatLayerRef.current.addTo(mapRef.current);
+      console.log('✅ Heatmap layer added to map');
     }
   }, [sites, heatLayerLoaded]);
+
+  const handleMapCreated = (map: L.Map) => {
+    mapRef.current = map;
+    console.log('✅ Map instance created and stored');
+  };
 
   return (
     <div className={`w-full ${className}`} style={{ height: `${height}px` }}>
@@ -80,11 +91,7 @@ const InteractiveHeatmap: React.FC<InteractiveHeatmapProps> = ({
         center={defaultCenter}
         zoom={defaultZoom}
         style={{ height: '100%', width: '100%' }}
-        ref={(mapInstance) => {
-          if (mapInstance) {
-            mapRef.current = mapInstance;
-          }
-        }}
+        whenCreated={handleMapCreated}
       >
         <TileLayer
           url={getMapStyle(isDarkMode)}
