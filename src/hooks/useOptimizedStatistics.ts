@@ -56,7 +56,7 @@ export const useOptimizedStatistics = (siteId?: string) => {
     queryKey: ['statistics', siteId],
     queryFn: fetchStatistics,
     staleTime: CACHE_DURATION,
-    cacheTime: CACHE_DURATION * 2,
+    gcTime: CACHE_DURATION * 2, // Changé de cacheTime à gcTime
     refetchOnWindowFocus: false,
     refetchInterval: CACHE_DURATION
   });
