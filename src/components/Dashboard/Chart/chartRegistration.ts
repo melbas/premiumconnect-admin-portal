@@ -10,7 +10,11 @@ import {
   Tooltip,
   Legend,
   ArcElement,
-  Filler
+  Filler,
+  LineController,
+  BarController,
+  DoughnutController,
+  PieController
 } from 'chart.js';
 
 // Enregistrer tous les composants Chart.js nécessaires
@@ -24,7 +28,11 @@ ChartJS.register(
   Tooltip,
   Legend,
   ArcElement,
-  Filler // Plugin pour les zones remplies
+  Filler,
+  LineController,
+  BarController,
+  DoughnutController,
+  PieController
 );
 
 export { ChartJS };

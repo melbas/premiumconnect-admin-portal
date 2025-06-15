@@ -13,6 +13,7 @@ interface State {
   hasError: boolean;
   error?: Error;
   errorInfo?: any;
+  isChartError?: boolean;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
@@ -22,7 +23,15 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error };
+    const isChartError = error.message.includes('registered controller') || 
+                        error.message.includes('Chart.js') ||
+                        error.stack?.includes('chart');
+    
+    return { 
+      hasError: true, 
+      error,
+      isChartError
+    };
   }
 
   componentDidCatch(error: Error, errorInfo: any) {
@@ -45,10 +54,46 @@ export class ErrorBoundary extends Component<Props, State> {
     window.location.href = '/';
   };
 
+  handleRetry = () => {
+    this.setState({ hasError: false, error: undefined, errorInfo: undefined });
+  };
+
   render() {
     if (this.state.hasError) {
       if (this.props.fallback) {
         return this.props.fallback;
+      }
+
+      // Affichage spécial pour les erreurs de graphiques
+      if (this.state.isChartError) {
+        return (
+          <div className="min-h-screen flex items-center justify-center bg-background p-4">
+            <Card className="w-full max-w-lg">
+              <CardHeader className="text-center">
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100">
+                  <AlertTriangle className="h-6 w-6 text-yellow-600" />
+                </div>
+                <CardTitle className="text-xl">Problème avec les graphiques</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-muted-foreground text-center">
+                  Une erreur s'est produite lors du chargement des graphiques. 
+                  Cela peut être dû à un problème de configuration Chart.js.
+                </p>
+                
+                <div className="flex gap-2 pt-4">
+                  <Button onClick={this.handleRetry} className="flex-1">
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Réessayer
+                  </Button>
+                  <Button variant="outline" onClick={this.handleReload} className="flex-1">
+                    Recharger
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        );
       }
 
       return (
