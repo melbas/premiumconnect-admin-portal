@@ -1,26 +1,97 @@
-<!DOCTYPE html>
-<html lang="en">
+
+<!doctype html>
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>premiumconnect-admin-portal</title>
-    <meta name="description" content="Lovable Generated Project" />
-    <meta name="author" content="Lovable" />
-
-    <meta property="og:title" content="premiumconnect-admin-portal" />
-    <meta property="og:description" content="Lovable Generated Project" />
+    
+    <!-- SEO Meta Tags -->
+    <title>WiFi Sénégal - Plateforme de Gestion de Portails Captifs</title>
+    <meta name="description" content="Plateforme innovante de gestion de portails captifs WiFi au Sénégal. Gestion multi-sites, analytics avancés, IA intégrée." />
+    <meta name="keywords" content="WiFi, Sénégal, portail captif, hotspot, gestion réseau, analytics, IA" />
+    <meta name="author" content="WiFi Sénégal" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://wifisenegal.com" />
+    
+    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
-
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@lovable_dev" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta property="og:url" content="https://wifisenegal.com" />
+    <meta property="og:title" content="WiFi Sénégal - Plateforme de Gestion de Portails Captifs" />
+    <meta property="og:description" content="Plateforme innovante de gestion de portails captifs WiFi au Sénégal. Gestion multi-sites, analytics avancés, IA intégrée." />
+    <meta property="og:image" content="https://wifisenegal.com/og-image.jpg" />
+    <meta property="og:locale" content="fr_SN" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://wifisenegal.com" />
+    <meta property="twitter:title" content="WiFi Sénégal - Plateforme de Gestion de Portails Captifs" />
+    <meta property="twitter:description" content="Plateforme innovante de gestion de portails captifs WiFi au Sénégal. Gestion multi-sites, analytics avancés, IA intégrée." />
+    <meta property="twitter:image" content="https://wifisenegal.com/twitter-image.jpg" />
+    
+    <!-- PWA Meta Tags -->
+    <meta name="application-name" content="WiFi Sénégal" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="WiFi Sénégal" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="theme-color" content="#3b82f6" />
+    <meta name="msapplication-TileColor" content="#3b82f6" />
+    <meta name="msapplication-config" content="/browserconfig.xml" />
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Security Headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+    
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "WiFi Sénégal",
+      "description": "Plateforme de gestion de portails captifs WiFi",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "url": "https://wifisenegal.com",
+      "author": {
+        "@type": "Organization",
+        "name": "WiFi Sénégal"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "XOF"
+      }
+    }
+    </script>
   </head>
-
   <body>
     <div id="root"></div>
-    <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
-    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('SW registered: ', registration);
+            })
+            .catch((registrationError) => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
   </body>
 </html>
