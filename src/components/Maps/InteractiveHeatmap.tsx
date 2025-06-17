@@ -28,7 +28,6 @@ const InteractiveHeatmap: React.FC<InteractiveHeatmapProps> = ({
   const { defaultCenter, defaultZoom, isDarkMode } = useMapContext();
   const mapRef = useRef<L.Map | null>(null);
   const heatLayerRef = useRef<L.Layer | null>(null);
-  const mapContainerRef = useRef<L.Map | null>(null);
 
   // Charger leaflet.heat dynamiquement
   useEffect(() => {
@@ -81,22 +80,18 @@ const InteractiveHeatmap: React.FC<InteractiveHeatmapProps> = ({
     }
   }, [sites, heatLayerLoaded]);
 
-  const handleMapReady = () => {
-    // Accéder à l'instance de la carte via le ref
-    if (mapContainerRef.current) {
-      mapRef.current = mapContainerRef.current;
-      console.log('✅ Map instance created and stored');
-    }
+  const handleMapCreated = (map: L.Map) => {
+    mapRef.current = map;
+    console.log('✅ Map instance created and stored');
   };
 
   return (
     <div className={`w-full ${className}`} style={{ height: `${height}px` }}>
       <MapContainer
-        ref={mapContainerRef}
         center={defaultCenter}
         zoom={defaultZoom}
         style={{ height: '100%', width: '100%' }}
-        whenReady={handleMapReady}
+        whenCreated={handleMapCreated}
       >
         <TileLayer
           url={getMapStyle(isDarkMode)}

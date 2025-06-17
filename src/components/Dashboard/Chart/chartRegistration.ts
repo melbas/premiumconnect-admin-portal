@@ -1,38 +1,37 @@
 
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-  Title,
-  Tooltip,
+import { 
+  Chart as ChartJS, 
+  LineController, 
+  LineElement, 
+  PointElement, 
+  LinearScale, 
+  CategoryScale, 
+  Tooltip, 
   Legend,
-  ArcElement,
-  Filler,
-  LineController,
   BarController,
+  BarElement,
   DoughnutController,
-  PieController
+  ArcElement,
+  Title
 } from 'chart.js';
 
-// Enregistrer tous les composants Chart.js nécessaires
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-  Filler,
-  LineController,
-  BarController,
-  DoughnutController,
-  PieController
-);
+// Register Chart.js components
+export const registerChartComponents = () => {
+  ChartJS.register(
+    LineController, 
+    LineElement, 
+    PointElement, 
+    LinearScale, 
+    CategoryScale, 
+    Tooltip, 
+    Legend,
+    BarController,
+    BarElement,
+    DoughnutController,
+    ArcElement,
+    Title
+  );
+};
 
-export { ChartJS };
+// Call this function to register all chart components
+registerChartComponents();
