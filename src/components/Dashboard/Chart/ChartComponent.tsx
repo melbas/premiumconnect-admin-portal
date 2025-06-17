@@ -36,26 +36,43 @@ const ChartRenderer: React.FC<ChartComponentProps> = ({
       chartInstance.current.destroy();
     }
     
-    // Create new chart with appropriate type assertion
-    const ctx = chartRef.current.getContext('2d');
-    if (ctx) {
-      chartInstance.current = new ChartJS(ctx, {
-        type: type as keyof ChartTypeRegistry,
-        data: data as any,
-        options: { ...getDefaultOptions(type, isDarkMode, isMobile), ...options },
-      });
+    try {
+      // Create new chart with appropriate type assertion
+      const ctx = chartRef.current.getContext('2d');
+      if (ctx) {
+        chartInstance.current = new ChartJS(ctx, {
+          type: type as keyof ChartTypeRegistry,
+          data: data as any,
+          options: { ...getDefaultOptions(type, isDarkMode, isMobile), ...options },
+        });
+      }
+    } catch (error) {
+      console.error('Error creating chart:', error);
+      // Fallback: show error message in canvas
+      const ctx = chartRef.current.getContext('2d');
+      if (ctx) {
+        ctx.fillStyle = isDarkMode ? '#ffffff' : '#000000';
+        ctx.font = '14px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('Chart Error', chartRef.current.width / 2, chartRef.current.height / 2);
+      }
     }
     
     // Update chart when dark mode changes
     const observer = new MutationObserver(() => {
       if (chartInstance.current) {
         chartInstance.current.destroy();
+        const ctx = chartRef.current?.getContext('2d');
         if (ctx) {
-          chartInstance.current = new ChartJS(ctx, {
-            type: type as keyof ChartTypeRegistry,
-            data: data as any,
-            options: { ...getDefaultOptions(type, isDarkMode, isMobile), ...options },
-          });
+          try {
+            chartInstance.current = new ChartJS(ctx, {
+              type: type as keyof ChartTypeRegistry,
+              data: data as any,
+              options: { ...getDefaultOptions(type, isDarkMode, isMobile), ...options },
+            });
+          } catch (error) {
+            console.error('Error updating chart:', error);
+          }
         }
       }
     });
