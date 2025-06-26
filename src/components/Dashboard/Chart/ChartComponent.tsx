@@ -1,11 +1,42 @@
 
 import React, { useEffect, useRef } from 'react';
-import { Chart as ChartJS, ChartType, ChartTypeRegistry } from 'chart.js';
+import { 
+  Chart as ChartJS, 
+  ChartType, 
+  ChartTypeRegistry,
+  LineController, 
+  LineElement, 
+  PointElement, 
+  LinearScale, 
+  CategoryScale, 
+  Tooltip, 
+  Legend,
+  BarController,
+  BarElement,
+  DoughnutController,
+  ArcElement,
+  Title
+} from 'chart.js';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ChartProvider, useChartContext } from './ChartContext';
 import { getDefaultOptions } from './chartOptions';
 import { ChartComponentProps } from './chartTypes';
-import './chartRegistration';
+
+// Register all Chart.js components immediately
+ChartJS.register(
+  LineController, 
+  LineElement, 
+  PointElement, 
+  LinearScale, 
+  CategoryScale, 
+  Tooltip, 
+  Legend,
+  BarController,
+  BarElement,
+  DoughnutController,
+  ArcElement,
+  Title
+);
 
 const ChartRenderer: React.FC<ChartComponentProps> = ({ 
   type, 
@@ -37,6 +68,12 @@ const ChartRenderer: React.FC<ChartComponentProps> = ({
     }
     
     try {
+      // Verify that the chart type is supported
+      const supportedTypes = ['line', 'bar', 'doughnut'];
+      if (!supportedTypes.includes(type)) {
+        throw new Error(`Chart type "${type}" is not supported`);
+      }
+
       // Create new chart with appropriate type assertion
       const ctx = chartRef.current.getContext('2d');
       if (ctx) {
@@ -45,16 +82,22 @@ const ChartRenderer: React.FC<ChartComponentProps> = ({
           data: data as any,
           options: { ...getDefaultOptions(type, isDarkMode, isMobile), ...options },
         });
+        console.log(`✅ Chart created successfully with type: ${type}`);
       }
     } catch (error) {
       console.error('Error creating chart:', error);
       // Fallback: show error message in canvas
       const ctx = chartRef.current.getContext('2d');
       if (ctx) {
+        ctx.clearRect(0, 0, chartRef.current.width, chartRef.current.height);
         ctx.fillStyle = isDarkMode ? '#ffffff' : '#000000';
         ctx.font = '14px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText('Chart Error', chartRef.current.width / 2, chartRef.current.height / 2);
+        ctx.fillText(
+          `Erreur de graphique: ${error.message}`, 
+          chartRef.current.width / 2, 
+          chartRef.current.height / 2
+        );
       }
     }
     
