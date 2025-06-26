@@ -80,9 +80,9 @@ const InteractiveHeatmap: React.FC<InteractiveHeatmapProps> = ({
     }
   }, [sites, heatLayerLoaded]);
 
-  const handleMapReady = (map: L.Map) => {
-    mapRef.current = map;
-    console.log('✅ Map instance created and stored');
+  const handleMapReady = () => {
+    // Le map sera accessible via le ref dans les useEffect
+    console.log('✅ Map is ready');
   };
 
   return (
@@ -92,6 +92,11 @@ const InteractiveHeatmap: React.FC<InteractiveHeatmapProps> = ({
         zoom={defaultZoom}
         style={{ height: '100%', width: '100%' }}
         whenReady={handleMapReady}
+        ref={(mapInstance) => {
+          if (mapInstance) {
+            mapRef.current = mapInstance;
+          }
+        }}
       >
         <TileLayer
           url={getMapStyle(isDarkMode)}
