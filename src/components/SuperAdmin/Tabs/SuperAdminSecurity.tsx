@@ -7,11 +7,13 @@ import { ConsentManager, PrivacyPolicy, DataRightsManager } from '@/components/G
 import { Shield, Lock, Eye, AlertTriangle, Users, Cookie } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 
+type ThreatLevel = 'low' | 'medium' | 'high' | 'critical';
+
 const SuperAdminSecurity: React.FC = () => {
   const { toast } = useToast();
   const [consentOpen, setConsentOpen] = useState(false);
   const [securityMetrics] = useState({
-    threatLevel: 'medium' as const,
+    threatLevel: 'medium' as ThreatLevel,
     activeThreats: 3,
     blockedRequests: 247,
     protectedUsers: 156
