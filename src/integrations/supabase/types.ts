@@ -7,8 +7,58 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instanciate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "12.2.12 (cd3cf9e)"
+  }
   public: {
     Tables: {
+      access_profiles: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          max_down_kbps: number
+          max_up_kbps: number
+          name: string
+          priority: number
+          quota_mb: number | null
+          quota_minutes: number | null
+          updated_at: string
+          vlan_id: number | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          max_down_kbps?: number
+          max_up_kbps?: number
+          name: string
+          priority?: number
+          quota_mb?: number | null
+          quota_minutes?: number | null
+          updated_at?: string
+          vlan_id?: number | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          max_down_kbps?: number
+          max_up_kbps?: number
+          name?: string
+          priority?: number
+          quota_mb?: number | null
+          quota_minutes?: number | null
+          updated_at?: string
+          vlan_id?: number | null
+        }
+        Relationships: []
+      }
       ad_videos: {
         Row: {
           active: boolean | null
@@ -1057,6 +1107,155 @@ export type Database = {
         }
         Relationships: []
       }
+      radius_coa_requests: {
+        Row: {
+          attributes: Json
+          created_at: string
+          error_message: string | null
+          id: string
+          nas_ip_address: unknown
+          nas_port_id: string | null
+          request_type: string
+          response_at: string | null
+          response_code: number | null
+          sent_at: string | null
+          session_id: string
+          status: string
+        }
+        Insert: {
+          attributes?: Json
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          nas_ip_address: unknown
+          nas_port_id?: string | null
+          request_type: string
+          response_at?: string | null
+          response_code?: number | null
+          sent_at?: string | null
+          session_id: string
+          status?: string
+        }
+        Update: {
+          attributes?: Json
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          nas_ip_address?: unknown
+          nas_port_id?: string | null
+          request_type?: string
+          response_at?: string | null
+          response_code?: number | null
+          sent_at?: string | null
+          session_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "radius_coa_requests_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "radius_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "radius_coa_requests_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "vw_active_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      radius_sessions: {
+        Row: {
+          ap_name: string | null
+          created_at: string
+          id: string
+          ip_address: unknown | null
+          last_seen: string | null
+          mac_address: string | null
+          nas_ip_address: unknown | null
+          nas_port_id: string | null
+          profile_id: string | null
+          rx_bytes: number | null
+          rx_packets: number | null
+          session_id: string
+          session_time: number | null
+          ssid: string | null
+          start_time: string
+          state: string
+          stop_time: string | null
+          terminate_cause: string | null
+          tx_bytes: number | null
+          tx_packets: number | null
+          updated_at: string
+          user_id: string | null
+          username: string | null
+          vlan_id: number | null
+        }
+        Insert: {
+          ap_name?: string | null
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          last_seen?: string | null
+          mac_address?: string | null
+          nas_ip_address?: unknown | null
+          nas_port_id?: string | null
+          profile_id?: string | null
+          rx_bytes?: number | null
+          rx_packets?: number | null
+          session_id: string
+          session_time?: number | null
+          ssid?: string | null
+          start_time?: string
+          state?: string
+          stop_time?: string | null
+          terminate_cause?: string | null
+          tx_bytes?: number | null
+          tx_packets?: number | null
+          updated_at?: string
+          user_id?: string | null
+          username?: string | null
+          vlan_id?: number | null
+        }
+        Update: {
+          ap_name?: string | null
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          last_seen?: string | null
+          mac_address?: string | null
+          nas_ip_address?: unknown | null
+          nas_port_id?: string | null
+          profile_id?: string | null
+          rx_bytes?: number | null
+          rx_packets?: number | null
+          session_id?: string
+          session_time?: number | null
+          ssid?: string | null
+          start_time?: string
+          state?: string
+          stop_time?: string | null
+          terminate_cause?: string | null
+          tx_bytes?: number | null
+          tx_packets?: number | null
+          updated_at?: string
+          user_id?: string | null
+          username?: string | null
+          vlan_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "radius_sessions_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "access_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       referrals: {
         Row: {
           code: string | null
@@ -1244,6 +1443,47 @@ export type Database = {
           },
         ]
       }
+      user_access: {
+        Row: {
+          created_at: string
+          id: string
+          last_reset_at: string | null
+          minutes_used: number | null
+          profile_id: string
+          quota_used_mb: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_reset_at?: string | null
+          minutes_used?: number | null
+          profile_id: string
+          quota_used_mb?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_reset_at?: string | null
+          minutes_used?: number | null
+          profile_id?: string
+          quota_used_mb?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_access_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "access_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_segment_memberships: {
         Row: {
           created_at: string | null
@@ -1306,6 +1546,56 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      vouchers: {
+        Row: {
+          code: string
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          profile_id: string
+          use_limit: number | null
+          used_at: string | null
+          used_count: number | null
+          valid_from: string
+          valid_to: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          profile_id: string
+          use_limit?: number | null
+          used_at?: string | null
+          used_count?: number | null
+          valid_from?: string
+          valid_to: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          profile_id?: string
+          use_limit?: number | null
+          used_at?: string | null
+          used_count?: number | null
+          valid_from?: string
+          valid_to?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vouchers_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "access_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       wifi_plans: {
         Row: {
@@ -1463,11 +1753,39 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      vw_active_sessions: {
+        Row: {
+          ap_name: string | null
+          id: string | null
+          ip_address: unknown | null
+          last_seen: string | null
+          mac_address: string | null
+          max_down_kbps: number | null
+          max_up_kbps: number | null
+          minutes_used: number | null
+          profile_name: string | null
+          quota_mb: number | null
+          quota_usage_percent: number | null
+          quota_used_mb: number | null
+          rx_bytes: number | null
+          session_id: string | null
+          session_time: number | null
+          ssid: string | null
+          start_time: string | null
+          tx_bytes: number | null
+          user_id: string | null
+          username: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       cleanup_old_audit_logs: {
         Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      fn_apply_quota: {
+        Args: { target_user_id: string }
         Returns: undefined
       }
     }
@@ -1480,21 +1798,25 @@ export type Database = {
   }
 }
 
-type DefaultSchema = Database[Extract<keyof Database, "public">]
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
@@ -1512,14 +1834,16 @@ export type Tables<
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
@@ -1535,14 +1859,16 @@ export type TablesInsert<
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
@@ -1558,14 +1884,16 @@ export type TablesUpdate<
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
-> = DefaultSchemaEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
@@ -1573,14 +1901,16 @@ export type Enums<
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
-> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never

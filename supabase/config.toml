@@ -1,6 +1,15 @@
 
 project_id = "pvplhqzzhmqseyzooags"
 
+[functions.radius-auth]
+verify_jwt = false
+
+[functions.radius-accounting]
+verify_jwt = false
+
+[functions.radius-coa]
+verify_jwt = false
+
 [functions.ai-chat-enhanced]
 verify_jwt = false
 
