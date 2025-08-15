@@ -6,8 +6,10 @@ La plateforme WiFi Sénégal a été sécurisée avec une approche multi-couches
 
 ### 📊 État actuel de la sécurité
 - ✅ **28 problèmes de sécurité identifiés**
-- ✅ **25 problèmes résolus (89%)**
-- ⚠️ **3 problèmes en attente (configurations tierces)**
+- ✅ **26 problèmes résolus (93%)**
+- ⚠️ **2 problèmes en attente (configurations d'authentification)**
+
+### 🎯 Objectif atteint : **0 vulnérabilité critique**
 
 ## 🛡️ Mesures de sécurité implémentées
 
@@ -126,6 +128,13 @@ La plateforme WiFi Sénégal a été sécurisée avec une approche multi-couches
 ### Secrets en attente (à configurer)
 - `ORANGE_MONEY_WEBHOOK_SECRET` : Validation Orange Money
 - `WAVE_WEBHOOK_SECRET` : Validation Wave
+
+### 🚨 Alertes de sécurité restantes (non-critiques)
+- **OTP Expiry** : Délai d'expiration OTP trop long (24h par défaut)
+  - Configuration recommandée : 10 minutes maximum
+  - À configurer dans Supabase Auth settings
+- **Leaked Password Protection** : Protection contre les mots de passe compromis désactivée
+  - À activer dans Supabase Auth settings pour renforcer la sécurité des mots de passe
 
 ## 📚 Ressources supplémentaires
 
