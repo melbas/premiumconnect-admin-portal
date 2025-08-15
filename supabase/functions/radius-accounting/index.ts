@@ -1,10 +1,19 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
+// Import rate limiter for accounting (200 req/min)
+import { RateLimiter, getClientIP, createRateLimitHeaders } from '../_shared/rate-limiter.ts';
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
+
+// Rate limiter for accounting - higher limit due to frequent updates
+const accountingRateLimiter = new RateLimiter({
+  windowMs: 60 * 1000,   // 1 minute
+  maxRequests: 200       // 200 requests per minute
+})
 
 interface RadiusAccountingRequest {
   session_id: string;
@@ -32,6 +41,23 @@ serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
+  }
+
+  // Rate limiting for accounting
+  const clientIP = getClientIP(req);
+  const isLimited = accountingRateLimiter.isLimited(clientIP);
+  const rateLimitInfo = accountingRateLimiter.getRateLimitInfo(clientIP);
+  
+  if (isLimited) {
+    console.log(`Rate limit exceeded for RADIUS accounting from IP: ${clientIP}`);
+    return new Response(JSON.stringify({ error: 'Rate limit exceeded' }), {
+      status: 429,
+      headers: {
+        ...corsHeaders,
+        ...createRateLimitHeaders(rateLimitInfo),
+        'Content-Type': 'application/json',
+      },
+    });
   }
 
   try {

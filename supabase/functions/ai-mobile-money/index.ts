@@ -22,6 +22,23 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Rate limiting for mobile money AI
+  const clientIP = getClientIP(req);
+  const isLimited = mobileMoneyRateLimiter.isLimited(clientIP);
+  const rateLimitInfo = mobileMoneyRateLimiter.getRateLimitInfo(clientIP);
+  
+  if (isLimited) {
+    console.log(`Rate limit exceeded for mobile money AI from IP: ${clientIP}`);
+    return new Response(JSON.stringify({ error: 'Rate limit exceeded. Too many AI requests.' }), {
+      status: 429,
+      headers: {
+        ...corsHeaders,
+        ...createRateLimitHeaders(rateLimitInfo),
+        'Content-Type': 'application/json',
+      },
+    });
+  }
+
   try {
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',

@@ -27,3 +27,6 @@ verify_jwt = true
 
 [functions.chat-message-handler]
 verify_jwt = true
+
+[functions.mobile-money-webhook]
+verify_jwt = false
