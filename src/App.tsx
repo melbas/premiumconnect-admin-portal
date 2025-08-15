@@ -7,9 +7,11 @@ import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
+import Auth from "./pages/Auth";
 import Portal from "./pages/Portal";
 import NotFound from "./pages/NotFound";
 import SuperAdminDashboard from "./components/SuperAdmin/SuperAdminDashboard";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -23,12 +25,33 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/auth" element={<Auth />} />
             <Route path="/portal" element={<Portal />} />
-            <Route path="/super-admin" element={<SuperAdminDashboard />} />
-            <Route path="/super-admin/:tab" element={<SuperAdminDashboard />} />
-            <Route path="/marketing" element={<SuperAdminDashboard initialTab="marketing" />} />
-            <Route path="/technical" element={<SuperAdminDashboard initialTab="technical" />} />
-            <Route path="/vouchers" element={<SuperAdminDashboard initialTab="vouchers" />} />
+            <Route path="/super-admin" element={
+              <ProtectedRoute allowedRoles={['admin', 'superadmin']}>
+                <SuperAdminDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/super-admin/:tab" element={
+              <ProtectedRoute allowedRoles={['admin', 'superadmin']}>
+                <SuperAdminDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/marketing" element={
+              <ProtectedRoute allowedRoles={['admin', 'superadmin', 'marketing']}>
+                <SuperAdminDashboard initialTab="marketing" />
+              </ProtectedRoute>
+            } />
+            <Route path="/technical" element={
+              <ProtectedRoute allowedRoles={['admin', 'superadmin', 'technical']}>
+                <SuperAdminDashboard initialTab="technical" />
+              </ProtectedRoute>
+            } />
+            <Route path="/vouchers" element={
+              <ProtectedRoute allowedRoles={['admin', 'superadmin', 'voucher_manager']}>
+                <SuperAdminDashboard initialTab="vouchers" />
+              </ProtectedRoute>
+            } />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

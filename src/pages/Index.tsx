@@ -45,8 +45,8 @@ const Index = () => {
           <>
             <div className="mb-6 flex justify-end gap-3">
               {!isAuthenticated ? (
-                <Link to="/login">
-                  <Button variant="default">Connexion Admin</Button>
+                <Link to="/auth">
+                  <Button variant="default">Administration</Button>
                 </Link>
               ) : (
                 <Link to="/super-admin">

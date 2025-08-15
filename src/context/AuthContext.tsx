@@ -1,8 +1,10 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { User as SupabaseUser, Session } from '@supabase/supabase-js';
+import { supabase } from '@/integrations/supabase/client';
 
 // Define the user roles
-export type UserRole = 'superadmin' | 'marketing' | 'technical' | 'voucher_manager';
+export type UserRole = 'superadmin' | 'admin' | 'marketing' | 'technical' | 'voucher_manager';
 
 // Define user interface
 export interface User {
@@ -16,6 +18,7 @@ export interface User {
 // Auth context interface
 interface AuthContextType {
   user: User | null;
+  session: Session | null;
   isAuthenticated: boolean;
   login: (user: User) => void;
   logout: () => void;
@@ -61,56 +64,80 @@ export const mockUsers: User[] = [
 // Provider component
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Initialize auth state from localStorage on mount
+  // Convert Supabase user to our User interface
+  const mapSupabaseUser = (supabaseUser: SupabaseUser): User => {
+    return {
+      id: supabaseUser.id,
+      name: supabaseUser.user_metadata?.full_name || supabaseUser.email?.split('@')[0] || 'Admin',
+      email: supabaseUser.email || '',
+      role: (supabaseUser.user_metadata?.role as UserRole) || 'admin',
+      avatar: supabaseUser.user_metadata?.avatar_url
+    };
+  };
+
+  // Initialize auth state and set up listener
   useEffect(() => {
-    const initializeAuth = () => {
-      try {
-        const storedUser = localStorage.getItem('wifisenegal_user');
-        if (storedUser) {
-          const parsedUser = JSON.parse(storedUser);
-          console.log('🔐 Restored user from localStorage:', parsedUser);
-          setUser(parsedUser);
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        console.log('🔐 Auth state changed:', event, session?.user?.email);
+        setSession(session);
+        
+        if (session?.user) {
+          const mappedUser = mapSupabaseUser(session.user);
+          setUser(mappedUser);
+          console.log('🔐 User authenticated:', mappedUser);
         } else {
-          console.log('🔐 No stored user found');
+          setUser(null);
+          console.log('🔐 User logged out');
         }
-      } catch (error) {
-        console.error('🔐 Error parsing stored user:', error);
-        localStorage.removeItem('wifisenegal_user');
-      } finally {
+        
         setIsLoading(false);
       }
-    };
+    );
 
-    initializeAuth();
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session?.user) {
+        const mappedUser = mapSupabaseUser(session.user);
+        setUser(mappedUser);
+        console.log('🔐 Existing session found:', mappedUser);
+      }
+      setIsLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  // Login handler with persistence
+  // Login handler (for compatibility with existing code)
   const login = (userData: User) => {
-    console.log('🔐 Logging in user:', userData);
+    console.log('🔐 Manual login called:', userData);
     setUser(userData);
-    localStorage.setItem('wifisenegal_user', JSON.stringify(userData));
   };
 
-  // Logout handler with cleanup
-  const logout = () => {
+  // Logout handler
+  const logout = async () => {
     console.log('🔐 Logging out user');
+    await supabase.auth.signOut();
     setUser(null);
-    localStorage.removeItem('wifisenegal_user');
+    setSession(null);
   };
 
-  // Update current user with persistence
+  // Update current user (for compatibility)
   const setCurrentUser = (userData: User) => {
     console.log('🔐 Updating current user:', userData);
     setUser(userData);
-    localStorage.setItem('wifisenegal_user', JSON.stringify(userData));
   };
 
   // Context value
   const value = {
     user,
-    isAuthenticated: !!user,
+    session,
+    isAuthenticated: !!user && !!session,
     login,
     logout,
     setCurrentUser,

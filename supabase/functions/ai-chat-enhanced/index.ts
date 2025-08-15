@@ -2,6 +2,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { chatRateLimiter, getClientIP, createRateLimitHeaders } from '../_shared/rate-limiter.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -33,6 +34,24 @@ interface OpenAIResponse {
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
+  }
+
+  // Rate limiting
+  const clientIP = getClientIP(req);
+  const rateLimitInfo = chatRateLimiter.getRateLimitInfo(clientIP);
+  
+  if (chatRateLimiter.isLimited(clientIP)) {
+    console.log(`⚠️ Rate limit exceeded for IP: ${clientIP}`);
+    return new Response(JSON.stringify({ 
+      error: 'Trop de requêtes. Veuillez patienter.' 
+    }), {
+      status: 429,
+      headers: { 
+        ...corsHeaders, 
+        ...createRateLimitHeaders(rateLimitInfo),
+        'Content-Type': 'application/json' 
+      }
+    });
   }
 
   try {
