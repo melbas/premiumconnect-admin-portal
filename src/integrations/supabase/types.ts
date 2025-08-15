@@ -1158,13 +1158,6 @@ export type Database = {
             referencedRelation: "radius_sessions"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "radius_coa_requests_session_id_fkey"
-            columns: ["session_id"]
-            isOneToOne: false
-            referencedRelation: "vw_active_sessions"
-            referencedColumns: ["id"]
-          },
         ]
       }
       radius_sessions: {
@@ -1753,31 +1746,7 @@ export type Database = {
       }
     }
     Views: {
-      vw_active_sessions: {
-        Row: {
-          ap_name: string | null
-          id: string | null
-          ip_address: unknown | null
-          last_seen: string | null
-          mac_address: string | null
-          max_down_kbps: number | null
-          max_up_kbps: number | null
-          minutes_used: number | null
-          profile_name: string | null
-          quota_mb: number | null
-          quota_usage_percent: number | null
-          quota_used_mb: number | null
-          rx_bytes: number | null
-          session_id: string | null
-          session_time: number | null
-          ssid: string | null
-          start_time: string | null
-          tx_bytes: number | null
-          user_id: string | null
-          username: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       cleanup_old_audit_logs: {
@@ -1787,6 +1756,31 @@ export type Database = {
       fn_apply_quota: {
         Args: { target_user_id: string }
         Returns: undefined
+      }
+      get_active_sessions: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          ap_name: string
+          id: string
+          ip_address: unknown
+          last_seen: string
+          mac_address: string
+          max_down_kbps: number
+          max_up_kbps: number
+          minutes_used: number
+          profile_name: string
+          quota_mb: number
+          quota_usage_percent: number
+          quota_used_mb: number
+          rx_bytes: number
+          session_id: string
+          session_time: number
+          ssid: string
+          start_time: string
+          tx_bytes: number
+          user_id: string
+          username: string
+        }[]
       }
       is_admin_user: {
         Args: Record<PropertyKey, never>
