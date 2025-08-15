@@ -323,6 +323,33 @@ export type Database = {
         }
         Relationships: []
       }
+      auth_otp_config: {
+        Row: {
+          created_at: string | null
+          enable_leaked_password_protection: boolean
+          id: string
+          max_attempts: number
+          otp_expiry_seconds: number
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          enable_leaked_password_protection?: boolean
+          id?: string
+          max_attempts?: number
+          otp_expiry_seconds?: number
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          enable_leaked_password_protection?: boolean
+          id?: string
+          max_attempts?: number
+          otp_expiry_seconds?: number
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       chat_analytics: {
         Row: {
           avg_response_time_ms: number | null
