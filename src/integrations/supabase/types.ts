@@ -1809,6 +1809,10 @@ export type Database = {
           username: string
         }[]
       }
+      get_security_dashboard_metrics: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       is_admin_user: {
         Args: Record<PropertyKey, never>
         Returns: boolean
