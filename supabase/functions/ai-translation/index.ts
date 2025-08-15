@@ -1,11 +1,18 @@
 
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { RateLimiter, getClientIP, createRateLimitHeaders } from '../_shared/rate-limiter.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Translation specific rate limiter - 30 requests per minute per IP
+const translationRateLimiter = new RateLimiter({
+  windowMs: 60 * 1000,   // 1 minute
+  maxRequests: 30        // 30 requests per minute for translation
+});
 
 interface TranslationRequest {
   text: string;
