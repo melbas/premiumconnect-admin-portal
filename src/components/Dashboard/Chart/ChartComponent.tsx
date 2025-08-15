@@ -15,7 +15,8 @@ import {
   BarElement,
   DoughnutController,
   ArcElement,
-  Title
+  Title,
+  Filler
 } from 'chart.js';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ChartProvider, useChartContext } from './ChartContext';
@@ -35,7 +36,8 @@ ChartJS.register(
   BarElement,
   DoughnutController,
   ArcElement,
-  Title
+  Title,
+  Filler
 );
 
 const ChartRenderer: React.FC<ChartComponentProps> = ({ 
