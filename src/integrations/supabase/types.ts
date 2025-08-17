@@ -323,6 +323,45 @@ export type Database = {
         }
         Relationships: []
       }
+      auth_funnel_metrics: {
+        Row: {
+          auth_method: string
+          created_at: string
+          failure_count: number
+          id: string
+          site_id: string | null
+          stage: string
+          success_count: number
+          success_rate: number
+          timestamp: string
+          total_attempts: number
+        }
+        Insert: {
+          auth_method: string
+          created_at?: string
+          failure_count?: number
+          id?: string
+          site_id?: string | null
+          stage: string
+          success_count?: number
+          success_rate?: number
+          timestamp?: string
+          total_attempts?: number
+        }
+        Update: {
+          auth_method?: string
+          created_at?: string
+          failure_count?: number
+          id?: string
+          site_id?: string | null
+          stage?: string
+          success_count?: number
+          success_rate?: number
+          timestamp?: string
+          total_attempts?: number
+        }
+        Relationships: []
+      }
       auth_otp_config: {
         Row: {
           created_at: string | null
@@ -534,6 +573,54 @@ export type Database = {
           },
         ]
       }
+      customer_satisfaction_metrics: {
+        Row: {
+          acquisition_channel: string | null
+          created_at: string
+          csat_score: number | null
+          fcr_rate: number
+          id: string
+          metric_date: string
+          nps_score: number | null
+          resolved_first_contact: number
+          segment: string | null
+          support_tickets: number
+          survey_responses: number
+          ttfa_median_hours: number | null
+          ttfa_p95_hours: number | null
+        }
+        Insert: {
+          acquisition_channel?: string | null
+          created_at?: string
+          csat_score?: number | null
+          fcr_rate?: number
+          id?: string
+          metric_date?: string
+          nps_score?: number | null
+          resolved_first_contact?: number
+          segment?: string | null
+          support_tickets?: number
+          survey_responses?: number
+          ttfa_median_hours?: number | null
+          ttfa_p95_hours?: number | null
+        }
+        Update: {
+          acquisition_channel?: string | null
+          created_at?: string
+          csat_score?: number | null
+          fcr_rate?: number
+          id?: string
+          metric_date?: string
+          nps_score?: number | null
+          resolved_first_contact?: number
+          segment?: string | null
+          support_tickets?: number
+          survey_responses?: number
+          ttfa_median_hours?: number | null
+          ttfa_p95_hours?: number | null
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           created_at: string | null
@@ -571,6 +658,66 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      financial_kpis: {
+        Row: {
+          arpu: number
+          arpu_b2b: number
+          arpu_b2c: number
+          churn_rate_customers: number
+          churn_rate_revenue: number
+          churned_customers: number
+          created_at: string
+          id: string
+          metric_date: string
+          mrr_churn: number
+          mrr_contraction: number
+          mrr_expansion: number
+          mrr_new: number
+          mrr_total: number
+          new_customers: number
+          nrr_percentage: number
+          total_customers: number
+        }
+        Insert: {
+          arpu?: number
+          arpu_b2b?: number
+          arpu_b2c?: number
+          churn_rate_customers?: number
+          churn_rate_revenue?: number
+          churned_customers?: number
+          created_at?: string
+          id?: string
+          metric_date?: string
+          mrr_churn?: number
+          mrr_contraction?: number
+          mrr_expansion?: number
+          mrr_new?: number
+          mrr_total?: number
+          new_customers?: number
+          nrr_percentage?: number
+          total_customers?: number
+        }
+        Update: {
+          arpu?: number
+          arpu_b2b?: number
+          arpu_b2c?: number
+          churn_rate_customers?: number
+          churn_rate_revenue?: number
+          churned_customers?: number
+          created_at?: string
+          id?: string
+          metric_date?: string
+          mrr_churn?: number
+          mrr_contraction?: number
+          mrr_expansion?: number
+          mrr_new?: number
+          mrr_total?: number
+          new_customers?: number
+          nrr_percentage?: number
+          total_customers?: number
+        }
+        Relationships: []
       }
       games: {
         Row: {
@@ -611,6 +758,75 @@ export type Database = {
           points_reward?: number | null
           title?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      incidents_tracking: {
+        Row: {
+          affected_sites: string[] | null
+          affected_users_count: number | null
+          assigned_to: string | null
+          closed_at: string | null
+          created_at: string
+          description: string | null
+          eta: string | null
+          first_response_at: string | null
+          id: string
+          impact_level: string
+          incident_id: string
+          last_update_at: string
+          mttr_minutes: number | null
+          resolved_at: string | null
+          severity: string
+          sla_breached: boolean
+          sla_target_minutes: number
+          started_at: string
+          status: string
+          title: string
+        }
+        Insert: {
+          affected_sites?: string[] | null
+          affected_users_count?: number | null
+          assigned_to?: string | null
+          closed_at?: string | null
+          created_at?: string
+          description?: string | null
+          eta?: string | null
+          first_response_at?: string | null
+          id?: string
+          impact_level: string
+          incident_id: string
+          last_update_at?: string
+          mttr_minutes?: number | null
+          resolved_at?: string | null
+          severity: string
+          sla_breached?: boolean
+          sla_target_minutes?: number
+          started_at?: string
+          status?: string
+          title: string
+        }
+        Update: {
+          affected_sites?: string[] | null
+          affected_users_count?: number | null
+          assigned_to?: string | null
+          closed_at?: string | null
+          created_at?: string
+          description?: string | null
+          eta?: string | null
+          first_response_at?: string | null
+          id?: string
+          impact_level?: string
+          incident_id?: string
+          last_update_at?: string
+          mttr_minutes?: number | null
+          resolved_at?: string | null
+          severity?: string
+          sla_breached?: boolean
+          sla_target_minutes?: number
+          started_at?: string
+          status?: string
+          title?: string
         }
         Relationships: []
       }
@@ -1037,6 +1253,45 @@ export type Database = {
         }
         Relationships: []
       }
+      qoe_measurements: {
+        Row: {
+          ap_name: string | null
+          created_at: string
+          id: string
+          latency_p95_ms: number | null
+          packet_loss_percentage: number | null
+          qoe_score: number
+          site_id: string
+          throughput_mbps: number | null
+          timestamp: string
+          user_count: number
+        }
+        Insert: {
+          ap_name?: string | null
+          created_at?: string
+          id?: string
+          latency_p95_ms?: number | null
+          packet_loss_percentage?: number | null
+          qoe_score: number
+          site_id: string
+          throughput_mbps?: number | null
+          timestamp?: string
+          user_count?: number
+        }
+        Update: {
+          ap_name?: string | null
+          created_at?: string
+          id?: string
+          latency_p95_ms?: number | null
+          packet_loss_percentage?: number | null
+          qoe_score?: number
+          site_id?: string
+          throughput_mbps?: number | null
+          timestamp?: string
+          user_count?: number
+        }
+        Relationships: []
+      }
       quiz_options: {
         Row: {
           id: string
@@ -1402,6 +1657,39 @@ export type Database = {
           resolved_by?: string | null
           severity?: string
           title?: string
+        }
+        Relationships: []
+      }
+      site_availability_metrics: {
+        Row: {
+          created_at: string
+          downtime_minutes: number
+          id: string
+          incident_count: number
+          site_id: string
+          sla_breached: boolean
+          timestamp: string
+          uptime_percentage: number
+        }
+        Insert: {
+          created_at?: string
+          downtime_minutes?: number
+          id?: string
+          incident_count?: number
+          site_id: string
+          sla_breached?: boolean
+          timestamp?: string
+          uptime_percentage?: number
+        }
+        Update: {
+          created_at?: string
+          downtime_minutes?: number
+          id?: string
+          incident_count?: number
+          site_id?: string
+          sla_breached?: boolean
+          timestamp?: string
+          uptime_percentage?: number
         }
         Relationships: []
       }
@@ -1808,6 +2096,10 @@ export type Database = {
           user_id: string
           username: string
         }[]
+      }
+      get_realtime_dashboard_metrics: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
       }
       get_security_dashboard_metrics: {
         Args: Record<PropertyKey, never>
