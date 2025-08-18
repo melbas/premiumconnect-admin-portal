@@ -282,6 +282,48 @@ class FinancialKPIService {
     }
   }
 
+  // Missing methods for component compatibility
+  async getCurrentKPIs(): Promise<FinancialKPI | null> {
+    return this.getLatestFinancialKPIs();
+  }
+
+  async getKPIsTrend(months = 6): Promise<FinancialKPI[]> {
+    try {
+      const startDate = new Date();
+      startDate.setMonth(startDate.getMonth() - months);
+      
+      const { data, error } = await supabase
+        .from('financial_kpis')
+        .select('*')
+        .gte('metric_date', startDate.toISOString().split('T')[0])
+        .order('metric_date', { ascending: true });
+      
+      if (error) throw error;
+      
+      return data || [];
+    } catch (error) {
+      console.error('Error fetching KPIs trend:', error);
+      return [];
+    }
+  }
+
+  async getKPIsForDate(date: string): Promise<FinancialKPI | null> {
+    try {
+      const { data, error } = await supabase
+        .from('financial_kpis')
+        .select('*')
+        .eq('metric_date', date)
+        .maybeSingle();
+      
+      if (error) throw error;
+      
+      return data;
+    } catch (error) {
+      console.error('Error fetching KPIs for date:', error);
+      return null;
+    }
+  }
+
   // Health check for financial metrics
   async getFinancialHealthScore(): Promise<{
     score: number;

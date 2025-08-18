@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TrendingUp, TrendingDown, DollarSign, Users, AlertTriangle } from 'lucide-react';
-import { financialKPIService, FinancialKPIs } from '@/services/kpi/FinancialKPIService';
+import { financialKPIService, FinancialKPI } from '@/services/kpi/FinancialKPIService';
 import { alertingService } from '@/services/kpi/AlertingService';
 import MRRBreakdownChart from './widgets/MRRBreakdownChart';
 import NRRWidget from './widgets/NRRWidget';
@@ -11,7 +11,7 @@ import ARPUTrendChart from './widgets/ARPUTrendChart';
 import ChurnDualWidget from './widgets/ChurnDualWidget';
 
 const FinancialDashboard: React.FC = () => {
-  const [kpis, setKpis] = useState<FinancialKPIs | null>(null);
+  const [kpis, setKpis] = useState<FinancialKPI | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -42,7 +42,8 @@ const FinancialDashboard: React.FC = () => {
           }
 
           // Check ARPU alert (compare with previous month)
-          const previousMonth = await financialKPIService.getKPIsForDate(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000));
+          const previousDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+          const previousMonth = await financialKPIService.getKPIsForDate(previousDate.toISOString().split('T')[0]);
           if (previousMonth && data.arpu < previousMonth.arpu * 0.95) {
             alertingService.checkAlerts('arpu', { 
               current_arpu: data.arpu,

@@ -3,7 +3,7 @@ import { toast } from '@/hooks/use-toast';
 
 export interface Alert {
   id: string;
-  type: 'uptime' | 'qoe' | 'auth' | 'incident' | 'financial' | 'performance';
+  type: 'uptime' | 'qoe' | 'auth' | 'incident' | 'financial' | 'performance' | 'nrr' | 'churn' | 'arpu';
   severity: 'critical' | 'high' | 'medium' | 'low';
   title: string;
   message: string;
