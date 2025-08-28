@@ -5,6 +5,13 @@ import { AdminHeader } from './AdminHeader';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 
 export type AdminTab = 
+  | 'dashboard'
+  | 'sites-infrastructure' 
+  | 'clients-engagement'
+  | 'finance-ventes'
+  | 'intelligence'
+  | 'administration'
+  // Legacy tabs for backward compatibility
   | 'overview' 
   | 'technical' 
   | 'marketing' 

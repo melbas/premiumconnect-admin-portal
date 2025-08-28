@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import AdminLayout, { AdminTab } from './AdminLayout';
+import BusinessDashboard from './BusinessDashboard';
 import SuperAdminOverview from './Tabs/SuperAdminOverview';
 import SuperAdminTechnical from './Tabs/SuperAdminTechnical';
 import SuperAdminMarketing from './Tabs/SuperAdminMarketing';
@@ -21,7 +22,7 @@ interface SuperAdminDashboardProps {
   initialTab?: AdminTab;
 }
 
-const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ initialTab = 'overview' }) => {
+const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ initialTab = 'dashboard' }) => {
   const { tab } = useParams<{ tab: string }>();
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
@@ -39,7 +40,8 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ initialTab = 
 
   // Determine initial active tab from URL or props
   const getInitialTab = (): AdminTab => {
-    if (tab && ['overview', 'technical', 'marketing', 'vouchers', 'users', 'sites', 'wholesalers', 'captive-portal', 'portals', 'analytics', 'ai', 'ai-opt', 'audit', 'settings'].includes(tab)) {
+    const validTabs = ['dashboard', 'sites-infrastructure', 'clients-engagement', 'finance-ventes', 'intelligence', 'administration', 'overview', 'technical', 'marketing', 'vouchers', 'users', 'sites', 'wholesalers', 'captive-portal', 'portals', 'analytics', 'ai', 'ai-opt', 'audit', 'settings'];
+    if (tab && validTabs.includes(tab)) {
       return tab as AdminTab;
     }
     return initialTab;
@@ -55,7 +57,22 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ initialTab = 
   };
   
   const renderTabContent = () => {
+    // New business sections
     switch (activeTab) {
+      case 'dashboard':
+        return <BusinessDashboard userRole="manager" onSectionChange={handleTabChange} />;
+      case 'sites-infrastructure':
+        return <SuperAdminSites />;
+      case 'clients-engagement':
+        return <SuperAdminPortals />;
+      case 'finance-ventes':
+        return <SuperAdminAnalytics />;
+      case 'intelligence':
+        return <SuperAdminAI />;
+      case 'administration':
+        return <SuperAdminSettings />;
+      
+      // Legacy tabs (backward compatibility)
       case 'overview':
         return <SuperAdminOverview />;
       case 'technical':
@@ -85,7 +102,7 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ initialTab = 
       case 'settings':
         return <SuperAdminSettings />;
       default:
-        return <SuperAdminOverview />;
+        return <BusinessDashboard userRole="manager" onSectionChange={handleTabChange} />;
     }
   };
 

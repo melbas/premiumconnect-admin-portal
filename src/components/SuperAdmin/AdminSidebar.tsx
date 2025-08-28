@@ -15,7 +15,11 @@ import {
   Brain, 
   Shield, 
   Zap,
-  Palette
+  Palette,
+  MapPin,
+  TrendingUp,
+  ChevronDown,
+  ChevronRight
 } from 'lucide-react';
 import {
   Sidebar,
@@ -36,21 +40,84 @@ interface AdminSidebarProps {
 }
 
 const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, setActiveTab }) => {
-  const sidebarItems = [
-    { id: 'overview' as AdminTab, label: 'Vue d\'ensemble', icon: LayoutDashboard },
-    { id: 'sites' as AdminTab, label: 'Sites', icon: Building },
-    { id: 'wholesalers' as AdminTab, label: 'Grossistes', icon: Users2 },
-    { id: 'users' as AdminTab, label: 'Utilisateurs', icon: Users },
-    { id: 'portals' as AdminTab, label: 'Portails Captifs', icon: Palette, badge: 'Nouveau' },
-    { id: 'technical' as AdminTab, label: 'Technique', icon: Server },
-    { id: 'marketing' as AdminTab, label: 'Marketing', icon: Megaphone },
-    { id: 'vouchers' as AdminTab, label: 'Vouchers', icon: Ticket },
-    { id: 'analytics' as AdminTab, label: 'Analytics', icon: BarChart3 },
-    { id: 'ai' as AdminTab, label: 'IA', icon: Brain },
-    { id: 'ai-opt' as AdminTab, label: 'IA Optimisation', icon: Zap },
-    { id: 'audit' as AdminTab, label: 'Audit', icon: Shield },
-    { id: 'settings' as AdminTab, label: 'Paramètres', icon: Settings },
+  const [expandedSections, setExpandedSections] = React.useState<Set<string>>(new Set(['dashboard']));
+
+  const businessSections = [
+    {
+      id: 'dashboard',
+      label: 'Tableau de Bord',
+      icon: LayoutDashboard,
+      tab: 'dashboard' as AdminTab,
+      description: 'Vue d\'ensemble personnalisée'
+    },
+    {
+      id: 'sites-infrastructure',
+      label: 'Sites & Infrastructure',
+      icon: MapPin,
+      tab: 'sites-infrastructure' as AdminTab,
+      description: 'Gestion réseau et équipements',
+      subsections: [
+        { label: 'Vue d\'ensemble', tab: 'sites' as AdminTab },
+        { label: 'Technique', tab: 'technical' as AdminTab }
+      ]
+    },
+    {
+      id: 'clients-engagement',
+      label: 'Clients & Engagement',
+      icon: Users,
+      tab: 'clients-engagement' as AdminTab,
+      description: 'Portails, CRM et campagnes',
+      subsections: [
+        { label: 'Portails', tab: 'portals' as AdminTab },
+        { label: 'Marketing', tab: 'marketing' as AdminTab },
+        { label: 'Utilisateurs', tab: 'users' as AdminTab }
+      ]
+    },
+    {
+      id: 'finance-ventes',
+      label: 'Finance & Ventes',
+      icon: TrendingUp,
+      tab: 'finance-ventes' as AdminTab,
+      description: 'Revenus et analytics',
+      subsections: [
+        { label: 'Analytics', tab: 'analytics' as AdminTab },
+        { label: 'Vouchers', tab: 'vouchers' as AdminTab },
+        { label: 'Grossistes', tab: 'wholesalers' as AdminTab }
+      ]
+    },
+    {
+      id: 'intelligence',
+      label: 'Intelligence',
+      icon: Brain,
+      tab: 'intelligence' as AdminTab,
+      description: 'IA et optimisation',
+      subsections: [
+        { label: 'IA Dashboard', tab: 'ai' as AdminTab },
+        { label: 'Optimisation', tab: 'ai-opt' as AdminTab }
+      ]
+    },
+    {
+      id: 'administration',
+      label: 'Administration',
+      icon: Shield,
+      tab: 'administration' as AdminTab,
+      description: 'Sécurité et paramètres',
+      subsections: [
+        { label: 'Audit', tab: 'audit' as AdminTab },
+        { label: 'Paramètres', tab: 'settings' as AdminTab }
+      ]
+    }
   ];
+
+  const toggleSection = (sectionId: string) => {
+    const newExpanded = new Set(expandedSections);
+    if (newExpanded.has(sectionId)) {
+      newExpanded.delete(sectionId);
+    } else {
+      newExpanded.add(sectionId);
+    }
+    setExpandedSections(newExpanded);
+  };
 
   return (
     <Sidebar>
@@ -63,26 +130,62 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, setActiveTab }) 
       
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel>Navigation Métier</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {sidebarItems.map((item) => {
-                const Icon = item.icon;
+              {businessSections.map((section) => {
+                const Icon = section.icon;
+                const isExpanded = expandedSections.has(section.id);
+                const isActive = activeTab === section.tab || 
+                  (section.subsections?.some(sub => sub.tab === activeTab));
+
                 return (
-                  <SidebarMenuItem key={item.id}>
-                    <SidebarMenuButton
-                      isActive={activeTab === item.id}
-                      onClick={() => setActiveTab(item.id)}
-                    >
-                      <Icon className="h-4 w-4" />
-                      <span>{item.label}</span>
-                      {item.badge && (
-                        <Badge variant="secondary" className="ml-auto text-xs">
-                          {item.badge}
-                        </Badge>
-                      )}
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
+                  <div key={section.id}>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton
+                        isActive={isActive}
+                        onClick={() => {
+                          if (section.subsections && section.subsections.length > 0) {
+                            toggleSection(section.id);
+                          } else {
+                            setActiveTab(section.tab);
+                          }
+                        }}
+                        className="w-full flex items-center justify-between"
+                      >
+                        <div className="flex items-center">
+                          <Icon className="h-4 w-4" />
+                          <span>{section.label}</span>
+                        </div>
+                        {section.subsections && section.subsections.length > 0 && (
+                          <div className="ml-auto">
+                            {isExpanded ? (
+                              <ChevronDown className="h-3 w-3" />
+                            ) : (
+                              <ChevronRight className="h-3 w-3" />
+                            )}
+                          </div>
+                        )}
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    
+                    {/* Subsections */}
+                    {section.subsections && isExpanded && (
+                      <div className="ml-6 space-y-1">
+                        {section.subsections.map((subsection) => (
+                          <SidebarMenuItem key={subsection.tab}>
+                            <SidebarMenuButton
+                              isActive={activeTab === subsection.tab}
+                              onClick={() => setActiveTab(subsection.tab)}
+                              className="text-sm"
+                            >
+                              <span>{subsection.label}</span>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 );
               })}
             </SidebarMenu>
