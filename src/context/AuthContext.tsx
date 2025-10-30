@@ -29,12 +29,17 @@ interface AuthContextType {
 // Create the context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Mock users for demonstration
-export const mockUsers: User[] = [
+// Mock users for demonstration (with passwords for test mode)
+export interface MockUser extends User {
+  password: string;
+}
+
+export const mockUsers: MockUser[] = [
   {
     id: '1',
     name: 'Amadou Diallo',
     email: 'admin@wifisenegal.com',
+    password: 'admin123',
     role: 'superadmin',
     avatar: '/assets/profiles/amadou.jpg'
   },
@@ -42,6 +47,7 @@ export const mockUsers: User[] = [
     id: '2',
     name: 'Fatou Ndiaye',
     email: 'marketing@wifisenegal.com',
+    password: 'marketing123',
     role: 'marketing',
     avatar: '/assets/profiles/fatou.jpg'
   },
@@ -49,6 +55,7 @@ export const mockUsers: User[] = [
     id: '3',
     name: 'Omar Sow',
     email: 'tech@wifisenegal.com',
+    password: 'tech123',
     role: 'technical',
     avatar: '/assets/profiles/omar.jpg'
   },
@@ -56,6 +63,7 @@ export const mockUsers: User[] = [
     id: '4',
     name: 'Mariama Bâ',
     email: 'vouchers@wifisenegal.com',
+    password: 'voucher123',
     role: 'voucher_manager',
     avatar: '/assets/profiles/mariama.jpg'
   }

@@ -1,37 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth, mockUsers } from '@/context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { Shield, Mail, Lock, UserPlus, LogIn } from 'lucide-react';
+import { Shield, Mail, Lock, LogIn, Users } from 'lucide-react';
 
 const Auth = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { login } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState('login');
 
   // Login form state
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
-
-  // Signup form state  
-  const [signupEmail, setSignupEmail] = useState('');
-  const [signupPassword, setSignupPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [fullName, setFullName] = useState('');
-
-  // Redirect if already authenticated
-  if (isAuthenticated && user) {
-    return <Navigate to="/super-admin" replace />;
-  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,28 +26,27 @@ const Auth = () => {
     setError(null);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: loginEmail,
-        password: loginPassword,
-      });
+      // Recherche de l'utilisateur dans les mockUsers
+      const user = mockUsers.find(
+        (u) => u.email === loginEmail && u.password === loginPassword
+      );
 
-      if (error) {
-        if (error.message.includes('Invalid login credentials')) {
-          setError('Email ou mot de passe incorrect');
-        } else if (error.message.includes('Email not confirmed')) {
-          setError('Veuillez confirmer votre email avant de vous connecter');
-        } else {
-          setError(error.message);
-        }
+      if (!user) {
+        setError('Email ou mot de passe incorrect');
+        setIsLoading(false);
         return;
       }
 
-      if (data.user) {
-        toast({
-          title: "Connexion réussie",
-          description: "Bienvenue dans l'interface d'administration",
-        });
-      }
+      // Connexion via le contexte
+      login(user);
+
+      toast({
+        title: "Connexion réussie",
+        description: `Bienvenue ${user.name} - ${user.role}`,
+      });
+
+      // Redirection
+      navigate('/super-admin');
     } catch (err: any) {
       setError('Une erreur est survenue lors de la connexion');
       console.error('Login error:', err);
@@ -69,231 +55,122 @@ const Auth = () => {
     }
   };
 
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleQuickLogin = (user: typeof mockUsers[0]) => {
     setIsLoading(true);
-    setError(null);
-
-    // Validation
-    if (signupPassword !== confirmPassword) {
-      setError('Les mots de passe ne correspondent pas');
-      setIsLoading(false);
-      return;
-    }
-
-    if (signupPassword.length < 6) {
-      setError('Le mot de passe doit contenir au moins 6 caractères');
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      const redirectUrl = `${window.location.origin}/auth`;
-      
-      const { data, error } = await supabase.auth.signUp({
-        email: signupEmail,
-        password: signupPassword,
-        options: {
-          emailRedirectTo: redirectUrl,
-          data: {
-            full_name: fullName,
-            role: 'admin' // Default role for new signups
-          }
-        }
-      });
-
-      if (error) {
-        if (error.message.includes('User already registered')) {
-          setError('Un compte existe déjà avec cette adresse email');
-        } else {
-          setError(error.message);
-        }
-        return;
-      }
-
-      if (data.user && !data.session) {
-        toast({
-          title: "Compte créé avec succès",
-          description: "Veuillez vérifier votre email pour confirmer votre compte",
-        });
-        setActiveTab('login');
-      } else if (data.session) {
-        toast({
-          title: "Compte créé et connecté",
-          description: "Bienvenue dans l'interface d'administration",
-        });
-      }
-    } catch (err: any) {
-      setError('Une erreur est survenue lors de la création du compte');
-      console.error('Signup error:', err);
-    } finally {
-      setIsLoading(false);
-    }
+    login(user);
+    toast({
+      title: "Connexion rapide",
+      description: `Connecté en tant que ${user.name}`,
+    });
+    setTimeout(() => {
+      navigate('/super-admin');
+    }, 300);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-secondary/20 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-            <Shield className="h-6 w-6 text-primary" />
-          </div>
-          <CardTitle className="text-2xl">Administration WiFi Sénégal</CardTitle>
-          <CardDescription>
-            Accès sécurisé à l'interface d'administration
-          </CardDescription>
-        </CardHeader>
-        
-        <CardContent>
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login" className="flex items-center gap-2">
-                <LogIn className="h-4 w-4" />
-                Connexion
-              </TabsTrigger>
-              <TabsTrigger value="signup" className="flex items-center gap-2">
-                <UserPlus className="h-4 w-4" />
-                Inscription
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="login">
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="login-email">Email</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="login-email"
-                      type="email"
-                      placeholder="admin@wifisenegal.com"
-                      value={loginEmail}
-                      onChange={(e) => setLoginEmail(e.target.value)}
-                      className="pl-10"
-                      required
-                    />
+      <div className="w-full max-w-5xl space-y-6">
+        {/* Quick Login Section */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {mockUsers.map((user) => (
+            <Card 
+              key={user.id} 
+              className="cursor-pointer hover:shadow-lg transition-all hover:scale-105"
+              onClick={() => handleQuickLogin(user)}
+            >
+              <CardContent className="pt-6">
+                <div className="flex flex-col items-center text-center space-y-3">
+                  <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Users className="h-8 w-8 text-primary" />
                   </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="login-password">Mot de passe</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="login-password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={loginPassword}
-                      onChange={(e) => setLoginPassword(e.target.value)}
-                      className="pl-10"
-                      required
-                    />
+                  <div>
+                    <h3 className="font-semibold text-lg">{user.name}</h3>
+                    <p className="text-sm text-muted-foreground">{user.email}</p>
+                    <p className="text-xs text-primary font-medium mt-1">{user.role}</p>
                   </div>
+                  <Button size="sm" className="w-full">
+                    <LogIn className="h-4 w-4 mr-2" />
+                    Connexion rapide
+                  </Button>
                 </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
 
-                {error && (
-                  <Alert variant="destructive">
-                    <AlertDescription>{error}</AlertDescription>
-                  </Alert>
-                )}
-
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={isLoading}
-                >
-                  {isLoading ? 'Connexion...' : 'Se connecter'}
-                </Button>
-              </form>
-            </TabsContent>
-
-            <TabsContent value="signup">
-              <form onSubmit={handleSignup} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="signup-name">Nom complet</Label>
+        {/* Standard Login Form */}
+        <Card className="max-w-md mx-auto">
+          <CardHeader className="text-center">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+              <Shield className="h-6 w-6 text-primary" />
+            </div>
+            <CardTitle className="text-2xl">Administration WiFi Sénégal</CardTitle>
+            <CardDescription>
+              Mode test - Connexion simplifiée
+            </CardDescription>
+          </CardHeader>
+          
+          <CardContent>
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="login-email">Email</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
-                    id="signup-name"
-                    type="text"
-                    placeholder="Amadou Diallo"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
+                    id="login-email"
+                    type="email"
+                    placeholder="admin@wifisenegal.com"
+                    value={loginEmail}
+                    onChange={(e) => setLoginEmail(e.target.value)}
+                    className="pl-10"
                     required
                   />
                 </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="signup-email">Email</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="signup-email"
-                      type="email"
-                      placeholder="votre.email@wifisenegal.com"
-                      value={signupEmail}
-                      onChange={(e) => setSignupEmail(e.target.value)}
-                      className="pl-10"
-                      required
-                    />
-                  </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="login-password">Mot de passe</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="login-password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                    className="pl-10"
+                    required
+                  />
                 </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="signup-password">Mot de passe</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="signup-password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={signupPassword}
-                      onChange={(e) => setSignupPassword(e.target.value)}
-                      className="pl-10"
-                      required
-                      minLength={6}
-                    />
-                  </div>
+              </div>
+
+              {error && (
+                <Alert variant="destructive">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={isLoading}
+              >
+                {isLoading ? 'Connexion...' : 'Se connecter'}
+              </Button>
+            </form>
+
+            <div className="mt-6 p-4 bg-muted/50 rounded-lg">
+              <p className="text-sm font-semibold mb-2">Comptes de test disponibles :</p>
+              {mockUsers.map((user) => (
+                <div key={user.id} className="text-xs text-muted-foreground mb-1">
+                  <span className="font-mono">{user.email}</span> - 
+                  <span className="ml-1">Pass: {user.password}</span>
                 </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="confirm-password">Confirmer le mot de passe</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="confirm-password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="pl-10"
-                      required
-                      minLength={6}
-                    />
-                  </div>
-                </div>
-
-                {error && (
-                  <Alert variant="destructive">
-                    <AlertDescription>{error}</AlertDescription>
-                  </Alert>
-                )}
-
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={isLoading}
-                >
-                  {isLoading ? 'Création...' : 'Créer le compte'}
-                </Button>
-              </form>
-            </TabsContent>
-          </Tabs>
-
-          <div className="mt-6 text-center text-sm text-muted-foreground">
-            <p>Interface d'administration sécurisée</p>
-            <p>Accès réservé aux administrateurs autorisés</p>
-          </div>
-        </CardContent>
-      </Card>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
