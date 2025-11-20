@@ -86,66 +86,50 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
   };
 
-  // Initialize auth state and set up listener
+  // Initialize auth state - Mock mode only (no Supabase interference)
   useEffect(() => {
-    // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        console.log('🔐 Auth state changed:', event, session?.user?.email);
-        setSession(session);
-        
-        if (session?.user) {
-          const mappedUser = mapSupabaseUser(session.user);
-          setUser(mappedUser);
-          console.log('🔐 User authenticated:', mappedUser);
-        } else {
-          setUser(null);
-          console.log('🔐 User logged out');
-        }
-        
-        setIsLoading(false);
+    // Check localStorage for existing mock session
+    const storedUser = localStorage.getItem('mockUser');
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+        console.log('🔐 Mock session restored:', parsedUser);
+      } catch (e) {
+        console.error('Failed to parse stored user');
       }
-    );
-
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      if (session?.user) {
-        const mappedUser = mapSupabaseUser(session.user);
-        setUser(mappedUser);
-        console.log('🔐 Existing session found:', mappedUser);
-      }
-      setIsLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
+    }
+    setIsLoading(false);
   }, []);
 
-  // Login handler (for compatibility with existing code)
+  // Login handler (for mock mode)
   const login = (userData: User) => {
     console.log('🔐 Manual login called:', userData);
     setUser(userData);
+    // Persist to localStorage for mock sessions
+    localStorage.setItem('mockUser', JSON.stringify(userData));
   };
 
   // Logout handler
   const logout = async () => {
     console.log('🔐 Logging out user');
-    await supabase.auth.signOut();
     setUser(null);
     setSession(null);
+    localStorage.removeItem('mockUser');
   };
 
   // Update current user (for compatibility)
   const setCurrentUser = (userData: User) => {
     console.log('🔐 Updating current user:', userData);
     setUser(userData);
+    localStorage.setItem('mockUser', JSON.stringify(userData));
   };
 
   // Context value
   const value = {
     user,
     session,
-    isAuthenticated: !!user && !!session,
+    isAuthenticated: !!user, // Mock mode: only check user, not session
     login,
     logout,
     setCurrentUser,
